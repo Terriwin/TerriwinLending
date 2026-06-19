@@ -91,8 +91,13 @@
     }
 
     /* Lang fade */
-    [data-i18n] { transition: opacity 0.2s ease; }
-    body.lang-switching [data-i18n] { opacity: 0; }
+    [data-i18n] {
+      transition: opacity 0.18s ease, transform 0.18s var(--ease-out);
+    }
+    body.lang-switching [data-i18n] {
+      opacity: 0;
+      transform: translateY(4px);
+    }
 
     .container {
       max-width: 1100px;
@@ -164,33 +169,88 @@
       gap: 10px;
     }
 
-    /* Lang toggle */
-    .lang-toggle {
+    /* Lang dropdown */
+    .lang-dropdown { position: relative; }
+
+    .lang-trigger {
       display: flex;
       align-items: center;
+      gap: 6px;
+      padding: 7px 12px;
       background: var(--glass);
       border: 1px solid var(--border);
-      border-radius: 8px;
-      overflow: hidden;
+      border-radius: 10px;
+      cursor: pointer;
+      font-family: 'Space Grotesk', sans-serif;
+      font-size: 13px;
+      font-weight: 500;
+      color: var(--text-2);
       backdrop-filter: var(--blur);
+      transition: background 0.2s, border-color 0.2s, color 0.2s;
+      white-space: nowrap;
     }
-    .lang-btn {
-      padding: 7px 12px;
-      font-family: 'Space Mono', monospace;
-      font-size: 11px;
-      font-weight: 700;
-      letter-spacing: 0.06em;
-      color: var(--text-3);
+    .lang-trigger:hover {
+      background: var(--glass-hov);
+      border-color: var(--border-hov);
+      color: var(--text);
+    }
+    .lang-trigger .chevron {
+      width: 14px; height: 14px;
+      transition: transform 0.25s var(--ease-out);
+      flex-shrink: 0;
+      opacity: 0.6;
+    }
+    .lang-dropdown.open .chevron { transform: rotate(180deg); }
+
+    .lang-menu {
+      position: absolute;
+      top: calc(100% + 8px);
+      right: 0;
+      min-width: 160px;
+      background: rgba(18, 17, 16, 0.95);
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      overflow: hidden;
+      backdrop-filter: blur(24px);
+      -webkit-backdrop-filter: blur(24px);
+      box-shadow: 0 16px 40px rgba(0,0,0,0.4);
+      z-index: 200;
+      transform-origin: top right;
+      animation: langMenuIn 0.2s var(--ease-out) forwards;
+    }
+    @keyframes langMenuIn {
+      from { opacity: 0; transform: scale(0.95) translateY(-6px); }
+      to   { opacity: 1; transform: scale(1)    translateY(0); }
+    }
+    .lang-menu[hidden] { display: none; }
+
+    .lang-option {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      width: 100%;
+      padding: 10px 14px;
       background: none;
       border: none;
+      font-family: 'Space Grotesk', sans-serif;
+      font-size: 13px;
+      font-weight: 500;
+      color: var(--text-2);
       cursor: pointer;
-      transition: color 0.2s, background 0.2s;
+      transition: background 0.15s, color 0.15s;
+      text-align: left;
     }
-    .lang-btn.active {
-      background: var(--accent-dim);
+    .lang-option:hover { background: var(--glass-hov); color: var(--text); }
+    .lang-option.active { color: var(--accent); font-weight: 600; }
+    .lang-option .check {
+      width: 14px; height: 14px;
+      margin-left: auto;
+      flex-shrink: 0;
+      opacity: 0;
       color: var(--accent);
     }
-    .lang-btn:hover:not(.active) { color: var(--text-2); }
+    .lang-option.active .check { opacity: 1; }
+    .lang-flag { font-size: 16px; line-height: 1; }
 
     .btn {
       display: inline-flex;
@@ -515,9 +575,26 @@
         <li><a href="#contact" data-i18n="nav.contact"></a></li>
       </ul>
       <div class="nav-right">
-        <div class="lang-toggle" role="group" aria-label="Language selector">
-          <button class="lang-btn active" data-lang="ru" aria-pressed="true">RU</button>
-          <button class="lang-btn" data-lang="en" aria-pressed="false">EN</button>
+        <div class="lang-dropdown" id="langDropdown">
+          <button class="lang-trigger" id="langTrigger" aria-haspopup="listbox" aria-expanded="false">
+            <span class="lang-flag" id="langFlag">🇷🇺</span>
+            <span id="langLabel">Русский</span>
+            <svg class="chevron" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+              <path d="m6 9 6 6 6-6"/>
+            </svg>
+          </button>
+          <div class="lang-menu" id="langMenu" hidden role="listbox">
+            <button class="lang-option active" data-lang="ru" role="option" aria-selected="true">
+              <span class="lang-flag">🇷🇺</span>
+              <span>Русский</span>
+              <svg class="check" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="m5 12 5 5L20 7"/></svg>
+            </button>
+            <button class="lang-option" data-lang="en" role="option" aria-selected="false">
+              <span class="lang-flag">🇺🇸</span>
+              <span>English</span>
+              <svg class="check" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="m5 12 5 5L20 7"/></svg>
+            </button>
+          </div>
         </div>
         <a href="mailto:nikitos10b@gmail.com" class="btn btn-primary" data-i18n="nav.hire"></a>
       </div>
@@ -830,21 +907,36 @@
     };
 
     // ── Language engine ───────────────────────────────────────────
+    const langMeta = {
+      ru: { flag: '🇷🇺', label: 'Русский' },
+      en: { flag: '🇺🇸', label: 'English' },
+    };
+
     let lang = localStorage.getItem('lang') || 'ru';
+
+    const langDropdown = document.getElementById('langDropdown');
+    const langTrigger  = document.getElementById('langTrigger');
+    const langMenu     = document.getElementById('langMenu');
+    const langFlag     = document.getElementById('langFlag');
+    const langLabel    = document.getElementById('langLabel');
 
     function applyLang(l, animate = false) {
       lang = l;
       document.documentElement.lang = l;
       localStorage.setItem('lang', l);
 
-      // Buttons state
-      document.querySelectorAll('.lang-btn').forEach(btn => {
-        const active = btn.dataset.lang === l;
-        btn.classList.toggle('active', active);
-        btn.setAttribute('aria-pressed', active);
+      // Update trigger button
+      langFlag.textContent  = langMeta[l].flag;
+      langLabel.textContent = langMeta[l].label;
+
+      // Update options state
+      langMenu.querySelectorAll('.lang-option').forEach(opt => {
+        const active = opt.dataset.lang === l;
+        opt.classList.toggle('active', active);
+        opt.setAttribute('aria-selected', active);
       });
 
-      // Apply translations (with optional fade)
+      // Apply translations with smooth fade + slide
       const els = document.querySelectorAll('[data-i18n]');
       if (animate) {
         document.body.classList.add('lang-switching');
@@ -854,7 +946,7 @@
             if (val !== undefined) el.textContent = val;
           });
           document.body.classList.remove('lang-switching');
-        }, 200);
+        }, 190);
       } else {
         els.forEach(el => {
           const val = t[l][el.dataset.i18n];
@@ -863,15 +955,43 @@
       }
     }
 
-    // Initial apply (no animation on load)
-    applyLang(lang, false);
+    // Dropdown open/close
+    function openMenu() {
+      langMenu.hidden = false;
+      langDropdown.classList.add('open');
+      langTrigger.setAttribute('aria-expanded', 'true');
+    }
+    function closeMenu() {
+      langMenu.hidden = true;
+      langDropdown.classList.remove('open');
+      langTrigger.setAttribute('aria-expanded', 'false');
+    }
 
-    // Toggle handler
-    document.querySelectorAll('.lang-btn').forEach(btn => {
+    langTrigger.addEventListener('click', (e) => {
+      e.stopPropagation();
+      langMenu.hidden ? openMenu() : closeMenu();
+    });
+
+    // Select language from dropdown
+    langMenu.querySelectorAll('.lang-option').forEach(btn => {
       btn.addEventListener('click', () => {
         if (btn.dataset.lang !== lang) applyLang(btn.dataset.lang, true);
+        closeMenu();
       });
     });
+
+    // Close on outside click
+    document.addEventListener('click', (e) => {
+      if (!langDropdown.contains(e.target)) closeMenu();
+    });
+
+    // Close on Escape
+    document.addEventListener('keydown', (e) => {
+      if (e.key === 'Escape') closeMenu();
+    });
+
+    // Initial apply (no animation on load)
+    applyLang(lang, false);
 
     // ── Nav scroll ────────────────────────────────────────────────
     const nav = document.getElementById('nav');
