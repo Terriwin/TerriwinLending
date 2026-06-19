@@ -6,7 +6,7 @@
   <title>Terriwin — Full Stack Developer</title>
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-  <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300;400;500;600;700&family=Space+Mono:wght@400;700&display=swap" rel="stylesheet" />
+  <link href="https://fonts.googleapis.com/css2?family=Manrope:wght@300;400;500;600;700;800&family=Space+Mono:wght@400;700&display=swap" rel="stylesheet" />
   <style>
     *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
 
@@ -30,7 +30,7 @@
     html { scroll-behavior: smooth; }
 
     body {
-      font-family: 'Space Grotesk', system-ui, sans-serif;
+      font-family: 'Manrope', system-ui, sans-serif;
       background: var(--bg);
       color: var(--text);
       min-height: 100dvh;
@@ -92,11 +92,16 @@
 
     /* Lang fade */
     [data-i18n] {
-      transition: opacity 0.18s ease, transform 0.18s var(--ease-out);
+      transition:
+        opacity 0.28s ease,
+        transform 0.28s var(--ease-out),
+        filter 0.28s ease;
+      will-change: opacity, transform, filter;
     }
     body.lang-switching [data-i18n] {
       opacity: 0;
-      transform: translateY(4px);
+      transform: translateY(5px) scale(0.98);
+      filter: blur(4px);
     }
 
     .container {
@@ -181,7 +186,7 @@
       border: 1px solid var(--border);
       border-radius: 10px;
       cursor: pointer;
-      font-family: 'Space Grotesk', sans-serif;
+      font-family: 'Manrope', sans-serif;
       font-size: 13px;
       font-weight: 500;
       color: var(--text-2);
@@ -232,7 +237,7 @@
       padding: 10px 14px;
       background: none;
       border: none;
-      font-family: 'Space Grotesk', sans-serif;
+      font-family: 'Manrope', sans-serif;
       font-size: 13px;
       font-weight: 500;
       color: var(--text-2);
@@ -936,17 +941,27 @@
         opt.setAttribute('aria-selected', active);
       });
 
-      // Apply translations with smooth fade + slide
-      const els = document.querySelectorAll('[data-i18n]');
+      // Apply translations with blur + scale fade
+      const els = [...document.querySelectorAll('[data-i18n]')];
       if (animate) {
+        // Phase 1: blur out
         document.body.classList.add('lang-switching');
         setTimeout(() => {
+          // Swap text while invisible
           els.forEach(el => {
             const val = t[l][el.dataset.i18n];
             if (val !== undefined) el.textContent = val;
           });
+          // Phase 2: staggered fade in
           document.body.classList.remove('lang-switching');
-        }, 190);
+          els.forEach((el, i) => {
+            el.style.transitionDelay = `${i * 12}ms`;
+          });
+          // Clean up delays after animation completes
+          setTimeout(() => {
+            els.forEach(el => { el.style.transitionDelay = ''; });
+          }, els.length * 12 + 300);
+        }, 260);
       } else {
         els.forEach(el => {
           const val = t[l][el.dataset.i18n];
