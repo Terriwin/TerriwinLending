@@ -1,233 +1,843 @@
 <!DOCTYPE html>
-<html lang="ru">
+<html lang="en">
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Доска сообщений</title>
+  <title>Terriwin — Full Stack Developer</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300;400;500;600;700&family=Space+Mono:wght@400;700&display=swap" rel="stylesheet" />
   <style>
-    * { box-sizing: border-box; margin: 0; padding: 0; }
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    :root {
+      --bg:            #09090a;
+      --bg-2:          #111112;
+      --glass:         rgba(210, 195, 168, 0.055);
+      --glass-hov:     rgba(210, 195, 168, 0.095);
+      --border:        rgba(210, 195, 168, 0.10);
+      --border-hov:    rgba(210, 195, 168, 0.22);
+      --accent:        #c9b99a;
+      --accent-dim:    rgba(201, 185, 154, 0.18);
+      --accent-glow:   rgba(201, 185, 154, 0.10);
+      --text:          #ede9e0;
+      --text-2:        #9a9080;
+      --text-3:        #52504a;
+      --radius:        16px;
+      --blur:          blur(20px);
+      --ease-out:      cubic-bezier(0.22, 1, 0.36, 1);
+    }
+
+    html { scroll-behavior: smooth; }
 
     body {
-      font-family: system-ui, sans-serif;
-      background: #0f0f0f;
-      color: #e5e5e5;
-      height: 100vh;
-      display: flex;
+      font-family: 'Space Grotesk', system-ui, sans-serif;
+      background: var(--bg);
+      color: var(--text);
+      min-height: 100dvh;
+      overflow-x: hidden;
+      line-height: 1.6;
     }
 
-    #sidebar {
-      width: 320px;
-      min-width: 320px;
-      background: #1a1a1a;
-      border-right: 1px solid #2a2a2a;
-      display: flex;
-      flex-direction: column;
+    /* ── Noise overlay ── */
+    body::before {
+      content: '';
+      position: fixed;
+      inset: 0;
+      background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.75' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='1'/%3E%3C/svg%3E");
+      opacity: 0.025;
+      pointer-events: none;
+      z-index: 0;
     }
 
-    #sidebar h2 {
-      padding: 20px;
+    /* ── Gradient orbs ── */
+    .orb {
+      position: fixed;
+      border-radius: 50%;
+      filter: blur(120px);
+      pointer-events: none;
+      z-index: 0;
+    }
+    .orb-1 {
+      width: 600px; height: 600px;
+      background: radial-gradient(circle, rgba(201,185,154,0.07) 0%, transparent 70%);
+      top: -200px; right: -100px;
+      animation: float 18s ease-in-out infinite;
+    }
+    .orb-2 {
+      width: 500px; height: 500px;
+      background: radial-gradient(circle, rgba(140,120,100,0.05) 0%, transparent 70%);
+      bottom: 0; left: -100px;
+      animation: float 22s ease-in-out infinite reverse;
+    }
+    @keyframes float {
+      0%, 100% { transform: translate(0, 0); }
+      33%       { transform: translate(30px, -20px); }
+      66%       { transform: translate(-20px, 30px); }
+    }
+
+    /* ── Scroll reveal ── */
+    .reveal {
+      opacity: 0;
+      transform: translateY(28px);
+      transition: opacity 0.7s var(--ease-out), transform 0.7s var(--ease-out);
+    }
+    .reveal.visible {
+      opacity: 1;
+      transform: translateY(0);
+    }
+    .reveal-delay-1 { transition-delay: 0.1s; }
+    .reveal-delay-2 { transition-delay: 0.2s; }
+    .reveal-delay-3 { transition-delay: 0.3s; }
+    .reveal-delay-4 { transition-delay: 0.4s; }
+
+    @media (prefers-reduced-motion: reduce) {
+      .reveal { opacity: 1; transform: none; transition: none; }
+      .orb { animation: none; }
+    }
+
+    /* ── Layout ── */
+    .container {
+      max-width: 1100px;
+      margin: 0 auto;
+      padding: 0 24px;
+      position: relative;
+      z-index: 1;
+    }
+
+    section { padding: 100px 0; }
+
+    /* ── Glass card ── */
+    .glass {
+      background: var(--glass);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      backdrop-filter: var(--blur);
+      -webkit-backdrop-filter: var(--blur);
+      transition: background 0.3s, border-color 0.3s, transform 0.3s var(--ease-out), box-shadow 0.3s;
+    }
+    .glass:hover {
+      background: var(--glass-hov);
+      border-color: var(--border-hov);
+    }
+
+    /* ── NAV ── */
+    nav {
+      position: fixed;
+      top: 0; left: 0; right: 0;
+      z-index: 100;
+      padding: 16px 0;
+      transition: background 0.4s, border-color 0.4s, backdrop-filter 0.4s;
+    }
+    nav.scrolled {
+      background: rgba(9, 9, 10, 0.80);
+      border-bottom: 1px solid var(--border);
+      backdrop-filter: var(--blur);
+      -webkit-backdrop-filter: var(--blur);
+    }
+    .nav-inner {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+    .nav-logo {
+      font-family: 'Space Mono', monospace;
+      font-size: 15px;
+      font-weight: 700;
+      color: var(--accent);
+      text-decoration: none;
+      letter-spacing: -0.02em;
+    }
+    .nav-links {
+      display: flex;
+      gap: 36px;
+      list-style: none;
+    }
+    .nav-links a {
+      color: var(--text-2);
+      text-decoration: none;
+      font-size: 14px;
+      font-weight: 500;
+      transition: color 0.2s;
+    }
+    .nav-links a:hover { color: var(--text); }
+
+    .btn {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      padding: 10px 20px;
+      border-radius: 10px;
+      font-family: inherit;
       font-size: 14px;
       font-weight: 600;
-      color: #888;
-      text-transform: uppercase;
-      letter-spacing: 0.08em;
-      border-bottom: 1px solid #2a2a2a;
+      cursor: pointer;
+      transition: all 0.2s var(--ease-out);
+      text-decoration: none;
+    }
+    .btn-primary {
+      background: var(--accent);
+      color: #0a0908;
+      border: none;
+    }
+    .btn-primary:hover {
+      background: #ddd0b8;
+      transform: translateY(-2px);
+      box-shadow: 0 8px 24px rgba(201,185,154,0.25);
+    }
+    .btn-ghost {
+      background: var(--glass);
+      color: var(--text);
+      border: 1px solid var(--border);
+    }
+    .btn-ghost:hover {
+      background: var(--glass-hov);
+      border-color: var(--border-hov);
+      transform: translateY(-2px);
     }
 
-    #messages {
-      flex: 1;
-      overflow-y: auto;
-      padding: 12px;
+    /* ── HERO ── */
+    #hero {
+      min-height: 100dvh;
+      display: flex;
+      align-items: center;
+      padding: 120px 0 80px;
+    }
+    .hero-tag {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      background: var(--accent-dim);
+      border: 1px solid var(--border);
+      border-radius: 100px;
+      padding: 6px 14px;
+      font-size: 12px;
+      font-weight: 600;
+      color: var(--accent);
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      margin-bottom: 28px;
+    }
+    .hero-tag-dot {
+      width: 6px; height: 6px;
+      background: var(--accent);
+      border-radius: 50%;
+      animation: pulse 2s ease-in-out infinite;
+    }
+    @keyframes pulse {
+      0%, 100% { opacity: 1; transform: scale(1); }
+      50%       { opacity: 0.5; transform: scale(0.75); }
+    }
+    .hero-name {
+      font-size: clamp(52px, 8vw, 88px);
+      font-weight: 700;
+      letter-spacing: -0.04em;
+      line-height: 1.0;
+      margin-bottom: 20px;
+    }
+    .hero-name span {
+      background: linear-gradient(135deg, var(--text) 0%, var(--accent) 60%, #a08868 100%);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+    }
+    .hero-title {
+      font-size: clamp(16px, 2.5vw, 22px);
+      color: var(--text-2);
+      font-weight: 400;
+      margin-bottom: 40px;
+      max-width: 520px;
+      line-height: 1.7;
+    }
+    .hero-actions {
+      display: flex;
+      gap: 12px;
+      flex-wrap: wrap;
+    }
+    .hero-scroll {
+      position: absolute;
+      bottom: 40px;
+      left: 50%;
+      transform: translateX(-50%);
       display: flex;
       flex-direction: column;
+      align-items: center;
       gap: 8px;
-    }
-
-    .message {
-      background: #232323;
-      border: 1px solid #2e2e2e;
-      border-radius: 8px;
-      padding: 12px 14px;
-      animation: fadeIn 0.3s ease;
-    }
-
-    .message p {
-      font-size: 14px;
-      line-height: 1.5;
-      word-break: break-word;
-    }
-
-    .message time {
-      display: block;
-      margin-top: 6px;
+      color: var(--text-3);
       font-size: 11px;
-      color: #555;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      animation: bounce 2s ease-in-out infinite;
+    }
+    .scroll-line {
+      width: 1px; height: 48px;
+      background: linear-gradient(to bottom, var(--accent), transparent);
+    }
+    @keyframes bounce {
+      0%, 100% { transform: translateX(-50%) translateY(0); }
+      50%       { transform: translateX(-50%) translateY(8px); }
     }
 
-    @keyframes fadeIn {
-      from { opacity: 0; transform: translateY(6px); }
-      to   { opacity: 1; transform: translateY(0); }
+    /* ── SECTION HEADER ── */
+    .section-label {
+      font-family: 'Space Mono', monospace;
+      font-size: 11px;
+      letter-spacing: 0.15em;
+      text-transform: uppercase;
+      color: var(--accent);
+      margin-bottom: 16px;
+    }
+    .section-title {
+      font-size: clamp(32px, 5vw, 48px);
+      font-weight: 700;
+      letter-spacing: -0.03em;
+      line-height: 1.1;
+      margin-bottom: 24px;
+    }
+    .section-text {
+      color: var(--text-2);
+      font-size: 17px;
+      line-height: 1.75;
+      max-width: 560px;
     }
 
-    #main {
-      flex: 1;
+    /* ── ABOUT ── */
+    .about-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 24px;
+      margin-top: 64px;
+    }
+    .about-card {
+      padding: 32px;
+    }
+    .about-card-icon {
+      width: 40px; height: 40px;
+      border-radius: 10px;
+      background: var(--accent-dim);
+      border: 1px solid var(--border);
       display: flex;
       align-items: center;
       justify-content: center;
-      padding: 40px;
+      margin-bottom: 20px;
     }
-
-    #form-box {
-      width: 100%;
-      max-width: 480px;
-    }
-
-    #form-box h1 {
-      font-size: 28px;
-      font-weight: 700;
-      margin-bottom: 8px;
-    }
-
-    #form-box p {
-      color: #666;
-      font-size: 14px;
-      margin-bottom: 32px;
-    }
-
-    textarea {
-      width: 100%;
-      background: #1a1a1a;
-      border: 1px solid #2e2e2e;
-      border-radius: 10px;
-      color: #e5e5e5;
-      font-size: 15px;
-      font-family: inherit;
-      padding: 16px;
-      resize: none;
-      height: 140px;
-      outline: none;
-      transition: border-color 0.2s;
-    }
-
-    textarea:focus {
-      border-color: #555;
-    }
-
-    button {
-      margin-top: 12px;
-      width: 100%;
-      background: #e5e5e5;
-      color: #0f0f0f;
-      border: none;
-      border-radius: 8px;
-      font-size: 15px;
+    .about-card-icon svg { width: 20px; height: 20px; stroke: var(--accent); }
+    .about-card h3 {
+      font-size: 17px;
       font-weight: 600;
-      font-family: inherit;
-      padding: 14px;
-      cursor: pointer;
-      transition: background 0.2s;
+      margin-bottom: 10px;
+    }
+    .about-card p {
+      font-size: 14px;
+      color: var(--text-2);
+      line-height: 1.7;
     }
 
-    button:hover { background: #fff; }
-    button:disabled { background: #333; color: #666; cursor: default; }
-
-    #status {
-      margin-top: 12px;
+    /* ── SKILLS ── */
+    .skills-wrap {
+      margin-top: 56px;
+      display: flex;
+      flex-direction: column;
+      gap: 40px;
+    }
+    .skills-row { display: flex; flex-direction: column; gap: 12px; }
+    .skills-row-label {
+      font-size: 12px;
+      font-weight: 600;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      color: var(--text-3);
+    }
+    .skills-tags {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+    }
+    .skill-tag {
+      padding: 8px 16px;
+      background: var(--glass);
+      border: 1px solid var(--border);
+      border-radius: 8px;
       font-size: 13px;
-      color: #555;
+      font-weight: 500;
+      color: var(--text-2);
+      backdrop-filter: var(--blur);
+      transition: all 0.2s var(--ease-out);
+      cursor: default;
+    }
+    .skill-tag:hover {
+      background: var(--accent-dim);
+      border-color: var(--border-hov);
+      color: var(--accent);
+      transform: translateY(-2px);
+    }
+
+    /* ── TESTIMONIALS ── */
+    .testimonials-track-wrap {
+      margin-top: 64px;
+      position: relative;
+    }
+    .testimonials-track {
+      overflow: hidden;
+    }
+    .testimonials-inner {
+      display: flex;
+      gap: 20px;
+      transition: transform 0.5s var(--ease-out);
+    }
+    .testimonial-card {
+      min-width: calc(50% - 10px);
+      padding: 36px;
+      position: relative;
+      flex-shrink: 0;
+    }
+    .testimonial-quote {
+      font-size: 36px;
+      line-height: 1;
+      color: var(--accent);
+      font-family: 'Space Mono', monospace;
+      margin-bottom: 20px;
+      opacity: 0.6;
+    }
+    .testimonial-text {
+      font-size: 16px;
+      line-height: 1.75;
+      color: var(--text-2);
+      margin-bottom: 28px;
+    }
+    .testimonial-author {
+      display: flex;
+      align-items: center;
+      gap: 14px;
+    }
+    .testimonial-avatar {
+      width: 42px; height: 42px;
+      border-radius: 50%;
+      background: linear-gradient(135deg, var(--accent-dim), var(--glass));
+      border: 1px solid var(--border);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 14px;
+      font-weight: 700;
+      color: var(--accent);
+      flex-shrink: 0;
+    }
+    .testimonial-name { font-size: 14px; font-weight: 600; }
+    .testimonial-role { font-size: 13px; color: var(--text-3); margin-top: 2px; }
+
+    .testimonials-controls {
+      display: flex;
+      align-items: center;
+      gap: 16px;
+      margin-top: 32px;
+    }
+    .dot-wrap { display: flex; gap: 6px; }
+    .dot {
+      width: 6px; height: 6px;
+      border-radius: 50%;
+      background: var(--border);
+      cursor: pointer;
+      transition: all 0.3s;
+    }
+    .dot.active {
+      width: 20px;
+      border-radius: 3px;
+      background: var(--accent);
+    }
+    .ctrl-btn {
+      width: 40px; height: 40px;
+      border-radius: 10px;
+      background: var(--glass);
+      border: 1px solid var(--border);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+      transition: all 0.2s;
+      color: var(--text-2);
+    }
+    .ctrl-btn:hover {
+      background: var(--glass-hov);
+      border-color: var(--border-hov);
+      color: var(--text);
+    }
+    .ctrl-btn svg { width: 16px; height: 16px; }
+
+    /* ── CONTACT ── */
+    .contact-card {
+      padding: 72px 64px;
       text-align: center;
-      min-height: 18px;
+      position: relative;
+      overflow: hidden;
+    }
+    .contact-card::before {
+      content: '';
+      position: absolute;
+      inset: 0;
+      background: radial-gradient(ellipse at 50% 0%, rgba(201,185,154,0.08) 0%, transparent 70%);
+      pointer-events: none;
+    }
+    .contact-card .section-title { margin-bottom: 16px; }
+    .contact-card .section-text { margin: 0 auto 40px; text-align: center; }
+    .contact-links {
+      display: flex;
+      justify-content: center;
+      gap: 12px;
+      flex-wrap: wrap;
+    }
+
+    /* ── FOOTER ── */
+    footer {
+      border-top: 1px solid var(--border);
+      padding: 32px 0;
+      position: relative;
+      z-index: 1;
+    }
+    .footer-inner {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      font-size: 13px;
+      color: var(--text-3);
+    }
+    .footer-inner a { color: var(--text-3); text-decoration: none; transition: color 0.2s; }
+    .footer-inner a:hover { color: var(--accent); }
+
+    /* ── Divider ── */
+    .section-divider {
+      height: 1px;
+      background: linear-gradient(to right, transparent, var(--border), transparent);
+      margin: 0 24px;
+      position: relative;
+      z-index: 1;
+    }
+
+    /* ── Responsive ── */
+    @media (max-width: 768px) {
+      section { padding: 72px 0; }
+      .about-grid { grid-template-columns: 1fr; }
+      .testimonial-card { min-width: calc(100% - 0px); }
+      nav .nav-links { display: none; }
+      .contact-card { padding: 48px 24px; }
+      .hero-scroll { display: none; }
+      .footer-inner { flex-direction: column; gap: 12px; text-align: center; }
     }
   </style>
 </head>
 <body>
 
-  <aside id="sidebar">
-    <h2>Сообщения</h2>
-    <div id="messages"></div>
-  </aside>
+  <div class="orb orb-1"></div>
+  <div class="orb orb-2"></div>
 
-  <main id="main">
-    <div id="form-box">
-      <h1>Напиши что-нибудь</h1>
-      <p>Сообщение появится у всех пользователей сразу.</p>
-      <textarea id="input" placeholder="Введи текст..."></textarea>
-      <button id="send">Отправить</button>
-      <div id="status"></div>
+  <!-- NAV -->
+  <nav id="nav">
+    <div class="container nav-inner">
+      <a href="#" class="nav-logo">tw.</a>
+      <ul class="nav-links">
+        <li><a href="#about">About</a></li>
+        <li><a href="#skills">Skills</a></li>
+        <li><a href="#testimonials">Reviews</a></li>
+        <li><a href="#contact">Contact</a></li>
+      </ul>
+      <a href="mailto:nikitos10b@gmail.com" class="btn btn-primary">Hire me</a>
     </div>
-  </main>
+  </nav>
 
-  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <!-- HERO -->
+  <section id="hero">
+    <div class="container" style="position:relative;">
+      <div class="hero-tag reveal">
+        <span class="hero-tag-dot"></span>
+        Available for work
+      </div>
+      <h1 class="hero-name reveal reveal-delay-1">
+        <span>Terriwin</span>
+      </h1>
+      <p class="hero-title reveal reveal-delay-2">
+        Full Stack Developer crafting digital experiences that balance clean code with thoughtful design.
+      </p>
+      <div class="hero-actions reveal reveal-delay-3">
+        <a href="#testimonials" class="btn btn-primary">See Reviews</a>
+        <a href="#about" class="btn btn-ghost">About me</a>
+      </div>
+      <div class="hero-scroll">
+        <div class="scroll-line"></div>
+        <span>Scroll</span>
+      </div>
+    </div>
+  </section>
+
+  <div class="section-divider"></div>
+
+  <!-- ABOUT -->
+  <section id="about">
+    <div class="container">
+      <p class="section-label reveal">About</p>
+      <h2 class="section-title reveal reveal-delay-1">Building things <br />that matter</h2>
+      <p class="section-text reveal reveal-delay-2">
+        I'm a full stack developer focused on creating well-crafted digital products. I care deeply about performance, accessibility, and the craft of building software that feels good to use.
+      </p>
+      <div class="about-grid">
+        <div class="glass about-card reveal reveal-delay-1">
+          <div class="about-card-icon">
+            <svg fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor">
+              <path stroke-linecap="round" stroke-linejoin="round" d="M17.25 6.75 22.5 12l-5.25 5.25m-10.5 0L1.5 12l5.25-5.25m7.5-3-4.5 16.5" />
+            </svg>
+          </div>
+          <h3>Clean Code</h3>
+          <p>I write code that's readable, maintainable, and built to last. Every function has a purpose, every abstraction earns its place.</p>
+        </div>
+        <div class="glass about-card reveal reveal-delay-2">
+          <div class="about-card-icon">
+            <svg fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor">
+              <path stroke-linecap="round" stroke-linejoin="round" d="M9.53 16.122a3 3 0 0 0-5.78 1.128 2.25 2.25 0 0 1-2.4 2.245 4.5 4.5 0 0 0 8.4-2.245c0-.399-.078-.78-.22-1.128Zm0 0a15.998 15.998 0 0 0 3.388-1.62m-5.043-.025a15.994 15.994 0 0 1 1.622-3.395m3.42 3.42a15.995 15.995 0 0 0 4.764-4.648l3.876-5.814a1.151 1.151 0 0 0-1.597-1.597L14.146 6.32a15.996 15.996 0 0 0-4.649 4.763m3.42 3.42a6.776 6.776 0 0 0-3.42-3.42" />
+            </svg>
+          </div>
+          <h3>Thoughtful Design</h3>
+          <p>I collaborate closely with design, translating ideas into interfaces that feel intuitive and polished across all devices.</p>
+        </div>
+        <div class="glass about-card reveal reveal-delay-3">
+          <div class="about-card-icon">
+            <svg fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor">
+              <path stroke-linecap="round" stroke-linejoin="round" d="M3.75 13.5l10.5-11.25L12 10.5h8.25L9.75 21.75 12 13.5H3.75z" />
+            </svg>
+          </div>
+          <h3>Performance First</h3>
+          <p>Fast sites win. I optimise for real-world metrics — Core Web Vitals, load time, responsiveness — not just benchmarks.</p>
+        </div>
+        <div class="glass about-card reveal reveal-delay-4">
+          <div class="about-card-icon">
+            <svg fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor">
+              <path stroke-linecap="round" stroke-linejoin="round" d="M13.5 10.5V6.75a4.5 4.5 0 1 1 9 0v3.75M3.75 21.75h10.5a2.25 2.25 0 0 0 2.25-2.25v-6.75a2.25 2.25 0 0 0-2.25-2.25H3.75a2.25 2.25 0 0 0-2.25 2.25v6.75a2.25 2.25 0 0 0 2.25 2.25Z" />
+            </svg>
+          </div>
+          <h3>Reliable Delivery</h3>
+          <p>Deadlines are commitments. I communicate proactively, ship consistently, and keep teams informed throughout every project.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <div class="section-divider"></div>
+
+  <!-- SKILLS -->
+  <section id="skills">
+    <div class="container">
+      <p class="section-label reveal">Skills</p>
+      <h2 class="section-title reveal reveal-delay-1">My tech stack</h2>
+      <div class="skills-wrap">
+        <div class="skills-row reveal reveal-delay-1">
+          <span class="skills-row-label">Frontend</span>
+          <div class="skills-tags">
+            <span class="skill-tag">React</span>
+            <span class="skill-tag">Next.js</span>
+            <span class="skill-tag">TypeScript</span>
+            <span class="skill-tag">Tailwind CSS</span>
+            <span class="skill-tag">HTML & CSS</span>
+            <span class="skill-tag">Framer Motion</span>
+          </div>
+        </div>
+        <div class="skills-row reveal reveal-delay-2">
+          <span class="skills-row-label">Backend</span>
+          <div class="skills-tags">
+            <span class="skill-tag">Node.js</span>
+            <span class="skill-tag">PostgreSQL</span>
+            <span class="skill-tag">Supabase</span>
+            <span class="skill-tag">REST APIs</span>
+            <span class="skill-tag">GraphQL</span>
+          </div>
+        </div>
+        <div class="skills-row reveal reveal-delay-3">
+          <span class="skills-row-label">Tools & Platforms</span>
+          <div class="skills-tags">
+            <span class="skill-tag">Git & GitHub</span>
+            <span class="skill-tag">Vercel</span>
+            <span class="skill-tag">Docker</span>
+            <span class="skill-tag">Figma</span>
+            <span class="skill-tag">VS Code</span>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <div class="section-divider"></div>
+
+  <!-- TESTIMONIALS -->
+  <section id="testimonials">
+    <div class="container">
+      <p class="section-label reveal">Testimonials</p>
+      <h2 class="section-title reveal reveal-delay-1">What people say</h2>
+      <p class="section-text reveal reveal-delay-2">Feedback from clients and collaborators I've had the pleasure of working with.</p>
+
+      <div class="testimonials-track-wrap reveal reveal-delay-3">
+        <div class="testimonials-track" id="track">
+          <div class="testimonials-inner" id="inner">
+
+            <div class="glass testimonial-card">
+              <div class="testimonial-quote">"</div>
+              <p class="testimonial-text">Working with Terriwin was a breath of fresh air. He delivered a complex dashboard on time, communicated clearly throughout, and the code quality was exceptional. I'd hire him again without hesitation.</p>
+              <div class="testimonial-author">
+                <div class="testimonial-avatar">AK</div>
+                <div>
+                  <div class="testimonial-name">Alex K.</div>
+                  <div class="testimonial-role">CTO, SaaS Startup</div>
+                </div>
+              </div>
+            </div>
+
+            <div class="glass testimonial-card">
+              <div class="testimonial-quote">"</div>
+              <p class="testimonial-text">The landing page Terriwin built for us saw a 40% improvement in conversion rate. He pushed back on design choices that wouldn't have worked and suggested better alternatives. A true professional.</p>
+              <div class="testimonial-author">
+                <div class="testimonial-avatar">MR</div>
+                <div>
+                  <div class="testimonial-name">Maria R.</div>
+                  <div class="testimonial-role">Founder, E-Commerce Brand</div>
+                </div>
+              </div>
+            </div>
+
+            <div class="glass testimonial-card">
+              <div class="testimonial-quote">"</div>
+              <p class="testimonial-text">Our backend was a mess before Terriwin joined. He refactored the entire API layer, improved response times by 3x, and left us with clean documentation. Highly recommended.</p>
+              <div class="testimonial-author">
+                <div class="testimonial-avatar">JT</div>
+                <div>
+                  <div class="testimonial-name">James T.</div>
+                  <div class="testimonial-role">Lead Engineer, FinTech</div>
+                </div>
+              </div>
+            </div>
+
+            <div class="glass testimonial-card">
+              <div class="testimonial-quote">"</div>
+              <p class="testimonial-text">Fast, focused, and great to work with. Terriwin took our vague idea and turned it into a polished product in just a few weeks. The attention to detail — especially on mobile — was impressive.</p>
+              <div class="testimonial-author">
+                <div class="testimonial-avatar">SL</div>
+                <div>
+                  <div class="testimonial-name">Sofia L.</div>
+                  <div class="testimonial-role">Product Manager, Agency</div>
+                </div>
+              </div>
+            </div>
+
+          </div>
+        </div>
+
+        <div class="testimonials-controls">
+          <button class="ctrl-btn" id="prev" aria-label="Previous">
+            <svg fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor">
+              <path stroke-linecap="round" stroke-linejoin="round" d="M15.75 19.5 8.25 12l7.5-7.5" />
+            </svg>
+          </button>
+          <button class="ctrl-btn" id="next" aria-label="Next">
+            <svg fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor">
+              <path stroke-linecap="round" stroke-linejoin="round" d="m8.25 4.5 7.5 7.5-7.5 7.5" />
+            </svg>
+          </button>
+          <div class="dot-wrap" id="dots"></div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <div class="section-divider"></div>
+
+  <!-- CONTACT -->
+  <section id="contact">
+    <div class="container">
+      <div class="glass contact-card reveal">
+        <p class="section-label" style="text-align:center;">Contact</p>
+        <h2 class="section-title">Let's build something <br />together</h2>
+        <p class="section-text">Have a project in mind? I'm currently available for freelance work and full-time opportunities. Let's talk.</p>
+        <div class="contact-links">
+          <a href="mailto:nikitos10b@gmail.com" class="btn btn-primary">
+            <svg width="16" height="16" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor">
+              <path stroke-linecap="round" stroke-linejoin="round" d="M21.75 6.75v10.5a2.25 2.25 0 0 1-2.25 2.25h-15a2.25 2.25 0 0 1-2.25-2.25V6.75m19.5 0A2.25 2.25 0 0 0 19.5 4.5h-15a2.25 2.25 0 0 0-2.25 2.25m19.5 0v.243a2.25 2.25 0 0 1-1.07 1.916l-7.5 4.615a2.25 2.25 0 0 1-2.36 0L3.32 8.91a2.25 2.25 0 0 1-1.07-1.916V6.75" />
+            </svg>
+            Send email
+          </a>
+          <a href="https://github.com/Terriwin" target="_blank" rel="noopener" class="btn btn-ghost">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor">
+              <path d="M12 0C5.374 0 0 5.373 0 12c0 5.302 3.438 9.8 8.207 11.387.599.111.793-.261.793-.577v-2.234c-3.338.726-4.033-1.416-4.033-1.416-.546-1.387-1.333-1.756-1.333-1.756-1.089-.745.083-.729.083-.729 1.205.084 1.839 1.237 1.839 1.237 1.07 1.834 2.807 1.304 3.492.997.107-.775.418-1.305.762-1.604-2.665-.305-5.467-1.334-5.467-5.931 0-1.311.469-2.381 1.236-3.221-.124-.303-.535-1.524.117-3.176 0 0 1.008-.322 3.301 1.23A11.509 11.509 0 0 1 12 5.803c1.02.005 2.047.138 3.006.404 2.291-1.552 3.297-1.23 3.297-1.23.653 1.653.242 2.874.118 3.176.77.84 1.235 1.911 1.235 3.221 0 4.609-2.807 5.624-5.479 5.921.43.372.823 1.102.823 2.222v3.293c0 .319.192.694.801.576C20.566 21.797 24 17.3 24 12c0-6.627-5.373-12-12-12z"/>
+            </svg>
+            GitHub
+          </a>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- FOOTER -->
+  <footer>
+    <div class="container footer-inner">
+      <span>© 2025 Terriwin. All rights reserved.</span>
+      <span>Built with care &amp; clean code.</span>
+    </div>
+  </footer>
+
   <script>
-    const SUPABASE_URL = 'https://bonxqtzwmdmicqaantly.supabase.co';
-    const SUPABASE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImJvbnhxdHp3bWRtaWNxYWFudGx5Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODE4MDgwMTEsImV4cCI6MjA5NzM4NDAxMX0.LrVRXAMNeyBhaaAbIbYLjNuHPKSfR7VSuBMgbUgsj14';
+    // Nav scroll
+    const nav = document.getElementById('nav');
+    window.addEventListener('scroll', () => {
+      nav.classList.toggle('scrolled', window.scrollY > 20);
+    }, { passive: true });
 
-    const { createClient } = supabase;
-    const db = createClient(SUPABASE_URL, SUPABASE_KEY);
-
-    const messagesEl = document.getElementById('messages');
-    const input = document.getElementById('input');
-    const sendBtn = document.getElementById('send');
-    const status = document.getElementById('status');
-
-    function formatTime(iso) {
-      return new Date(iso).toLocaleString('ru-RU', {
-        day: '2-digit', month: '2-digit',
-        hour: '2-digit', minute: '2-digit'
+    // Scroll reveal
+    const observer = new IntersectionObserver((entries) => {
+      entries.forEach(el => {
+        if (el.isIntersecting) {
+          el.target.classList.add('visible');
+          observer.unobserve(el.target);
+        }
       });
+    }, { threshold: 0.12 });
+    document.querySelectorAll('.reveal').forEach(el => observer.observe(el));
+
+    // Testimonials slider
+    const inner = document.getElementById('inner');
+    const dotsEl = document.getElementById('dots');
+    const cards = inner.querySelectorAll('.testimonial-card');
+    const total = cards.length;
+    const perView = window.innerWidth < 768 ? 1 : 2;
+    let cur = 0;
+
+    // Build dots
+    const maxSlides = total - perView + 1;
+    for (let i = 0; i < maxSlides; i++) {
+      const d = document.createElement('button');
+      d.className = 'dot' + (i === 0 ? ' active' : '');
+      d.setAttribute('aria-label', `Slide ${i + 1}`);
+      d.addEventListener('click', () => go(i));
+      dotsEl.appendChild(d);
     }
 
-    function renderMessage(msg) {
-      const el = document.createElement('div');
-      el.className = 'message';
-      el.dataset.id = msg.id;
-      el.innerHTML = `<p>${msg.content.replace(/</g, '&lt;')}</p><time>${formatTime(msg.created_at)}</time>`;
-      return el;
+    function go(idx) {
+      cur = Math.max(0, Math.min(idx, maxSlides - 1));
+      const cardW = cards[0].offsetWidth + 20;
+      inner.style.transform = `translateX(-${cur * cardW}px)`;
+      dotsEl.querySelectorAll('.dot').forEach((d, i) => d.classList.toggle('active', i === cur));
     }
 
-    async function loadMessages() {
-      const { data, error } = await db
-        .from('messages')
-        .select('*')
-        .order('created_at', { ascending: true });
+    document.getElementById('prev').addEventListener('click', () => go(cur - 1));
+    document.getElementById('next').addEventListener('click', () => go(cur + 1));
 
-      if (error) { console.error(error); return; }
-      messagesEl.innerHTML = '';
-      data.forEach(msg => messagesEl.appendChild(renderMessage(msg)));
-      messagesEl.scrollTop = messagesEl.scrollHeight;
-    }
-
-    db.channel('messages')
-      .on('postgres_changes', { event: 'INSERT', schema: 'public', table: 'messages' }, payload => {
-        messagesEl.appendChild(renderMessage(payload.new));
-        messagesEl.scrollTop = messagesEl.scrollHeight;
-      })
-      .subscribe();
-
-    sendBtn.addEventListener('click', async () => {
-      const content = input.value.trim();
-      if (!content) return;
-
-      sendBtn.disabled = true;
-      status.textContent = 'Отправляю...';
-
-      const { error } = await db.from('messages').insert({ content });
-
-      if (error) {
-        status.textContent = 'Ошибка: ' + error.message;
-      } else {
-        input.value = '';
-        status.textContent = 'Отправлено!';
-        setTimeout(() => status.textContent = '', 2000);
-      }
-      sendBtn.disabled = false;
+    // Auto-advance
+    let autoTimer = setInterval(() => go((cur + 1) % maxSlides), 5000);
+    inner.parentElement.addEventListener('mouseenter', () => clearInterval(autoTimer));
+    inner.parentElement.addEventListener('mouseleave', () => {
+      autoTimer = setInterval(() => go((cur + 1) % maxSlides), 5000);
     });
 
-    input.addEventListener('keydown', e => {
-      if (e.key === 'Enter' && (e.ctrlKey || e.metaKey)) sendBtn.click();
+    // Swipe
+    let startX = 0;
+    inner.addEventListener('touchstart', e => { startX = e.touches[0].clientX; }, { passive: true });
+    inner.addEventListener('touchend', e => {
+      const dx = e.changedTouches[0].clientX - startX;
+      if (Math.abs(dx) > 40) go(dx < 0 ? cur + 1 : cur - 1);
     });
-
-    loadMessages();
   </script>
 </body>
 </html>
