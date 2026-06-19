@@ -11,33 +11,32 @@
     *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
 
     :root {
-      --bg:            #09090a;
-      --bg-2:          #111112;
-      --glass:         rgba(210, 195, 168, 0.055);
-      --glass-hov:     rgba(210, 195, 168, 0.095);
-      --border:        rgba(210, 195, 168, 0.10);
-      --border-hov:    rgba(210, 195, 168, 0.22);
-      --accent:        #c9b99a;
-      --accent-dim:    rgba(201, 185, 154, 0.18);
-      --radius:        16px;
-      --blur:          blur(20px);
-      --ease-out:      cubic-bezier(0.22, 1, 0.36, 1);
-      --text:          #ede9e0;
-      --text-2:        #9a9080;
-      --text-3:        #52504a;
+      --bg:          #09090a;
+      --glass:       rgba(210, 195, 168, 0.055);
+      --glass-hov:   rgba(210, 195, 168, 0.10);
+      --border:      rgba(210, 195, 168, 0.10);
+      --border-hov:  rgba(210, 195, 168, 0.24);
+      --accent:      #c9b99a;
+      --accent-dim:  rgba(201, 185, 154, 0.15);
+      --radius:      14px;
+      --blur:        blur(20px);
+      --ease-out:    cubic-bezier(0.22, 1, 0.36, 1);
+      --text:        #ede9e0;
+      --text-2:      #9a9080;
+      --text-3:      #52504a;
     }
 
     html { scroll-behavior: smooth; }
-
     body {
       font-family: 'Manrope', system-ui, sans-serif;
       background: var(--bg);
       color: var(--text);
-      min-height: 100dvh;
-      overflow-x: hidden;
+      height: 100dvh;
+      overflow: hidden;
       line-height: 1.6;
     }
 
+    /* noise */
     body::before {
       content: '';
       position: fixed;
@@ -48,95 +47,80 @@
       z-index: 0;
     }
 
+    /* ambient orbs */
     .orb {
       position: fixed;
       border-radius: 50%;
       filter: blur(120px);
       pointer-events: none;
       z-index: 0;
+      animation: float 20s ease-in-out infinite;
     }
     .orb-1 {
-      width: 600px; height: 600px;
+      width: 560px; height: 560px;
       background: radial-gradient(circle, rgba(201,185,154,0.07) 0%, transparent 70%);
-      top: -200px; right: -100px;
-      animation: float 18s ease-in-out infinite;
+      top: -180px; right: -80px;
     }
     .orb-2 {
-      width: 500px; height: 500px;
+      width: 480px; height: 480px;
       background: radial-gradient(circle, rgba(140,120,100,0.05) 0%, transparent 70%);
-      bottom: 0; left: -100px;
-      animation: float 22s ease-in-out infinite reverse;
+      bottom: -80px; left: -80px;
+      animation-duration: 25s;
+      animation-direction: reverse;
     }
     @keyframes float {
-      0%, 100% { transform: translate(0, 0); }
-      33%       { transform: translate(30px, -20px); }
-      66%       { transform: translate(-20px, 30px); }
+      0%,100% { transform: translate(0,0); }
+      33%      { transform: translate(24px,-16px); }
+      66%      { transform: translate(-16px,24px); }
     }
 
-    /* Reveal */
+    @media (prefers-reduced-motion: reduce) {
+      .orb { animation: none; }
+      .reveal { opacity: 1 !important; transform: none !important; transition: none !important; }
+    }
+
+    /* reveal */
     .reveal {
       opacity: 0;
-      transform: translateY(28px);
+      transform: translateY(22px);
       transition: opacity 0.7s var(--ease-out), transform 0.7s var(--ease-out);
     }
     .reveal.visible { opacity: 1; transform: translateY(0); }
-    .reveal-delay-1 { transition-delay: 0.1s; }
-    .reveal-delay-2 { transition-delay: 0.2s; }
-    .reveal-delay-3 { transition-delay: 0.3s; }
-    .reveal-delay-4 { transition-delay: 0.4s; }
+    .reveal-d1 { transition-delay: 0.08s; }
+    .reveal-d2 { transition-delay: 0.16s; }
+    .reveal-d3 { transition-delay: 0.24s; }
+    .reveal-d4 { transition-delay: 0.32s; }
 
-    @media (prefers-reduced-motion: reduce) {
-      .reveal { opacity: 1; transform: none; transition: none; }
-      .orb { animation: none; }
-    }
-
-    /* Lang fade */
+    /* lang fade */
     [data-i18n] {
-      transition:
-        opacity 0.28s ease,
-        transform 0.28s var(--ease-out),
-        filter 0.28s ease;
+      transition: opacity 0.28s ease, transform 0.28s var(--ease-out), filter 0.28s ease;
       will-change: opacity, transform, filter;
     }
     body.lang-switching [data-i18n] {
       opacity: 0;
-      transform: translateY(5px) scale(0.98);
+      transform: translateY(4px) scale(0.985);
       filter: blur(4px);
     }
 
+    /* layout */
     .container {
-      max-width: 1100px;
+      max-width: 1160px;
       margin: 0 auto;
-      padding: 0 24px;
+      padding: 0 28px;
       position: relative;
       z-index: 1;
     }
 
-    section { padding: 100px 0; }
-
-    .glass {
-      background: var(--glass);
-      border: 1px solid var(--border);
-      border-radius: var(--radius);
-      backdrop-filter: var(--blur);
-      -webkit-backdrop-filter: var(--blur);
-      transition: background 0.3s, border-color 0.3s, transform 0.3s var(--ease-out);
-    }
-    .glass:hover {
-      background: var(--glass-hov);
-      border-color: var(--border-hov);
-    }
-
-    /* NAV */
+    /* ── NAV ─────────────────────────────────────────────── */
     nav {
       position: fixed;
       top: 0; left: 0; right: 0;
       z-index: 100;
-      padding: 16px 0;
+      padding: 14px 0;
       transition: background 0.4s, border-color 0.4s, backdrop-filter 0.4s;
     }
     nav.scrolled {
-      background: rgba(9, 9, 10, 0.80);
+      background: rgba(9,9,10,0.82);
       border-bottom: 1px solid var(--border);
       backdrop-filter: var(--blur);
       -webkit-backdrop-filter: var(--blur);
@@ -145,7 +129,6 @@
       display: flex;
       align-items: center;
       justify-content: space-between;
-      gap: 16px;
     }
     .nav-logo {
       font-family: 'Space Mono', monospace;
@@ -153,37 +136,22 @@
       font-weight: 700;
       color: var(--accent);
       text-decoration: none;
+      letter-spacing: -0.02em;
     }
-    .nav-links {
-      display: flex;
-      gap: 32px;
-      list-style: none;
-    }
-    .nav-links a {
-      color: var(--text-2);
-      text-decoration: none;
-      font-size: 14px;
-      font-weight: 500;
-      transition: color 0.2s;
-    }
-    .nav-links a:hover { color: var(--text); }
-
     .nav-right {
       display: flex;
       align-items: center;
-      gap: 10px;
+      gap: 8px;
     }
 
-    /* Lang dropdown */
+    /* lang dropdown */
     .lang-dropdown { position: relative; }
-
     .lang-trigger {
       display: flex;
       align-items: center;
       gap: 6px;
       padding: 0 14px;
       height: 38px;
-      box-sizing: border-box;
       background: var(--glass);
       border: 1px solid var(--border);
       border-radius: 10px;
@@ -196,44 +164,34 @@
       transition: background 0.2s, border-color 0.2s, color 0.2s;
       white-space: nowrap;
     }
-    .nav-right .btn {
-      height: 38px;
-      padding-top: 0;
-      padding-bottom: 0;
-      box-sizing: border-box;
-    }
-    .lang-trigger:hover {
-      background: var(--glass-hov);
-      border-color: var(--border-hov);
-      color: var(--text);
-    }
+    .lang-trigger:hover { background: var(--glass-hov); border-color: var(--border-hov); color: var(--text); }
     .lang-trigger .chevron {
       width: 14px; height: 14px;
       transition: transform 0.25s var(--ease-out);
-      flex-shrink: 0;
-      opacity: 0.6;
+      flex-shrink: 0; opacity: 0.6;
     }
     .lang-dropdown.open .chevron { transform: rotate(180deg); }
+    .lang-flag { font-size: 15px; line-height: 1; }
 
     .lang-menu {
       position: absolute;
       top: calc(100% + 8px);
       right: 0;
       min-width: 160px;
-      background: rgba(18, 17, 16, 0.95);
+      background: rgba(14,13,12,0.96);
       border: 1px solid var(--border);
       border-radius: 12px;
       overflow: hidden;
       backdrop-filter: blur(24px);
       -webkit-backdrop-filter: blur(24px);
-      box-shadow: 0 16px 40px rgba(0,0,0,0.4);
+      box-shadow: 0 16px 40px rgba(0,0,0,0.45);
       z-index: 200;
       transform-origin: top right;
-      animation: langMenuIn 0.2s var(--ease-out) forwards;
+      animation: menuIn 0.18s var(--ease-out) forwards;
     }
-    @keyframes langMenuIn {
-      from { opacity: 0; transform: scale(0.95) translateY(-6px); }
-      to   { opacity: 1; transform: scale(1)    translateY(0); }
+    @keyframes menuIn {
+      from { opacity: 0; transform: scale(0.94) translateY(-6px); }
+      to   { opacity: 1; transform: scale(1) translateY(0); }
     }
     .lang-menu[hidden] { display: none; }
 
@@ -255,638 +213,471 @@
     }
     .lang-option:hover { background: var(--glass-hov); color: var(--text); }
     .lang-option.active { color: var(--accent); font-weight: 600; }
-    .lang-option .check {
-      width: 14px; height: 14px;
-      margin-left: auto;
-      flex-shrink: 0;
-      opacity: 0;
-      color: var(--accent);
-    }
+    .lang-option .check { width: 14px; height: 14px; margin-left: auto; flex-shrink: 0; opacity: 0; color: var(--accent); }
     .lang-option.active .check { opacity: 1; }
-    .lang-flag { font-size: 16px; line-height: 1; }
 
-    .btn {
+    /* Telegram nav button */
+    .btn-tg {
       display: inline-flex;
       align-items: center;
-      gap: 8px;
-      padding: 10px 20px;
+      gap: 7px;
+      padding: 0 16px;
+      height: 38px;
       border-radius: 10px;
       font-family: inherit;
-      font-size: 14px;
+      font-size: 13px;
       font-weight: 600;
       cursor: pointer;
-      transition: all 0.2s var(--ease-out);
       text-decoration: none;
-    }
-    .btn-primary {
       background: var(--accent);
       color: #0a0908;
       border: none;
+      transition: background 0.2s, transform 0.2s var(--ease-out), box-shadow 0.2s;
+      white-space: nowrap;
     }
-    .btn-primary:hover {
+    .btn-tg:hover {
       background: #ddd0b8;
-      transform: translateY(-2px);
-      box-shadow: 0 8px 24px rgba(201,185,154,0.25);
+      transform: translateY(-1px);
+      box-shadow: 0 6px 20px rgba(201,185,154,0.28);
     }
-    .btn-ghost {
-      background: var(--glass);
-      color: var(--text);
-      border: 1px solid var(--border);
-    }
-    .btn-ghost:hover {
-      background: var(--glass-hov);
-      border-color: var(--border-hov);
-      transform: translateY(-2px);
-    }
+    .btn-tg svg { width: 16px; height: 16px; flex-shrink: 0; }
 
-    /* HERO */
+    /* ── HERO ────────────────────────────────────────────── */
     #hero {
-      min-height: 100dvh;
+      height: 100dvh;
       display: flex;
       align-items: center;
-      padding: 120px 0 80px;
+      padding-top: 66px;
+    }
+    .hero-split {
+      display: grid;
+      grid-template-columns: 44% 56%;
+      gap: 0;
+      align-items: center;
+      width: 100%;
+    }
+
+    /* LEFT */
+    .hero-left {
+      padding-right: 48px;
+      display: flex;
+      flex-direction: column;
+      gap: 28px;
     }
     .hero-tag {
       display: inline-flex;
       align-items: center;
       gap: 8px;
       background: var(--accent-dim);
-      border: 1px solid var(--border);
+      border: 1px solid rgba(201,185,154,0.18);
       border-radius: 100px;
       padding: 6px 14px;
-      font-size: 12px;
+      width: fit-content;
+      font-size: 11.5px;
       font-weight: 600;
-      color: var(--accent);
-      letter-spacing: 0.08em;
+      letter-spacing: 0.07em;
       text-transform: uppercase;
-      margin-bottom: 28px;
+      color: var(--accent);
     }
-    .hero-tag-dot {
+    .tag-dot {
       width: 6px; height: 6px;
-      background: var(--accent);
       border-radius: 50%;
+      background: var(--accent);
       flex-shrink: 0;
-      animation: pulse 2s ease-in-out infinite;
+      animation: dotPulse 2.4s ease-in-out infinite;
     }
-    @keyframes pulse {
-      0%, 100% { opacity: 1; transform: scale(1); }
-      50%       { opacity: 0.5; transform: scale(0.75); }
+    @keyframes dotPulse {
+      0%,100% { opacity: 1; transform: scale(1); }
+      50%      { opacity: 0.5; transform: scale(0.7); }
     }
     .hero-name {
-      font-size: clamp(52px, 8vw, 88px);
-      font-weight: 700;
-      letter-spacing: -0.04em;
+      font-size: clamp(3.2rem, 5.5vw, 5.2rem);
+      font-weight: 800;
+      letter-spacing: -0.035em;
       line-height: 1.0;
-      margin-bottom: 20px;
+      color: var(--text);
     }
-    .hero-name span {
-      background: linear-gradient(135deg, var(--text) 0%, var(--accent) 60%, #a08868 100%);
-      -webkit-background-clip: text;
-      -webkit-text-fill-color: transparent;
-      background-clip: text;
-    }
-    .hero-title {
-      font-size: clamp(16px, 2.5vw, 22px);
+    .hero-sub {
+      font-size: 1.05rem;
+      line-height: 1.65;
       color: var(--text-2);
-      font-weight: 400;
-      margin-bottom: 40px;
-      max-width: 520px;
-      line-height: 1.7;
+      max-width: 420px;
     }
-    .hero-actions { display: flex; gap: 12px; flex-wrap: wrap; }
-    /* SECTION HEADER */
-    .section-label {
-      font-family: 'Space Mono', monospace;
-      font-size: 11px;
-      letter-spacing: 0.15em;
-      text-transform: uppercase;
-      color: var(--accent);
-      margin-bottom: 16px;
-    }
-    .section-title {
-      font-size: clamp(32px, 5vw, 48px);
-      font-weight: 700;
-      letter-spacing: -0.03em;
-      line-height: 1.1;
-      margin-bottom: 24px;
-    }
-    .section-text {
-      color: var(--text-2);
-      font-size: 17px;
-      line-height: 1.75;
-      max-width: 560px;
-    }
-
-    /* ABOUT */
-    .about-grid {
-      display: grid;
-      grid-template-columns: 1fr 1fr;
-      gap: 24px;
-      margin-top: 64px;
-    }
-    .about-card { padding: 32px; }
-    .about-card-icon {
-      width: 40px; height: 40px;
-      border-radius: 10px;
-      background: var(--accent-dim);
-      border: 1px solid var(--border);
-      display: flex;
+    .hero-cta {
+      display: inline-flex;
       align-items: center;
-      justify-content: center;
-      margin-bottom: 20px;
-    }
-    .about-card-icon svg { width: 20px; height: 20px; stroke: var(--accent); }
-    .about-card h3 { font-size: 17px; font-weight: 600; margin-bottom: 10px; }
-    .about-card p { font-size: 14px; color: var(--text-2); line-height: 1.7; }
-
-    /* SKILLS */
-    .skills-wrap { margin-top: 56px; display: flex; flex-direction: column; gap: 40px; }
-    .skills-row { display: flex; flex-direction: column; gap: 12px; }
-    .skills-row-label {
-      font-size: 12px;
-      font-weight: 600;
-      letter-spacing: 0.08em;
-      text-transform: uppercase;
-      color: var(--text-3);
-    }
-    .skills-tags { display: flex; flex-wrap: wrap; gap: 8px; }
-    .skill-tag {
-      padding: 8px 16px;
-      background: var(--glass);
-      border: 1px solid var(--border);
-      border-radius: 8px;
-      font-size: 13px;
-      font-weight: 500;
-      color: var(--text-2);
-      backdrop-filter: var(--blur);
-      transition: all 0.2s var(--ease-out);
-      cursor: default;
-    }
-    .skill-tag:hover {
-      background: var(--accent-dim);
-      border-color: var(--border-hov);
-      color: var(--accent);
-      transform: translateY(-2px);
-    }
-
-    /* TESTIMONIALS */
-    .testimonials-track-wrap { margin-top: 64px; position: relative; }
-    .testimonials-track { overflow: hidden; }
-    .testimonials-inner {
-      display: flex;
-      gap: 20px;
-      transition: transform 0.5s var(--ease-out);
-    }
-    .testimonial-card {
-      min-width: calc(50% - 10px);
-      padding: 36px;
-      position: relative;
-      flex-shrink: 0;
-    }
-    .testimonial-quote {
-      font-size: 36px;
-      line-height: 1;
-      color: var(--accent);
-      font-family: 'Space Mono', monospace;
-      margin-bottom: 20px;
-      opacity: 0.6;
-    }
-    .testimonial-text { font-size: 16px; line-height: 1.75; color: var(--text-2); margin-bottom: 28px; }
-    .testimonial-author { display: flex; align-items: center; gap: 14px; }
-    .testimonial-avatar {
-      width: 42px; height: 42px;
-      border-radius: 50%;
-      background: linear-gradient(135deg, var(--accent-dim), var(--glass));
-      border: 1px solid var(--border);
-      display: flex;
-      align-items: center;
-      justify-content: center;
+      gap: 8px;
+      padding: 13px 24px;
+      border-radius: 12px;
+      font-family: inherit;
       font-size: 14px;
       font-weight: 700;
-      color: var(--accent);
+      cursor: pointer;
+      text-decoration: none;
+      background: var(--accent);
+      color: #0a0908;
+      border: none;
+      width: fit-content;
+      transition: background 0.2s, transform 0.22s var(--ease-out), box-shadow 0.22s;
+    }
+    .hero-cta:hover {
+      background: #ddd0b8;
+      transform: translateY(-2px);
+      box-shadow: 0 10px 28px rgba(201,185,154,0.3);
+    }
+    .hero-cta svg { width: 17px; height: 17px; }
+
+    /* RIGHT — orbital */
+    .hero-right {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 8px;
+    }
+    .orbital-label {
+      font-size: 11px;
+      font-weight: 700;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      color: var(--text-3);
+      align-self: flex-start;
+      margin-left: 8px;
+    }
+
+    /* Orbital timeline */
+    #orbital {
+      position: relative;
+      width: 360px;
+      height: 360px;
       flex-shrink: 0;
     }
-    .testimonial-name { font-size: 14px; font-weight: 600; }
-    .testimonial-role { font-size: 13px; color: var(--text-3); margin-top: 2px; }
-
-    .testimonials-controls { display: flex; align-items: center; gap: 16px; margin-top: 32px; }
-    .dot-wrap { display: flex; gap: 6px; }
-    .dot {
-      width: 6px; height: 6px;
+    .orbital-track {
+      position: absolute;
+      top: 50%; left: 50%;
+      width: 270px; height: 270px;
+      border: 1px solid rgba(201,185,154,0.10);
       border-radius: 50%;
-      background: var(--border);
-      cursor: pointer;
-      transition: all 0.3s;
-      border: none;
+      transform: translate(-50%,-50%);
+      pointer-events: none;
     }
-    .dot.active { width: 20px; border-radius: 3px; background: var(--accent); }
-    .ctrl-btn {
-      width: 40px; height: 40px;
-      border-radius: 10px;
-      background: var(--glass);
-      border: 1px solid var(--border);
+    .orbital-center {
+      position: absolute;
+      top: 50%; left: 50%;
+      transform: translate(-50%,-50%);
+      z-index: 10;
+      pointer-events: none;
+    }
+    .orbital-core {
+      width: 16px; height: 16px;
+      border-radius: 50%;
+      background: radial-gradient(circle at 40% 35%, #e8d9c0, var(--accent));
+      box-shadow: 0 0 18px rgba(201,185,154,0.6), 0 0 36px rgba(201,185,154,0.2);
+      animation: corePulse 3s ease-in-out infinite;
+    }
+    .orbital-ring {
+      position: absolute;
+      top: 50%; left: 50%;
+      border-radius: 50%;
+      border: 1px solid rgba(201,185,154,0.18);
+      animation: ringOut 3s ease-out infinite;
+      transform: translate(-50%,-50%) scale(0);
+      opacity: 0;
+    }
+    .orbital-ring-1 { width: 44px; height: 44px; }
+    .orbital-ring-2 { width: 68px; height: 68px; animation-delay: 1.5s; }
+    @keyframes ringOut {
+      0%   { transform: translate(-50%,-50%) scale(0.4); opacity: 0.55; }
+      100% { transform: translate(-50%,-50%) scale(1.0); opacity: 0; }
+    }
+    @keyframes corePulse {
+      0%,100% { box-shadow: 0 0 18px rgba(201,185,154,0.6), 0 0 36px rgba(201,185,154,0.2); }
+      50%      { box-shadow: 0 0 26px rgba(201,185,154,0.9), 0 0 52px rgba(201,185,154,0.35); }
+    }
+
+    /* nodes */
+    .orbit-node {
+      position: absolute;
+      top: 50%; left: 50%;
+      width: 42px; height: 42px;
+      margin: -21px 0 0 -21px;
+      border-radius: 50%;
       display: flex;
       align-items: center;
       justify-content: center;
+      background: rgba(14,13,12,0.85);
+      border: 1.5px solid var(--border);
       cursor: pointer;
-      transition: all 0.2s;
-      color: var(--text-2);
+      transition: background 0.28s, border-color 0.28s, box-shadow 0.28s;
+      /* transform is set by JS every frame */
     }
-    .ctrl-btn:hover { background: var(--glass-hov); border-color: var(--border-hov); color: var(--text); }
-    .ctrl-btn svg { width: 16px; height: 16px; }
-
-    /* CONTACT */
-    .contact-card {
-      padding: 72px 64px;
-      text-align: center;
-      position: relative;
-      overflow: hidden;
+    .orbit-node:hover { border-color: rgba(201,185,154,0.45); }
+    .orbit-node.active {
+      background: rgba(201,185,154,0.12);
+      border-color: var(--accent);
+      box-shadow: 0 0 0 6px rgba(201,185,154,0.08), 0 0 20px rgba(201,185,154,0.2);
     }
-    .contact-card::before {
-      content: '';
-      position: absolute;
-      inset: 0;
-      background: radial-gradient(ellipse at 50% 0%, rgba(201,185,154,0.08) 0%, transparent 70%);
+    .orbit-node.related {
+      border-color: rgba(201,185,154,0.38);
+      animation: relPulse 1.8s ease-in-out infinite;
+    }
+    @keyframes relPulse {
+      0%,100% { box-shadow: 0 0 0 0 rgba(201,185,154,0.25); }
+      50%      { box-shadow: 0 0 0 5px rgba(201,185,154,0); }
+    }
+    .orbit-node svg {
+      width: 17px; height: 17px;
+      stroke: var(--text-3);
+      transition: stroke 0.25s;
       pointer-events: none;
     }
-    .contact-card .section-text { margin: 0 auto 40px; text-align: center; }
-    .contact-links { display: flex; justify-content: center; gap: 12px; flex-wrap: wrap; }
+    .orbit-node:hover svg, .orbit-node.active svg { stroke: var(--accent); }
+    .orbit-node.related svg { stroke: rgba(201,185,154,0.6); }
 
-    /* FOOTER */
-    footer {
-      border-top: 1px solid var(--border);
-      padding: 32px 0;
-      position: relative;
-      z-index: 1;
+    .orbit-node-label {
+      position: absolute;
+      top: calc(100% + 7px);
+      left: 50%;
+      transform: translateX(-50%);
+      font-size: 10.5px;
+      font-weight: 600;
+      letter-spacing: 0.02em;
+      color: var(--text-3);
+      white-space: nowrap;
+      pointer-events: none;
+      transition: color 0.25s;
     }
-    .footer-inner {
+    .orbit-node:hover .orbit-node-label,
+    .orbit-node.active .orbit-node-label { color: var(--text-2); }
+
+    /* info panel below orbital */
+    .orbit-info {
+      width: 360px;
+      min-height: 90px;
+      background: var(--glass);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      padding: 16px 20px;
+      backdrop-filter: var(--blur);
       display: flex;
       align-items: center;
-      justify-content: space-between;
-      font-size: 13px;
+    }
+    .orbit-hint {
+      font-size: 12.5px;
       color: var(--text-3);
+      font-weight: 500;
+      width: 100%;
+      text-align: center;
     }
-    .footer-inner a { color: var(--text-3); text-decoration: none; transition: color 0.2s; }
-    .footer-inner a:hover { color: var(--accent); }
-
-    .section-divider {
-      height: 1px;
-      background: linear-gradient(to right, transparent, var(--border), transparent);
-      margin: 0 24px;
-      position: relative;
-      z-index: 1;
+    .orbit-content { width: 100%; }
+    .orbit-content-step {
+      font-size: 10px;
+      font-weight: 700;
+      letter-spacing: 0.09em;
+      text-transform: uppercase;
+      color: var(--accent);
+      margin-bottom: 5px;
+      data-i18n: attr(data-i18n);
+    }
+    .orbit-content-title {
+      font-size: 14px;
+      font-weight: 700;
+      color: var(--text);
+      margin-bottom: 6px;
+    }
+    .orbit-content-desc {
+      font-size: 12.5px;
+      line-height: 1.6;
+      color: var(--text-2);
     }
 
-    @media (max-width: 768px) {
-      section { padding: 72px 0; }
-      .about-grid { grid-template-columns: 1fr; }
-      .testimonial-card { min-width: 100%; }
-      nav .nav-links { display: none; }
-      .contact-card { padding: 48px 24px; }
-      .hero-scroll { display: none; }
-      .footer-inner { flex-direction: column; gap: 12px; text-align: center; }
+    /* connection lines */
+    .orbital-svg {
+      position: absolute;
+      top: 0; left: 0;
+      width: 100%; height: 100%;
+      pointer-events: none;
+      z-index: 2;
+    }
+    .orbit-connector {
+      stroke: rgba(201,185,154,0.18);
+      stroke-width: 1;
+      stroke-dasharray: 3 4;
+      fill: none;
+      transition: stroke 0.3s;
+    }
+    .orbit-connector.active { stroke: rgba(201,185,154,0.35); }
+
+    /* ── MOBILE ──────────────────────────────────────────── */
+    @media (max-width: 860px) {
+      body { height: auto; overflow: auto; }
+      #hero { height: auto; padding: 100px 0 60px; }
+      .hero-split {
+        grid-template-columns: 1fr;
+        gap: 48px;
+      }
+      .hero-left { padding-right: 0; }
+      .hero-right { align-items: center; }
+      #orbital { width: 300px; height: 300px; }
+      .orbit-info { width: 300px; }
+      .orbital-track { width: 220px; height: 220px; }
     }
   </style>
 </head>
 <body>
-
   <div class="orb orb-1"></div>
   <div class="orb orb-2"></div>
 
   <!-- NAV -->
   <nav id="nav">
-    <div class="container nav-inner">
-      <a href="#" class="nav-logo">tw.</a>
-      <ul class="nav-links">
-        <li><a href="#about" data-i18n="nav.about"></a></li>
-        <li><a href="#skills" data-i18n="nav.skills"></a></li>
-        <li><a href="#testimonials" data-i18n="nav.reviews"></a></li>
-        <li><a href="#contact" data-i18n="nav.contact"></a></li>
-      </ul>
-      <div class="nav-right">
-        <div class="lang-dropdown" id="langDropdown">
-          <button class="lang-trigger" id="langTrigger" aria-haspopup="listbox" aria-expanded="false">
-            <span class="lang-flag" id="langFlag">🇷🇺</span>
-            <span id="langLabel">Русский</span>
-            <svg class="chevron" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
-              <path d="m6 9 6 6 6-6"/>
-            </svg>
-          </button>
-          <div class="lang-menu" id="langMenu" hidden role="listbox">
-            <button class="lang-option active" data-lang="ru" role="option" aria-selected="true">
-              <span class="lang-flag">🇷🇺</span>
-              <span>Русский</span>
-              <svg class="check" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="m5 12 5 5L20 7"/></svg>
+    <div class="container">
+      <div class="nav-inner">
+        <a href="#" class="nav-logo">tw.</a>
+        <div class="nav-right">
+
+          <!-- Language dropdown -->
+          <div class="lang-dropdown" id="langDropdown">
+            <button class="lang-trigger" id="langTrigger" aria-haspopup="listbox" aria-expanded="false">
+              <span class="lang-flag" id="langFlag">🇷🇺</span>
+              <span id="langLabel" data-i18n="meta.langLabel">Русский</span>
+              <svg class="chevron" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+                <path d="m6 9 6 6 6-6"/>
+              </svg>
             </button>
-            <button class="lang-option" data-lang="en" role="option" aria-selected="false">
-              <span class="lang-flag">🇺🇸</span>
-              <span>English</span>
-              <svg class="check" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="m5 12 5 5L20 7"/></svg>
-            </button>
+            <div class="lang-menu" id="langMenu" hidden role="listbox">
+              <button class="lang-option active" data-lang="ru" role="option" aria-selected="true">
+                <span class="lang-flag">🇷🇺</span>
+                <span>Русский</span>
+                <svg class="check" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+                  <path d="m5 12 5 5L20 7"/>
+                </svg>
+              </button>
+              <button class="lang-option" data-lang="en" role="option" aria-selected="false">
+                <span class="lang-flag">🇺🇸</span>
+                <span>English</span>
+                <svg class="check" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+                  <path d="m5 12 5 5L20 7"/>
+                </svg>
+              </button>
+            </div>
           </div>
+
+          <!-- Telegram CTA -->
+          <a href="https://t.me/terriwin" class="btn-tg" target="_blank" rel="noopener noreferrer">
+            <svg viewBox="0 0 24 24" fill="currentColor">
+              <path d="M11.944 0A12 12 0 0 0 0 12a12 12 0 0 0 12 12 12 12 0 0 0 12-12A12 12 0 0 0 12 0a12 12 0 0 0-.056 0zm4.962 7.224c.1-.002.321.023.465.14a.506.506 0 0 1 .171.325c.016.093.036.306.02.472-.18 1.898-.962 6.502-1.36 8.627-.168.9-.499 1.201-.82 1.23-.696.065-1.225-.46-1.9-.902-1.056-.693-1.653-1.124-2.678-1.8-1.185-.78-.417-1.21.258-1.91.177-.184 3.247-2.977 3.307-3.23.007-.032.014-.15-.056-.212s-.174-.041-.249-.024c-.106.024-1.793 1.14-5.061 3.345-.48.33-.913.49-1.302.48-.428-.008-1.252-.241-1.865-.44-.752-.245-1.349-.374-1.297-.789.027-.216.325-.437.893-.663 3.498-1.524 5.83-2.529 6.998-3.014 3.332-1.386 4.025-1.627 4.476-1.635z"/>
+            </svg>
+            <span data-i18n="nav.contact">Написать</span>
+          </a>
+
         </div>
-        <a href="mailto:nikitos10b@gmail.com" class="btn btn-primary" data-i18n="nav.hire"></a>
       </div>
     </div>
   </nav>
 
   <!-- HERO -->
   <section id="hero">
-    <div class="container" style="position:relative;">
-      <div class="hero-tag reveal">
-        <span class="hero-tag-dot"></span>
-        <span data-i18n="hero.available"></span>
-      </div>
-      <h1 class="hero-name reveal reveal-delay-1"><span>Terriwin</span></h1>
-      <p class="hero-title reveal reveal-delay-2" data-i18n="hero.subtitle"></p>
-      <div class="hero-actions reveal reveal-delay-3">
-        <a href="#testimonials" class="btn btn-primary" data-i18n="hero.cta1"></a>
-        <a href="#about" class="btn btn-ghost" data-i18n="hero.cta2"></a>
-      </div>
-    </div>
-  </section>
-
-  <div class="section-divider"></div>
-
-  <!-- ABOUT -->
-  <section id="about">
     <div class="container">
-      <p class="section-label reveal" data-i18n="about.label"></p>
-      <h2 class="section-title reveal reveal-delay-1" data-i18n="about.title"></h2>
-      <p class="section-text reveal reveal-delay-2" data-i18n="about.text"></p>
-      <div class="about-grid">
-        <div class="glass about-card reveal reveal-delay-1">
-          <div class="about-card-icon">
-            <svg fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M17.25 6.75 22.5 12l-5.25 5.25m-10.5 0L1.5 12l5.25-5.25m7.5-3-4.5 16.5" /></svg>
-          </div>
-          <h3 data-i18n="about.card1.title"></h3>
-          <p data-i18n="about.card1.text"></p>
-        </div>
-        <div class="glass about-card reveal reveal-delay-2">
-          <div class="about-card-icon">
-            <svg fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M9.53 16.122a3 3 0 0 0-5.78 1.128 2.25 2.25 0 0 1-2.4 2.245 4.5 4.5 0 0 0 8.4-2.245c0-.399-.078-.78-.22-1.128Zm0 0a15.998 15.998 0 0 0 3.388-1.62m-5.043-.025a15.994 15.994 0 0 1 1.622-3.395m3.42 3.42a15.995 15.995 0 0 0 4.764-4.648l3.876-5.814a1.151 1.151 0 0 0-1.597-1.597L14.146 6.32a15.996 15.996 0 0 0-4.649 4.763m3.42 3.42a6.776 6.776 0 0 0-3.42-3.42" /></svg>
-          </div>
-          <h3 data-i18n="about.card2.title"></h3>
-          <p data-i18n="about.card2.text"></p>
-        </div>
-        <div class="glass about-card reveal reveal-delay-3">
-          <div class="about-card-icon">
-            <svg fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M3.75 13.5l10.5-11.25L12 10.5h8.25L9.75 21.75 12 13.5H3.75z" /></svg>
-          </div>
-          <h3 data-i18n="about.card3.title"></h3>
-          <p data-i18n="about.card3.text"></p>
-        </div>
-        <div class="glass about-card reveal reveal-delay-4">
-          <div class="about-card-icon">
-            <svg fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M13.5 10.5V6.75a4.5 4.5 0 1 1 9 0v3.75M3.75 21.75h10.5a2.25 2.25 0 0 0 2.25-2.25v-6.75a2.25 2.25 0 0 0-2.25-2.25H3.75a2.25 2.25 0 0 0-2.25-2.25v6.75a2.25 2.25 0 0 0 2.25 2.25Z" /></svg>
-          </div>
-          <h3 data-i18n="about.card4.title"></h3>
-          <p data-i18n="about.card4.text"></p>
-        </div>
-      </div>
-    </div>
-  </section>
+      <div class="hero-split">
 
-  <div class="section-divider"></div>
-
-  <!-- SKILLS -->
-  <section id="skills">
-    <div class="container">
-      <p class="section-label reveal" data-i18n="skills.label"></p>
-      <h2 class="section-title reveal reveal-delay-1" data-i18n="skills.title"></h2>
-      <div class="skills-wrap">
-        <div class="skills-row reveal reveal-delay-1">
-          <span class="skills-row-label" data-i18n="skills.cat1"></span>
-          <div class="skills-tags">
-            <span class="skill-tag">React</span><span class="skill-tag">Next.js</span>
-            <span class="skill-tag">TypeScript</span><span class="skill-tag">Tailwind CSS</span>
-            <span class="skill-tag">HTML & CSS</span><span class="skill-tag">Framer Motion</span>
+        <!-- LEFT: text -->
+        <div class="hero-left">
+          <div class="hero-tag reveal">
+            <span class="tag-dot"></span>
+            <span data-i18n="hero.tag">Открыт к работе</span>
           </div>
-        </div>
-        <div class="skills-row reveal reveal-delay-2">
-          <span class="skills-row-label" data-i18n="skills.cat2"></span>
-          <div class="skills-tags">
-            <span class="skill-tag">Node.js</span><span class="skill-tag">PostgreSQL</span>
-            <span class="skill-tag">Supabase</span><span class="skill-tag">REST APIs</span>
-            <span class="skill-tag">GraphQL</span>
-          </div>
-        </div>
-        <div class="skills-row reveal reveal-delay-3">
-          <span class="skills-row-label" data-i18n="skills.cat3"></span>
-          <div class="skills-tags">
-            <span class="skill-tag">Git & GitHub</span><span class="skill-tag">Vercel</span>
-            <span class="skill-tag">Docker</span><span class="skill-tag">Figma</span>
-            <span class="skill-tag">VS Code</span>
-          </div>
-        </div>
-      </div>
-    </div>
-  </section>
-
-  <div class="section-divider"></div>
-
-  <!-- TESTIMONIALS -->
-  <section id="testimonials">
-    <div class="container">
-      <p class="section-label reveal" data-i18n="reviews.label"></p>
-      <h2 class="section-title reveal reveal-delay-1" data-i18n="reviews.title"></h2>
-      <p class="section-text reveal reveal-delay-2" data-i18n="reviews.text"></p>
-      <div class="testimonials-track-wrap reveal reveal-delay-3">
-        <div class="testimonials-track">
-          <div class="testimonials-inner" id="inner">
-            <div class="glass testimonial-card">
-              <div class="testimonial-quote">"</div>
-              <p class="testimonial-text" data-i18n="reviews.t1.text"></p>
-              <div class="testimonial-author">
-                <div class="testimonial-avatar">AK</div>
-                <div>
-                  <div class="testimonial-name">Alex K.</div>
-                  <div class="testimonial-role" data-i18n="reviews.t1.role"></div>
-                </div>
-              </div>
-            </div>
-            <div class="glass testimonial-card">
-              <div class="testimonial-quote">"</div>
-              <p class="testimonial-text" data-i18n="reviews.t2.text"></p>
-              <div class="testimonial-author">
-                <div class="testimonial-avatar">MR</div>
-                <div>
-                  <div class="testimonial-name">Maria R.</div>
-                  <div class="testimonial-role" data-i18n="reviews.t2.role"></div>
-                </div>
-              </div>
-            </div>
-            <div class="glass testimonial-card">
-              <div class="testimonial-quote">"</div>
-              <p class="testimonial-text" data-i18n="reviews.t3.text"></p>
-              <div class="testimonial-author">
-                <div class="testimonial-avatar">JT</div>
-                <div>
-                  <div class="testimonial-name">James T.</div>
-                  <div class="testimonial-role" data-i18n="reviews.t3.role"></div>
-                </div>
-              </div>
-            </div>
-            <div class="glass testimonial-card">
-              <div class="testimonial-quote">"</div>
-              <p class="testimonial-text" data-i18n="reviews.t4.text"></p>
-              <div class="testimonial-author">
-                <div class="testimonial-avatar">SL</div>
-                <div>
-                  <div class="testimonial-name">Sofia L.</div>
-                  <div class="testimonial-role" data-i18n="reviews.t4.role"></div>
-                </div>
-              </div>
-            </div>
-          </div>
-        </div>
-        <div class="testimonials-controls">
-          <button class="ctrl-btn" id="prev" aria-label="Previous">
-            <svg fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M15.75 19.5 8.25 12l7.5-7.5" /></svg>
-          </button>
-          <button class="ctrl-btn" id="next" aria-label="Next">
-            <svg fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="m8.25 4.5 7.5 7.5-7.5 7.5" /></svg>
-          </button>
-          <div class="dot-wrap" id="dots"></div>
-        </div>
-      </div>
-    </div>
-  </section>
-
-  <div class="section-divider"></div>
-
-  <!-- CONTACT -->
-  <section id="contact">
-    <div class="container">
-      <div class="glass contact-card reveal">
-        <p class="section-label" data-i18n="contact.label"></p>
-        <h2 class="section-title" data-i18n="contact.title"></h2>
-        <p class="section-text" data-i18n="contact.text"></p>
-        <div class="contact-links">
-          <a href="mailto:nikitos10b@gmail.com" class="btn btn-primary">
-            <svg width="16" height="16" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M21.75 6.75v10.5a2.25 2.25 0 0 1-2.25 2.25h-15a2.25 2.25 0 0 1-2.25-2.25V6.75m19.5 0A2.25 2.25 0 0 0 19.5 4.5h-15a2.25 2.25 0 0 0-2.25 2.25m19.5 0v.243a2.25 2.25 0 0 1-1.07 1.916l-7.5 4.615a2.25 2.25 0 0 1-2.36 0L3.32 8.91a2.25 2.25 0 0 1-1.07-1.916V6.75" /></svg>
-            <span data-i18n="contact.email"></span>
-          </a>
-          <a href="https://github.com/Terriwin" target="_blank" rel="noopener" class="btn btn-ghost">
-            <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor"><path d="M12 0C5.374 0 0 5.373 0 12c0 5.302 3.438 9.8 8.207 11.387.599.111.793-.261.793-.577v-2.234c-3.338.726-4.033-1.416-4.033-1.416-.546-1.387-1.333-1.756-1.333-1.756-1.089-.745.083-.729.083-.729 1.205.084 1.839 1.237 1.839 1.237 1.07 1.834 2.807 1.304 3.492.997.107-.775.418-1.305.762-1.604-2.665-.305-5.467-1.334-5.467-5.931 0-1.311.469-2.381 1.236-3.221-.124-.303-.535-1.524.117-3.176 0 0 1.008-.322 3.301 1.23A11.509 11.509 0 0 1 12 5.803c1.02.005 2.047.138 3.006.404 2.291-1.552 3.297-1.23 3.297-1.23.653 1.653.242 2.874.118 3.176.77.84 1.235 1.911 1.235 3.221 0 4.609-2.807 5.624-5.479 5.921.43.372.823 1.102.823 2.222v3.293c0 .319.192.694.801.576C20.566 21.797 24 17.3 24 12c0-6.627-5.373-12-12-12z"/></svg>
-            GitHub
+          <h1 class="hero-name reveal reveal-d1">Terriwin</h1>
+          <p class="hero-sub reveal reveal-d2" data-i18n="hero.sub">Full Stack разработчик, создающий цифровые продукты на стыке чистого кода и продуманного дизайна.</p>
+          <a href="https://t.me/terriwin" class="hero-cta reveal reveal-d3" target="_blank" rel="noopener noreferrer">
+            <svg viewBox="0 0 24 24" fill="currentColor">
+              <path d="M11.944 0A12 12 0 0 0 0 12a12 12 0 0 0 12 12 12 12 0 0 0 12-12A12 12 0 0 0 12 0a12 12 0 0 0-.056 0zm4.962 7.224c.1-.002.321.023.465.14a.506.506 0 0 1 .171.325c.016.093.036.306.02.472-.18 1.898-.962 6.502-1.36 8.627-.168.9-.499 1.201-.82 1.23-.696.065-1.225-.46-1.9-.902-1.056-.693-1.653-1.124-2.678-1.8-1.185-.78-.417-1.21.258-1.91.177-.184 3.247-2.977 3.307-3.23.007-.032.014-.15-.056-.212s-.174-.041-.249-.024c-.106.024-1.793 1.14-5.061 3.345-.48.33-.913.49-1.302.48-.428-.008-1.252-.241-1.865-.44-.752-.245-1.349-.374-1.297-.789.027-.216.325-.437.893-.663 3.498-1.524 5.83-2.529 6.998-3.014 3.332-1.386 4.025-1.627 4.476-1.635z"/>
+            </svg>
+            <span data-i18n="hero.cta">Написать в Telegram</span>
           </a>
         </div>
+
+        <!-- RIGHT: orbital timeline -->
+        <div class="hero-right">
+          <p class="orbital-label reveal" data-i18n="orbital.label">Этапы работы</p>
+          <div id="orbital" class="reveal reveal-d1">
+            <div class="orbital-center">
+              <div class="orbital-ring orbital-ring-1"></div>
+              <div class="orbital-ring orbital-ring-2"></div>
+              <div class="orbital-core"></div>
+            </div>
+            <div class="orbital-track"></div>
+            <svg class="orbital-svg" id="orbitalSvg"></svg>
+          </div>
+          <div class="orbit-info reveal reveal-d2" id="orbitInfo">
+            <p class="orbit-hint" id="orbitHint"><span data-i18n="orbital.hint">Нажмите на этап</span></p>
+            <div class="orbit-content" id="orbitContent" hidden>
+              <div class="orbit-content-step" id="orbitStep" data-i18n="orbital.active.step"></div>
+              <div class="orbit-content-title" id="orbitTitle" data-i18n="orbital.active.title"></div>
+              <div class="orbit-content-desc" id="orbitDesc" data-i18n="orbital.active.desc"></div>
+            </div>
+          </div>
+        </div>
+
       </div>
     </div>
   </section>
-
-  <footer>
-    <div class="container footer-inner">
-      <span data-i18n="footer.copy"></span>
-      <span data-i18n="footer.made"></span>
-    </div>
-  </footer>
 
   <script>
     // ── Translations ──────────────────────────────────────────────
     const t = {
       ru: {
-        'nav.about':     'Обо мне',
-        'nav.skills':    'Навыки',
-        'nav.reviews':   'Отзывы',
-        'nav.contact':   'Контакт',
-        'nav.hire':      'Нанять меня',
-
-        'hero.available': 'Открыт к работе',
-        'hero.subtitle':  'Full Stack разработчик, создающий цифровые продукты на стыке чистого кода и продуманного дизайна.',
-        'hero.cta1':      'Читать отзывы',
-        'hero.cta2':      'Обо мне',
-
-        'about.label':  'Обо мне',
-        'about.title':  'Создаю вещи,\nкоторые важны',
-        'about.text':   'Я Full Stack разработчик, сосредоточенный на создании качественных цифровых продуктов. Мне важны производительность, доступность и ремесло разработки ПО, которым приятно пользоваться.',
-        'about.card1.title': 'Чистый код',
-        'about.card1.text':  'Пишу код, который легко читать, поддерживать и который создан надолго. Каждая функция имеет смысл, каждая абстракция оправдана.',
-        'about.card2.title': 'Продуманный дизайн',
-        'about.card2.text':  'Тесно сотрудничаю с дизайном, воплощая идеи в интерфейсы, которые ощущаются интуитивными и отполированными на любом устройстве.',
-        'about.card3.title': 'Производительность',
-        'about.card3.text':  'Быстрые сайты побеждают. Оптимизирую под реальные метрики — Core Web Vitals, время загрузки, отзывчивость — не только бенчмарки.',
-        'about.card4.title': 'Надёжность',
-        'about.card4.text':  'Дедлайны — это обязательства. Коммуницирую проактивно, сдаю стабильно и держу команду в курсе на каждом этапе.',
-
-        'skills.label': 'Навыки',
-        'skills.title': 'Мой технологический стек',
-        'skills.cat1':  'Фронтенд',
-        'skills.cat2':  'Бэкенд',
-        'skills.cat3':  'Инструменты и платформы',
-
-        'reviews.label': 'Отзывы',
-        'reviews.title': 'Что говорят люди',
-        'reviews.text':  'Отзывы клиентов и коллег, с которыми мне довелось работать.',
-        'reviews.t1.text': 'Работать с Terriwin было настоящим удовольствием. Он сдал сложный дашборд в срок, чётко коммуницировал на всём протяжении и продемонстрировал исключительное качество кода. Нанял бы снова без колебаний.',
-        'reviews.t1.role': 'CTO, SaaS-стартап',
-        'reviews.t2.text': 'Лендинг, который создал Terriwin, принёс нам рост конверсии на 40%. Он оспаривал дизайнерские решения, которые бы не сработали, и предлагал лучшие альтернативы. Настоящий профессионал.',
-        'reviews.t2.role': 'Основатель, E-Commerce бренд',
-        'reviews.t3.text': 'Наш бэкенд был в беспорядке до прихода Terriwin. Он рефакторил весь API-слой, улучшил время ответа в 3 раза и оставил нам чистую документацию. Очень рекомендую.',
-        'reviews.t3.role': 'Ведущий инженер, FinTech',
-        'reviews.t4.text': 'Быстро, целенаправленно, приятно в работе. Terriwin взял нашу расплывчатую идею и превратил её в отполированный продукт за несколько недель. Внимание к деталям — особенно на мобильных — впечатлило.',
-        'reviews.t4.role': 'Продакт-менеджер, Агентство',
-
-        'contact.label': 'Контакт',
-        'contact.title': 'Давай создадим\nчто-то вместе',
-        'contact.text':  'Есть проект? Я сейчас открыт к фрилансу и полной занятости. Давай поговорим.',
-        'contact.email': 'Написать письмо',
-
-        'footer.copy': '© 2025 Terriwin. Все права защищены.',
-        'footer.made': 'Сделано с заботой и чистым кодом.',
+        'meta.langLabel': 'Русский',
+        'nav.contact':    'Написать',
+        'hero.tag':       'Открыт к работе',
+        'hero.sub':       'Full Stack разработчик, создающий цифровые продукты на стыке чистого кода и продуманного дизайна.',
+        'hero.cta':       'Написать в Telegram',
+        'orbital.label':  'Этапы работы',
+        'orbital.hint':   'Нажмите на этап, чтобы узнать подробнее',
+        // active card — managed by orbital JS, but included for fade animation
+        'orbital.active.step':  '',
+        'orbital.active.title': '',
+        'orbital.active.desc':  '',
       },
-
       en: {
-        'nav.about':     'About',
-        'nav.skills':    'Skills',
-        'nav.reviews':   'Reviews',
-        'nav.contact':   'Contact',
-        'nav.hire':      'Hire me',
+        'meta.langLabel': 'English',
+        'nav.contact':    'Contact',
+        'hero.tag':       'Available for work',
+        'hero.sub':       'Full Stack Developer crafting digital products at the intersection of clean code and thoughtful design.',
+        'hero.cta':       'Message on Telegram',
+        'orbital.label':  'How I work',
+        'orbital.hint':   'Click a stage to learn more',
+        'orbital.active.step':  '',
+        'orbital.active.title': '',
+        'orbital.active.desc':  '',
+      },
+    };
 
-        'hero.available': 'Available for work',
-        'hero.subtitle':  'Full Stack Developer crafting digital experiences that balance clean code with thoughtful design.',
-        'hero.cta1':      'See Reviews',
-        'hero.cta2':      'About me',
+    // ── Work stages ───────────────────────────────────────────────
+    const stages = {
+      ru: [
+        { id: 1, title: 'Бриф',       icon: 'brief',   desc: 'Обсуждаем цели, аудиторию и требования к проекту. Определяем объём, сроки и стек.',  relatedIds: [2] },
+        { id: 2, title: 'Концепт',    icon: 'concept', desc: 'Проектируем структуру и создаём прототипы. Согласовываем визуальное направление.',       relatedIds: [1, 3] },
+        { id: 3, title: 'Дизайн',     icon: 'design',  desc: 'Разрабатываем UI/UX: цвета, типографику, компоненты и адаптивную вёрстку.',              relatedIds: [2, 4] },
+        { id: 4, title: 'Разработка', icon: 'dev',     desc: 'Пишем чистый, масштабируемый код. Frontend, backend, базы данных — всё в одних руках.',  relatedIds: [3, 5] },
+        { id: 5, title: 'Тесты',      icon: 'test',    desc: 'QA и кросс-браузерная проверка. Оптимизируем производительность и Core Web Vitals.',     relatedIds: [4, 6] },
+        { id: 6, title: 'Запуск',     icon: 'launch',  desc: 'Деплой, настройка окружения и мониторинг. Передача кода с документацией.',                relatedIds: [5] },
+      ],
+      en: [
+        { id: 1, title: 'Brief',       icon: 'brief',   desc: 'Discuss goals, audience and project requirements. Define scope, timeline and tech stack.',  relatedIds: [2] },
+        { id: 2, title: 'Concept',     icon: 'concept', desc: 'Design structure and create wireframes. Agree on visual direction and user flows.',          relatedIds: [1, 3] },
+        { id: 3, title: 'Design',      icon: 'design',  desc: 'Develop UI/UX: color schemes, typography, components and responsive layout.',                relatedIds: [2, 4] },
+        { id: 4, title: 'Build',       icon: 'dev',     desc: 'Write clean, scalable code. Frontend, backend, databases — end to end.',                    relatedIds: [3, 5] },
+        { id: 5, title: 'Testing',     icon: 'test',    desc: 'QA and cross-browser checks. Performance optimisation and Core Web Vitals.',                 relatedIds: [4, 6] },
+        { id: 6, title: 'Launch',      icon: 'launch',  desc: 'Deploy, configure environment and set up monitoring. Handover with clean documentation.',    relatedIds: [5] },
+      ],
+    };
 
-        'about.label':  'About',
-        'about.title':  'Building things\nthat matter',
-        'about.text':   "I'm a full stack developer focused on creating well-crafted digital products. I care deeply about performance, accessibility, and the craft of building software that feels good to use.",
-        'about.card1.title': 'Clean Code',
-        'about.card1.text':  "I write code that's readable, maintainable, and built to last. Every function has a purpose, every abstraction earns its place.",
-        'about.card2.title': 'Thoughtful Design',
-        'about.card2.text':  'I collaborate closely with design, translating ideas into interfaces that feel intuitive and polished across all devices.',
-        'about.card3.title': 'Performance First',
-        'about.card3.text':  'Fast sites win. I optimise for real-world metrics — Core Web Vitals, load time, responsiveness — not just benchmarks.',
-        'about.card4.title': 'Reliable Delivery',
-        'about.card4.text':  'Deadlines are commitments. I communicate proactively, ship consistently, and keep teams informed throughout every project.',
-
-        'skills.label': 'Skills',
-        'skills.title': 'My tech stack',
-        'skills.cat1':  'Frontend',
-        'skills.cat2':  'Backend',
-        'skills.cat3':  'Tools & Platforms',
-
-        'reviews.label': 'Testimonials',
-        'reviews.title': 'What people say',
-        'reviews.text':  "Feedback from clients and collaborators I've had the pleasure of working with.",
-        'reviews.t1.text': 'Working with Terriwin was a breath of fresh air. He delivered a complex dashboard on time, communicated clearly throughout, and the code quality was exceptional. I\'d hire him again without hesitation.',
-        'reviews.t1.role': 'CTO, SaaS Startup',
-        'reviews.t2.text': "The landing page Terriwin built for us saw a 40% improvement in conversion rate. He pushed back on design choices that wouldn't have worked and suggested better alternatives. A true professional.",
-        'reviews.t2.role': 'Founder, E-Commerce Brand',
-        'reviews.t3.text': 'Our backend was a mess before Terriwin joined. He refactored the entire API layer, improved response times by 3x, and left us with clean documentation. Highly recommended.',
-        'reviews.t3.role': 'Lead Engineer, FinTech',
-        'reviews.t4.text': 'Fast, focused, and great to work with. Terriwin took our vague idea and turned it into a polished product in just a few weeks. The attention to detail — especially on mobile — was impressive.',
-        'reviews.t4.role': 'Product Manager, Agency',
-
-        'contact.label': 'Contact',
-        'contact.title': "Let's build something\ntogether",
-        'contact.text':  "Have a project in mind? I'm currently available for freelance work and full-time opportunities. Let's talk.",
-        'contact.email': 'Send email',
-
-        'footer.copy': '© 2025 Terriwin. All rights reserved.',
-        'footer.made': 'Built with care & clean code.',
-      }
+    const icons = {
+      brief:   '<path stroke-linecap="round" stroke-linejoin="round" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-6 9l2 2 4-4"/>',
+      concept: '<path stroke-linecap="round" stroke-linejoin="round" d="M9.663 17h4.673M12 3v1m6.364 1.636l-.707.707M21 12h-1M4 12H3m3.343-5.657l-.707-.707m2.828 9.9a5 5 0 117.072 0l-.548.547A3.374 3.374 0 0014 18.469V19a2 2 0 11-4 0v-.531c0-.895-.356-1.754-.988-2.386l-.548-.547z"/>',
+      design:  '<path stroke-linecap="round" stroke-linejoin="round" d="M15.232 5.232l3.536 3.536m-2.036-5.036a2.5 2.5 0 113.536 3.536L6.5 21.036H3v-3.572L16.732 3.732z"/>',
+      dev:     '<polyline stroke-linecap="round" stroke-linejoin="round" points="16 18 22 12 16 6"/><polyline stroke-linecap="round" stroke-linejoin="round" points="8 6 2 12 8 18"/>',
+      test:    '<circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65" stroke-linecap="round"/><line x1="8.5" y1="11" x2="13.5" y2="11" stroke-linecap="round"/><line x1="11" y1="8.5" x2="11" y2="13.5" stroke-linecap="round"/>',
+      launch:  '<line x1="22" y1="2" x2="11" y2="13" stroke-linecap="round"/><polygon stroke-linejoin="round" points="22 2 15 22 11 13 2 9 22 2"/>',
     };
 
     // ── Language engine ───────────────────────────────────────────
@@ -922,87 +713,103 @@
       if (!animate) {
         els.forEach(el => {
           const v = t[l][el.dataset.i18n];
-          if (v !== undefined) el.textContent = v;
+          if (v !== undefined && v !== '') el.textContent = v;
         });
+        updateOrbitalLabels(l);
         return;
       }
 
-      // ── Step 1: snapshot current dimensions ───────────────────
+      // ── Step 1: snapshot ───────────────────────────────────────
       const snaps = els.map(el => {
         const cs = getComputedStyle(el);
         if (cs.display === 'inline') el.style.display = 'inline-block';
-        // Wide block elements (paragraphs, titles) fill their container
-        const isWide = (cs.display === 'block') && el.offsetWidth > 260;
+        const isWide = cs.display === 'block' && el.offsetWidth > 260;
         return { el, isWide, oldW: el.offsetWidth, oldH: el.offsetHeight };
       });
 
-      // ── Step 2: freeze layout — nothing shifts during fade-out ─
+      // ── Step 2: freeze ────────────────────────────────────────
       snaps.forEach(({ el, oldW, oldH }) => {
         el.style.width    = oldW + 'px';
         el.style.height   = oldH + 'px';
         el.style.overflow = 'hidden';
       });
 
-      // ── Step 3: blur-fade out ─────────────────────────────────
+      // ── Step 3: fade out ──────────────────────────────────────
       document.body.classList.add('lang-switching');
 
       setTimeout(() => {
-        // ── Step 4: swap text while invisible ─────────────────────
+        // ── Step 4: swap + measure ─────────────────────────────
         snaps.forEach(({ el }) => {
           const v = t[l][el.dataset.i18n];
-          if (v !== undefined) el.textContent = v;
+          if (v !== undefined && v !== '') el.textContent = v;
         });
+        updateOrbitalLabels(l); // update orbital labels while invisible
 
-        // ── Step 5: measure new natural sizes ─────────────────────
         snaps.forEach(s => {
-          s.newH = s.el.scrollHeight; // ignores height clamp
+          s.newH = s.el.scrollHeight;
           if (!s.isWide) {
             s.el.style.width = 'auto';
             s.newW = s.el.scrollWidth;
-            s.el.style.width = s.oldW + 'px'; // restore freeze
+            s.el.style.width = s.oldW + 'px';
           } else {
             s.newW = s.oldW;
           }
         });
 
-        // ── Step 6: animate containers to new size (text still invisible) ──
-        let hasResize = false;
-        snaps.forEach(({ el, oldW, oldH, newW, newH, isWide }) => {
-          const dW = !isWide && Math.abs(newW - oldW) > 1;
-          const dH = Math.abs(newH - oldH) > 1;
-          if (dW || dH) {
-            hasResize = true;
-            const parts = [];
-            if (dW) parts.push('width 0.22s ease');
-            if (dH) parts.push('height 0.22s ease');
-            el.style.transition = parts.join(', ');
-            el.offsetHeight; // force reflow
-            if (dW) el.style.width  = newW + 'px';
-            if (dH) el.style.height = newH + 'px';
-          }
+        // Categorise: grow = resize while invisible; shrink = resize after fade-in
+        snaps.forEach(s => {
+          const dW = !s.isWide && Math.abs(s.newW - s.oldW) > 1;
+          const dH = Math.abs(s.newH - s.oldH) > 1;
+          if (!dW && !dH) { s.strategy = 'none'; return; }
+          const growing = (dW && s.newW > s.oldW) || (dH && s.newH > s.oldH);
+          s.strategy = growing ? 'grow' : 'shrink';
         });
 
-        // ── Step 7: after resize → restore CSS transitions → fade in ──
+        // ── Step 5: animate GROW items while invisible ─────────
+        const hasGrow = snaps.some(s => s.strategy === 'grow');
+        snaps.filter(s => s.strategy === 'grow').forEach(({ el, newW, newH, isWide }) => {
+          const parts = [];
+          if (!isWide) parts.push('width 0.22s ease');
+          parts.push('height 0.22s ease');
+          el.style.transition = parts.join(', ');
+          el.offsetHeight;
+          if (!isWide) el.style.width  = newW + 'px';
+          el.style.height = newH + 'px';
+        });
+
+        // ── Step 6: after grow → restore transitions → fade in ─
         setTimeout(() => {
-          // Clear inline transitions so CSS [data-i18n] rule takes over
           snaps.forEach(({ el }) => { el.style.transition = ''; });
-          // Reflow so browser registers the transition change before class removal
           document.body.offsetHeight;
-          // Now fade in text — containers are already at correct size
           document.body.classList.remove('lang-switching');
 
-          // ── Step 8: clean up inline styles after fade-in ──────────
+          // ── Step 7: after fade-in → animate SHRINK items ──────
           setTimeout(() => {
-            snaps.forEach(({ el }) => {
-              el.style.width = el.style.height = el.style.overflow = el.style.display = '';
+            snaps.forEach(({ el, newW, newH, isWide, strategy, oldW, oldH }) => {
+              if (strategy === 'shrink') {
+                const parts = [];
+                if (!isWide) parts.push('width 0.26s ease');
+                if (Math.abs(newH - oldH) > 1) parts.push('height 0.26s ease');
+                el.style.transition = parts.join(', ');
+                el.offsetHeight;
+                if (!isWide) el.style.width  = newW + 'px';
+                if (Math.abs(newH - oldH) > 1) el.style.height = newH + 'px';
+                setTimeout(() => {
+                  el.style.cssText = el.style.cssText
+                    .replace(/\s*(width|height|overflow|transition|display)\s*:[^;]+;?/g, '');
+                }, 300);
+              } else {
+                el.style.width = el.style.height = el.style.overflow = el.style.display = '';
+              }
             });
           }, 310);
-        }, hasResize ? 240 : 0);
 
-      }, 260); // wait for fade-out (CSS: 0.28s)
+        }, hasGrow ? 260 : 0);
+
+      }, 265);
     }
 
-    // Dropdown open/close
+    // ── Dropdown ──────────────────────────────────────────────────
     function openMenu() {
       langMenu.hidden = false;
       langDropdown.classList.add('open');
@@ -1013,85 +820,184 @@
       langDropdown.classList.remove('open');
       langTrigger.setAttribute('aria-expanded', 'false');
     }
-
-    langTrigger.addEventListener('click', (e) => {
+    langTrigger.addEventListener('click', e => {
       e.stopPropagation();
       langMenu.hidden ? openMenu() : closeMenu();
     });
-
-    // Select language from dropdown
-    langMenu.querySelectorAll('.lang-option').forEach(btn => {
-      btn.addEventListener('click', () => {
-        if (btn.dataset.lang !== lang) applyLang(btn.dataset.lang, true);
+    langMenu.querySelectorAll('.lang-option').forEach(opt => {
+      opt.addEventListener('click', () => {
+        const l = opt.dataset.lang;
         closeMenu();
+        if (l !== lang) applyLang(l, true);
       });
     });
+    document.addEventListener('click', closeMenu);
+    document.addEventListener('keydown', e => { if (e.key === 'Escape') closeMenu(); });
 
-    // Close on outside click
-    document.addEventListener('click', (e) => {
-      if (!langDropdown.contains(e.target)) closeMenu();
-    });
+    // ── Orbital timeline ──────────────────────────────────────────
+    let rotation = 0;
+    let autoRotate = true;
+    let activeId = null;
+    let orbLang = lang;
+    let nodePositions = {};
+    let rafId = null;
 
-    // Close on Escape
-    document.addEventListener('keydown', (e) => {
-      if (e.key === 'Escape') closeMenu();
-    });
+    const RADIUS = 126;
+    const SIZE   = 360;
+    const CENTER = SIZE / 2;
 
-    // Initial apply (no animation on load)
+    function buildOrbital() {
+      const container = document.getElementById('orbital');
+      const stageList = stages.ru; // use ru for node count (same count in both langs)
+
+      stageList.forEach((s, i) => {
+        const node = document.createElement('div');
+        node.className = 'orbit-node';
+        node.dataset.id = s.id;
+        node.innerHTML = `
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6">${icons[s.icon]}</svg>
+          <span class="orbit-node-label">${s.title}</span>
+        `;
+        node.addEventListener('click', e => { e.stopPropagation(); toggleNode(s.id); });
+        container.appendChild(node);
+      });
+
+      container.addEventListener('click', () => { if (activeId !== null) clearActive(); });
+    }
+
+    function updateOrbitalLabels(l) {
+      orbLang = l;
+      const nodeEls = document.querySelectorAll('.orbit-node');
+      const stageList = stages[l];
+      nodeEls.forEach((node, i) => {
+        const label = node.querySelector('.orbit-node-label');
+        if (label) label.textContent = stageList[i].title;
+      });
+
+      if (activeId !== null) {
+        const stage = stageList.find(s => s.id === activeId);
+        if (stage) {
+          const n = stageList.length;
+          document.getElementById('orbitStep').textContent  = `${String(activeId).padStart(2,'0')} / ${String(n).padStart(2,'0')}`;
+          document.getElementById('orbitTitle').textContent = stage.title;
+          document.getElementById('orbitDesc').textContent  = stage.desc;
+        }
+      }
+    }
+
+    function toggleNode(id) {
+      if (activeId === id) { clearActive(); return; }
+      activeId = id;
+      autoRotate = false;
+
+      const stageList = stages[orbLang];
+      const stage = stageList.find(s => s.id === id);
+      const n = stageList.length;
+
+      // Update UI
+      document.getElementById('orbitHint').hidden = true;
+      const content = document.getElementById('orbitContent');
+      content.hidden = false;
+      document.getElementById('orbitStep').textContent  = `${String(id).padStart(2,'0')} / ${String(n).padStart(2,'0')}`;
+      document.getElementById('orbitTitle').textContent = stage.title;
+      document.getElementById('orbitDesc').textContent  = stage.desc;
+
+      // Node classes
+      document.querySelectorAll('.orbit-node').forEach((node, i) => {
+        const nid = stageList[i].id;
+        node.classList.toggle('active',   nid === id);
+        node.classList.toggle('related',  stage.relatedIds.includes(nid) && nid !== id);
+      });
+
+      drawConnectors(id);
+    }
+
+    function clearActive() {
+      activeId = null;
+      autoRotate = true;
+      document.getElementById('orbitHint').hidden = false;
+      document.getElementById('orbitContent').hidden = true;
+      document.querySelectorAll('.orbit-node').forEach(n => n.classList.remove('active','related'));
+      document.getElementById('orbitalSvg').innerHTML = '';
+    }
+
+    function drawConnectors(id) {
+      const svg = document.getElementById('orbitalSvg');
+      svg.innerHTML = '';
+      const stageList = stages[orbLang];
+      const stage = stageList.find(s => s.id === id);
+      if (!stage) return;
+
+      const activePos = nodePositions[id];
+      if (!activePos) return;
+
+      stage.relatedIds.forEach(rid => {
+        const relPos = nodePositions[rid];
+        if (!relPos) return;
+        const line = document.createElementNS('http://www.w3.org/2000/svg','line');
+        line.setAttribute('x1', CENTER + activePos.x);
+        line.setAttribute('y1', CENTER + activePos.y);
+        line.setAttribute('x2', CENTER + relPos.x);
+        line.setAttribute('y2', CENTER + relPos.y);
+        line.classList.add('orbit-connector','active');
+        svg.appendChild(line);
+      });
+    }
+
+    let lastTick = 0;
+    function tickOrbital(ts) {
+      rafId = requestAnimationFrame(tickOrbital);
+      if (ts - lastTick < 20) return; // cap ~50fps to reduce renderer load
+      lastTick = ts;
+      if (autoRotate) rotation = (rotation + 0.30) % 360;
+
+      const nodes = document.querySelectorAll('.orbit-node');
+      const total = nodes.length;
+
+      nodes.forEach((node, i) => {
+        const angle  = ((i / total) * 360 + rotation) * (Math.PI / 180);
+        const x      = Math.cos(angle) * RADIUS;
+        const y      = Math.sin(angle) * RADIUS;
+        const depth  = Math.sin(angle); // -1..1
+        const stageList = stages[orbLang];
+        const sid    = stageList[i]?.id;
+
+        nodePositions[sid] = { x, y };
+
+        const isActive  = node.classList.contains('active');
+        const isRelated = node.classList.contains('related');
+        const scale     = isActive ? 1.25 : 0.82 + 0.18 * ((1 + depth) / 2);
+        const opacity   = isActive ? 1    : (isRelated ? 0.9 : Math.max(0.22, 0.28 + 0.72 * ((1 + depth) / 2)));
+        const zIndex    = isActive ? 200  : Math.round(30 + 60 * ((1 + depth) / 2));
+
+        node.style.transform = `translate(${x}px, ${y}px) scale(${scale})`;
+        node.style.opacity   = opacity;
+        node.style.zIndex    = zIndex;
+      });
+
+      // Redraw connectors if active
+      if (activeId !== null) drawConnectors(activeId);
+
+    }
+
+    // ── Init ──────────────────────────────────────────────────────
     applyLang(lang, false);
+    buildOrbital();
+    updateOrbitalLabels(lang); // nodes didn't exist during applyLang, update now
+    tickOrbital(0);
 
     // ── Nav scroll ────────────────────────────────────────────────
     const nav = document.getElementById('nav');
     window.addEventListener('scroll', () => {
       nav.classList.toggle('scrolled', window.scrollY > 20);
-    }, { passive: true });
+    });
 
     // ── Scroll reveal ─────────────────────────────────────────────
-    const observer = new IntersectionObserver((entries) => {
-      entries.forEach(el => {
-        if (el.isIntersecting) { el.target.classList.add('visible'); observer.unobserve(el.target); }
-      });
+    const revealEls = document.querySelectorAll('.reveal');
+    const revealObs = new IntersectionObserver(entries => {
+      entries.forEach(e => { if (e.isIntersecting) { e.target.classList.add('visible'); revealObs.unobserve(e.target); } });
     }, { threshold: 0.12 });
-    document.querySelectorAll('.reveal').forEach(el => observer.observe(el));
-
-    // ── Testimonials slider ───────────────────────────────────────
-    const inner = document.getElementById('inner');
-    const dotsEl = document.getElementById('dots');
-    const cards = inner.querySelectorAll('.testimonial-card');
-    const perView = window.innerWidth < 768 ? 1 : 2;
-    const maxSlides = cards.length - perView + 1;
-    let cur = 0;
-
-    for (let i = 0; i < maxSlides; i++) {
-      const d = document.createElement('button');
-      d.className = 'dot' + (i === 0 ? ' active' : '');
-      d.setAttribute('aria-label', `Slide ${i + 1}`);
-      d.addEventListener('click', () => go(i));
-      dotsEl.appendChild(d);
-    }
-
-    function go(idx) {
-      cur = Math.max(0, Math.min(idx, maxSlides - 1));
-      const cardW = cards[0].offsetWidth + 20;
-      inner.style.transform = `translateX(-${cur * cardW}px)`;
-      dotsEl.querySelectorAll('.dot').forEach((d, i) => d.classList.toggle('active', i === cur));
-    }
-
-    document.getElementById('prev').addEventListener('click', () => go(cur - 1));
-    document.getElementById('next').addEventListener('click', () => go(cur + 1));
-
-    let autoTimer = setInterval(() => go((cur + 1) % maxSlides), 5000);
-    inner.parentElement.addEventListener('mouseenter', () => clearInterval(autoTimer));
-    inner.parentElement.addEventListener('mouseleave', () => {
-      autoTimer = setInterval(() => go((cur + 1) % maxSlides), 5000);
-    });
-
-    let startX = 0;
-    inner.addEventListener('touchstart', e => { startX = e.touches[0].clientX; }, { passive: true });
-    inner.addEventListener('touchend', e => {
-      const dx = e.changedTouches[0].clientX - startX;
-      if (Math.abs(dx) > 40) go(dx < 0 ? cur + 1 : cur - 1);
-    });
+    revealEls.forEach(el => revealObs.observe(el));
   </script>
 </body>
 </html>
