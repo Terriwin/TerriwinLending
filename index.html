@@ -930,44 +930,95 @@
       document.documentElement.lang = l;
       localStorage.setItem('lang', l);
 
-      // Update trigger button
       langFlag.textContent  = langMeta[l].flag;
       langLabel.textContent = langMeta[l].label;
 
-      // Update options state
       langMenu.querySelectorAll('.lang-option').forEach(opt => {
         const active = opt.dataset.lang === l;
         opt.classList.toggle('active', active);
         opt.setAttribute('aria-selected', active);
       });
 
-      // Apply translations with blur + scale fade
       const els = [...document.querySelectorAll('[data-i18n]')];
-      if (animate) {
-        // Phase 1: blur out
-        document.body.classList.add('lang-switching');
-        setTimeout(() => {
-          // Swap text while invisible
-          els.forEach(el => {
-            const val = t[l][el.dataset.i18n];
-            if (val !== undefined) el.textContent = val;
-          });
-          // Phase 2: staggered fade in
-          document.body.classList.remove('lang-switching');
-          els.forEach((el, i) => {
-            el.style.transitionDelay = `${i * 12}ms`;
-          });
-          // Clean up delays after animation completes
-          setTimeout(() => {
-            els.forEach(el => { el.style.transitionDelay = ''; });
-          }, els.length * 12 + 300);
-        }, 260);
-      } else {
+
+      if (!animate) {
         els.forEach(el => {
-          const val = t[l][el.dataset.i18n];
-          if (val !== undefined) el.textContent = val;
+          const v = t[l][el.dataset.i18n];
+          if (v !== undefined) el.textContent = v;
         });
+        return;
       }
+
+      // ── Step 1: snapshot current dimensions ───────────────────
+      const snaps = els.map(el => {
+        const cs = getComputedStyle(el);
+        if (cs.display === 'inline') el.style.display = 'inline-block';
+        // Wide block elements (paragraphs, titles) fill their container
+        const isWide = (cs.display === 'block') && el.offsetWidth > 260;
+        return { el, isWide, oldW: el.offsetWidth, oldH: el.offsetHeight };
+      });
+
+      // ── Step 2: freeze layout — nothing shifts during fade-out ─
+      snaps.forEach(({ el, oldW, oldH }) => {
+        el.style.width    = oldW + 'px';
+        el.style.height   = oldH + 'px';
+        el.style.overflow = 'hidden';
+      });
+
+      // ── Step 3: blur-fade out ─────────────────────────────────
+      document.body.classList.add('lang-switching');
+
+      setTimeout(() => {
+        // ── Step 4: swap text while invisible ─────────────────────
+        snaps.forEach(({ el }) => {
+          const v = t[l][el.dataset.i18n];
+          if (v !== undefined) el.textContent = v;
+        });
+
+        // ── Step 5: measure new natural sizes ─────────────────────
+        snaps.forEach(s => {
+          // scrollHeight ignores the height clamp → natural content height
+          s.newH = s.el.scrollHeight;
+
+          if (!s.isWide) {
+            s.el.style.width = 'auto';
+            s.newW = s.el.scrollWidth;
+            s.el.style.width = s.oldW + 'px'; // restore freeze
+          } else {
+            s.newW = s.oldW;
+          }
+        });
+
+        // ── Step 6: fade in (still at frozen dims) ────────────────
+        document.body.classList.remove('lang-switching');
+
+        // ── Step 7: after fade-in → smooth resize to new dims ─────
+        setTimeout(() => {
+          snaps.forEach(({ el, oldW, oldH, newW, newH, isWide }) => {
+            const dW = !isWide && Math.abs(newW - oldW) > 1;
+            const dH = Math.abs(newH - oldH) > 1;
+
+            if (dW || dH) {
+              const parts = [];
+              if (dW) parts.push('width 0.25s ease');
+              if (dH) parts.push('height 0.25s ease');
+              el.style.transition = parts.join(', ');
+              el.offsetHeight; // force reflow
+              if (dW) el.style.width  = newW + 'px';
+              if (dH) el.style.height = newH + 'px';
+
+              setTimeout(() => {
+                el.style.width = el.style.height = el.style.overflow =
+                  el.style.transition = el.style.display = '';
+              }, 280);
+            } else {
+              el.style.width = el.style.height = el.style.overflow =
+                el.style.display = '';
+            }
+          });
+        }, 300); // wait for fade-in to complete (CSS: 0.28s)
+
+      }, 260); // wait for fade-out (CSS: 0.28s)
     }
 
     // Dropdown open/close
