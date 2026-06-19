@@ -1,0 +1,233 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Доска сообщений</title>
+  <style>
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+
+    body {
+      font-family: system-ui, sans-serif;
+      background: #0f0f0f;
+      color: #e5e5e5;
+      height: 100vh;
+      display: flex;
+    }
+
+    #sidebar {
+      width: 320px;
+      min-width: 320px;
+      background: #1a1a1a;
+      border-right: 1px solid #2a2a2a;
+      display: flex;
+      flex-direction: column;
+    }
+
+    #sidebar h2 {
+      padding: 20px;
+      font-size: 14px;
+      font-weight: 600;
+      color: #888;
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+      border-bottom: 1px solid #2a2a2a;
+    }
+
+    #messages {
+      flex: 1;
+      overflow-y: auto;
+      padding: 12px;
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+    }
+
+    .message {
+      background: #232323;
+      border: 1px solid #2e2e2e;
+      border-radius: 8px;
+      padding: 12px 14px;
+      animation: fadeIn 0.3s ease;
+    }
+
+    .message p {
+      font-size: 14px;
+      line-height: 1.5;
+      word-break: break-word;
+    }
+
+    .message time {
+      display: block;
+      margin-top: 6px;
+      font-size: 11px;
+      color: #555;
+    }
+
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateY(6px); }
+      to   { opacity: 1; transform: translateY(0); }
+    }
+
+    #main {
+      flex: 1;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 40px;
+    }
+
+    #form-box {
+      width: 100%;
+      max-width: 480px;
+    }
+
+    #form-box h1 {
+      font-size: 28px;
+      font-weight: 700;
+      margin-bottom: 8px;
+    }
+
+    #form-box p {
+      color: #666;
+      font-size: 14px;
+      margin-bottom: 32px;
+    }
+
+    textarea {
+      width: 100%;
+      background: #1a1a1a;
+      border: 1px solid #2e2e2e;
+      border-radius: 10px;
+      color: #e5e5e5;
+      font-size: 15px;
+      font-family: inherit;
+      padding: 16px;
+      resize: none;
+      height: 140px;
+      outline: none;
+      transition: border-color 0.2s;
+    }
+
+    textarea:focus {
+      border-color: #555;
+    }
+
+    button {
+      margin-top: 12px;
+      width: 100%;
+      background: #e5e5e5;
+      color: #0f0f0f;
+      border: none;
+      border-radius: 8px;
+      font-size: 15px;
+      font-weight: 600;
+      font-family: inherit;
+      padding: 14px;
+      cursor: pointer;
+      transition: background 0.2s;
+    }
+
+    button:hover { background: #fff; }
+    button:disabled { background: #333; color: #666; cursor: default; }
+
+    #status {
+      margin-top: 12px;
+      font-size: 13px;
+      color: #555;
+      text-align: center;
+      min-height: 18px;
+    }
+  </style>
+</head>
+<body>
+
+  <aside id="sidebar">
+    <h2>Сообщения</h2>
+    <div id="messages"></div>
+  </aside>
+
+  <main id="main">
+    <div id="form-box">
+      <h1>Напиши что-нибудь</h1>
+      <p>Сообщение появится у всех пользователей сразу.</p>
+      <textarea id="input" placeholder="Введи текст..."></textarea>
+      <button id="send">Отправить</button>
+      <div id="status"></div>
+    </div>
+  </main>
+
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <script>
+    const SUPABASE_URL = 'https://bonxqtzwmdmicqaantly.supabase.co';
+    const SUPABASE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImJvbnhxdHp3bWRtaWNxYWFudGx5Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODE4MDgwMTEsImV4cCI6MjA5NzM4NDAxMX0.LrVRXAMNeyBhaaAbIbYLjNuHPKSfR7VSuBMgbUgsj14';
+
+    const { createClient } = supabase;
+    const db = createClient(SUPABASE_URL, SUPABASE_KEY);
+
+    const messagesEl = document.getElementById('messages');
+    const input = document.getElementById('input');
+    const sendBtn = document.getElementById('send');
+    const status = document.getElementById('status');
+
+    function formatTime(iso) {
+      return new Date(iso).toLocaleString('ru-RU', {
+        day: '2-digit', month: '2-digit',
+        hour: '2-digit', minute: '2-digit'
+      });
+    }
+
+    function renderMessage(msg) {
+      const el = document.createElement('div');
+      el.className = 'message';
+      el.dataset.id = msg.id;
+      el.innerHTML = `<p>${msg.content.replace(/</g, '&lt;')}</p><time>${formatTime(msg.created_at)}</time>`;
+      return el;
+    }
+
+    async function loadMessages() {
+      const { data, error } = await db
+        .from('messages')
+        .select('*')
+        .order('created_at', { ascending: true });
+
+      if (error) { console.error(error); return; }
+      messagesEl.innerHTML = '';
+      data.forEach(msg => messagesEl.appendChild(renderMessage(msg)));
+      messagesEl.scrollTop = messagesEl.scrollHeight;
+    }
+
+    db.channel('messages')
+      .on('postgres_changes', { event: 'INSERT', schema: 'public', table: 'messages' }, payload => {
+        messagesEl.appendChild(renderMessage(payload.new));
+        messagesEl.scrollTop = messagesEl.scrollHeight;
+      })
+      .subscribe();
+
+    sendBtn.addEventListener('click', async () => {
+      const content = input.value.trim();
+      if (!content) return;
+
+      sendBtn.disabled = true;
+      status.textContent = 'Отправляю...';
+
+      const { error } = await db.from('messages').insert({ content });
+
+      if (error) {
+        status.textContent = 'Ошибка: ' + error.message;
+      } else {
+        input.value = '';
+        status.textContent = 'Отправлено!';
+        setTimeout(() => status.textContent = '', 2000);
+      }
+      sendBtn.disabled = false;
+    });
+
+    input.addEventListener('keydown', e => {
+      if (e.key === 'Enter' && (e.ctrlKey || e.metaKey)) sendBtn.click();
+    });
+
+    loadMessages();
+  </script>
+</body>
+</html>
