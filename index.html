@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="ru">
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
@@ -19,13 +19,12 @@
       --border-hov:    rgba(210, 195, 168, 0.22);
       --accent:        #c9b99a;
       --accent-dim:    rgba(201, 185, 154, 0.18);
-      --accent-glow:   rgba(201, 185, 154, 0.10);
-      --text:          #ede9e0;
-      --text-2:        #9a9080;
-      --text-3:        #52504a;
       --radius:        16px;
       --blur:          blur(20px);
       --ease-out:      cubic-bezier(0.22, 1, 0.36, 1);
+      --text:          #ede9e0;
+      --text-2:        #9a9080;
+      --text-3:        #52504a;
     }
 
     html { scroll-behavior: smooth; }
@@ -39,7 +38,6 @@
       line-height: 1.6;
     }
 
-    /* ── Noise overlay ── */
     body::before {
       content: '';
       position: fixed;
@@ -50,7 +48,6 @@
       z-index: 0;
     }
 
-    /* ── Gradient orbs ── */
     .orb {
       position: fixed;
       border-radius: 50%;
@@ -76,16 +73,13 @@
       66%       { transform: translate(-20px, 30px); }
     }
 
-    /* ── Scroll reveal ── */
+    /* Reveal */
     .reveal {
       opacity: 0;
       transform: translateY(28px);
       transition: opacity 0.7s var(--ease-out), transform 0.7s var(--ease-out);
     }
-    .reveal.visible {
-      opacity: 1;
-      transform: translateY(0);
-    }
+    .reveal.visible { opacity: 1; transform: translateY(0); }
     .reveal-delay-1 { transition-delay: 0.1s; }
     .reveal-delay-2 { transition-delay: 0.2s; }
     .reveal-delay-3 { transition-delay: 0.3s; }
@@ -96,7 +90,10 @@
       .orb { animation: none; }
     }
 
-    /* ── Layout ── */
+    /* Lang fade */
+    [data-i18n] { transition: opacity 0.2s ease; }
+    body.lang-switching [data-i18n] { opacity: 0; }
+
     .container {
       max-width: 1100px;
       margin: 0 auto;
@@ -107,21 +104,20 @@
 
     section { padding: 100px 0; }
 
-    /* ── Glass card ── */
     .glass {
       background: var(--glass);
       border: 1px solid var(--border);
       border-radius: var(--radius);
       backdrop-filter: var(--blur);
       -webkit-backdrop-filter: var(--blur);
-      transition: background 0.3s, border-color 0.3s, transform 0.3s var(--ease-out), box-shadow 0.3s;
+      transition: background 0.3s, border-color 0.3s, transform 0.3s var(--ease-out);
     }
     .glass:hover {
       background: var(--glass-hov);
       border-color: var(--border-hov);
     }
 
-    /* ── NAV ── */
+    /* NAV */
     nav {
       position: fixed;
       top: 0; left: 0; right: 0;
@@ -139,6 +135,7 @@
       display: flex;
       align-items: center;
       justify-content: space-between;
+      gap: 16px;
     }
     .nav-logo {
       font-family: 'Space Mono', monospace;
@@ -146,11 +143,10 @@
       font-weight: 700;
       color: var(--accent);
       text-decoration: none;
-      letter-spacing: -0.02em;
     }
     .nav-links {
       display: flex;
-      gap: 36px;
+      gap: 32px;
       list-style: none;
     }
     .nav-links a {
@@ -161,6 +157,40 @@
       transition: color 0.2s;
     }
     .nav-links a:hover { color: var(--text); }
+
+    .nav-right {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    /* Lang toggle */
+    .lang-toggle {
+      display: flex;
+      align-items: center;
+      background: var(--glass);
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      overflow: hidden;
+      backdrop-filter: var(--blur);
+    }
+    .lang-btn {
+      padding: 7px 12px;
+      font-family: 'Space Mono', monospace;
+      font-size: 11px;
+      font-weight: 700;
+      letter-spacing: 0.06em;
+      color: var(--text-3);
+      background: none;
+      border: none;
+      cursor: pointer;
+      transition: color 0.2s, background 0.2s;
+    }
+    .lang-btn.active {
+      background: var(--accent-dim);
+      color: var(--accent);
+    }
+    .lang-btn:hover:not(.active) { color: var(--text-2); }
 
     .btn {
       display: inline-flex;
@@ -196,7 +226,7 @@
       transform: translateY(-2px);
     }
 
-    /* ── HERO ── */
+    /* HERO */
     #hero {
       min-height: 100dvh;
       display: flex;
@@ -222,6 +252,7 @@
       width: 6px; height: 6px;
       background: var(--accent);
       border-radius: 50%;
+      flex-shrink: 0;
       animation: pulse 2s ease-in-out infinite;
     }
     @keyframes pulse {
@@ -249,11 +280,7 @@
       max-width: 520px;
       line-height: 1.7;
     }
-    .hero-actions {
-      display: flex;
-      gap: 12px;
-      flex-wrap: wrap;
-    }
+    .hero-actions { display: flex; gap: 12px; flex-wrap: wrap; }
     .hero-scroll {
       position: absolute;
       bottom: 40px;
@@ -278,7 +305,7 @@
       50%       { transform: translateX(-50%) translateY(8px); }
     }
 
-    /* ── SECTION HEADER ── */
+    /* SECTION HEADER */
     .section-label {
       font-family: 'Space Mono', monospace;
       font-size: 11px;
@@ -301,16 +328,14 @@
       max-width: 560px;
     }
 
-    /* ── ABOUT ── */
+    /* ABOUT */
     .about-grid {
       display: grid;
       grid-template-columns: 1fr 1fr;
       gap: 24px;
       margin-top: 64px;
     }
-    .about-card {
-      padding: 32px;
-    }
+    .about-card { padding: 32px; }
     .about-card-icon {
       width: 40px; height: 40px;
       border-radius: 10px;
@@ -322,24 +347,11 @@
       margin-bottom: 20px;
     }
     .about-card-icon svg { width: 20px; height: 20px; stroke: var(--accent); }
-    .about-card h3 {
-      font-size: 17px;
-      font-weight: 600;
-      margin-bottom: 10px;
-    }
-    .about-card p {
-      font-size: 14px;
-      color: var(--text-2);
-      line-height: 1.7;
-    }
+    .about-card h3 { font-size: 17px; font-weight: 600; margin-bottom: 10px; }
+    .about-card p { font-size: 14px; color: var(--text-2); line-height: 1.7; }
 
-    /* ── SKILLS ── */
-    .skills-wrap {
-      margin-top: 56px;
-      display: flex;
-      flex-direction: column;
-      gap: 40px;
-    }
+    /* SKILLS */
+    .skills-wrap { margin-top: 56px; display: flex; flex-direction: column; gap: 40px; }
     .skills-row { display: flex; flex-direction: column; gap: 12px; }
     .skills-row-label {
       font-size: 12px;
@@ -348,11 +360,7 @@
       text-transform: uppercase;
       color: var(--text-3);
     }
-    .skills-tags {
-      display: flex;
-      flex-wrap: wrap;
-      gap: 8px;
-    }
+    .skills-tags { display: flex; flex-wrap: wrap; gap: 8px; }
     .skill-tag {
       padding: 8px 16px;
       background: var(--glass);
@@ -372,14 +380,9 @@
       transform: translateY(-2px);
     }
 
-    /* ── TESTIMONIALS ── */
-    .testimonials-track-wrap {
-      margin-top: 64px;
-      position: relative;
-    }
-    .testimonials-track {
-      overflow: hidden;
-    }
+    /* TESTIMONIALS */
+    .testimonials-track-wrap { margin-top: 64px; position: relative; }
+    .testimonials-track { overflow: hidden; }
     .testimonials-inner {
       display: flex;
       gap: 20px;
@@ -399,17 +402,8 @@
       margin-bottom: 20px;
       opacity: 0.6;
     }
-    .testimonial-text {
-      font-size: 16px;
-      line-height: 1.75;
-      color: var(--text-2);
-      margin-bottom: 28px;
-    }
-    .testimonial-author {
-      display: flex;
-      align-items: center;
-      gap: 14px;
-    }
+    .testimonial-text { font-size: 16px; line-height: 1.75; color: var(--text-2); margin-bottom: 28px; }
+    .testimonial-author { display: flex; align-items: center; gap: 14px; }
     .testimonial-avatar {
       width: 42px; height: 42px;
       border-radius: 50%;
@@ -426,12 +420,7 @@
     .testimonial-name { font-size: 14px; font-weight: 600; }
     .testimonial-role { font-size: 13px; color: var(--text-3); margin-top: 2px; }
 
-    .testimonials-controls {
-      display: flex;
-      align-items: center;
-      gap: 16px;
-      margin-top: 32px;
-    }
+    .testimonials-controls { display: flex; align-items: center; gap: 16px; margin-top: 32px; }
     .dot-wrap { display: flex; gap: 6px; }
     .dot {
       width: 6px; height: 6px;
@@ -439,12 +428,9 @@
       background: var(--border);
       cursor: pointer;
       transition: all 0.3s;
+      border: none;
     }
-    .dot.active {
-      width: 20px;
-      border-radius: 3px;
-      background: var(--accent);
-    }
+    .dot.active { width: 20px; border-radius: 3px; background: var(--accent); }
     .ctrl-btn {
       width: 40px; height: 40px;
       border-radius: 10px;
@@ -457,14 +443,10 @@
       transition: all 0.2s;
       color: var(--text-2);
     }
-    .ctrl-btn:hover {
-      background: var(--glass-hov);
-      border-color: var(--border-hov);
-      color: var(--text);
-    }
+    .ctrl-btn:hover { background: var(--glass-hov); border-color: var(--border-hov); color: var(--text); }
     .ctrl-btn svg { width: 16px; height: 16px; }
 
-    /* ── CONTACT ── */
+    /* CONTACT */
     .contact-card {
       padding: 72px 64px;
       text-align: center;
@@ -478,16 +460,10 @@
       background: radial-gradient(ellipse at 50% 0%, rgba(201,185,154,0.08) 0%, transparent 70%);
       pointer-events: none;
     }
-    .contact-card .section-title { margin-bottom: 16px; }
     .contact-card .section-text { margin: 0 auto 40px; text-align: center; }
-    .contact-links {
-      display: flex;
-      justify-content: center;
-      gap: 12px;
-      flex-wrap: wrap;
-    }
+    .contact-links { display: flex; justify-content: center; gap: 12px; flex-wrap: wrap; }
 
-    /* ── FOOTER ── */
+    /* FOOTER */
     footer {
       border-top: 1px solid var(--border);
       padding: 32px 0;
@@ -504,7 +480,6 @@
     .footer-inner a { color: var(--text-3); text-decoration: none; transition: color 0.2s; }
     .footer-inner a:hover { color: var(--accent); }
 
-    /* ── Divider ── */
     .section-divider {
       height: 1px;
       background: linear-gradient(to right, transparent, var(--border), transparent);
@@ -513,11 +488,10 @@
       z-index: 1;
     }
 
-    /* ── Responsive ── */
     @media (max-width: 768px) {
       section { padding: 72px 0; }
       .about-grid { grid-template-columns: 1fr; }
-      .testimonial-card { min-width: calc(100% - 0px); }
+      .testimonial-card { min-width: 100%; }
       nav .nav-links { display: none; }
       .contact-card { padding: 48px 24px; }
       .hero-scroll { display: none; }
@@ -535,12 +509,18 @@
     <div class="container nav-inner">
       <a href="#" class="nav-logo">tw.</a>
       <ul class="nav-links">
-        <li><a href="#about">About</a></li>
-        <li><a href="#skills">Skills</a></li>
-        <li><a href="#testimonials">Reviews</a></li>
-        <li><a href="#contact">Contact</a></li>
+        <li><a href="#about" data-i18n="nav.about"></a></li>
+        <li><a href="#skills" data-i18n="nav.skills"></a></li>
+        <li><a href="#testimonials" data-i18n="nav.reviews"></a></li>
+        <li><a href="#contact" data-i18n="nav.contact"></a></li>
       </ul>
-      <a href="mailto:nikitos10b@gmail.com" class="btn btn-primary">Hire me</a>
+      <div class="nav-right">
+        <div class="lang-toggle" role="group" aria-label="Language selector">
+          <button class="lang-btn active" data-lang="ru" aria-pressed="true">RU</button>
+          <button class="lang-btn" data-lang="en" aria-pressed="false">EN</button>
+        </div>
+        <a href="mailto:nikitos10b@gmail.com" class="btn btn-primary" data-i18n="nav.hire"></a>
+      </div>
     </div>
   </nav>
 
@@ -549,21 +529,17 @@
     <div class="container" style="position:relative;">
       <div class="hero-tag reveal">
         <span class="hero-tag-dot"></span>
-        Available for work
+        <span data-i18n="hero.available"></span>
       </div>
-      <h1 class="hero-name reveal reveal-delay-1">
-        <span>Terriwin</span>
-      </h1>
-      <p class="hero-title reveal reveal-delay-2">
-        Full Stack Developer crafting digital experiences that balance clean code with thoughtful design.
-      </p>
+      <h1 class="hero-name reveal reveal-delay-1"><span>Terriwin</span></h1>
+      <p class="hero-title reveal reveal-delay-2" data-i18n="hero.subtitle"></p>
       <div class="hero-actions reveal reveal-delay-3">
-        <a href="#testimonials" class="btn btn-primary">See Reviews</a>
-        <a href="#about" class="btn btn-ghost">About me</a>
+        <a href="#testimonials" class="btn btn-primary" data-i18n="hero.cta1"></a>
+        <a href="#about" class="btn btn-ghost" data-i18n="hero.cta2"></a>
       </div>
       <div class="hero-scroll">
         <div class="scroll-line"></div>
-        <span>Scroll</span>
+        <span data-i18n="hero.scroll"></span>
       </div>
     </div>
   </section>
@@ -573,47 +549,37 @@
   <!-- ABOUT -->
   <section id="about">
     <div class="container">
-      <p class="section-label reveal">About</p>
-      <h2 class="section-title reveal reveal-delay-1">Building things <br />that matter</h2>
-      <p class="section-text reveal reveal-delay-2">
-        I'm a full stack developer focused on creating well-crafted digital products. I care deeply about performance, accessibility, and the craft of building software that feels good to use.
-      </p>
+      <p class="section-label reveal" data-i18n="about.label"></p>
+      <h2 class="section-title reveal reveal-delay-1" data-i18n="about.title"></h2>
+      <p class="section-text reveal reveal-delay-2" data-i18n="about.text"></p>
       <div class="about-grid">
         <div class="glass about-card reveal reveal-delay-1">
           <div class="about-card-icon">
-            <svg fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor">
-              <path stroke-linecap="round" stroke-linejoin="round" d="M17.25 6.75 22.5 12l-5.25 5.25m-10.5 0L1.5 12l5.25-5.25m7.5-3-4.5 16.5" />
-            </svg>
+            <svg fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M17.25 6.75 22.5 12l-5.25 5.25m-10.5 0L1.5 12l5.25-5.25m7.5-3-4.5 16.5" /></svg>
           </div>
-          <h3>Clean Code</h3>
-          <p>I write code that's readable, maintainable, and built to last. Every function has a purpose, every abstraction earns its place.</p>
+          <h3 data-i18n="about.card1.title"></h3>
+          <p data-i18n="about.card1.text"></p>
         </div>
         <div class="glass about-card reveal reveal-delay-2">
           <div class="about-card-icon">
-            <svg fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor">
-              <path stroke-linecap="round" stroke-linejoin="round" d="M9.53 16.122a3 3 0 0 0-5.78 1.128 2.25 2.25 0 0 1-2.4 2.245 4.5 4.5 0 0 0 8.4-2.245c0-.399-.078-.78-.22-1.128Zm0 0a15.998 15.998 0 0 0 3.388-1.62m-5.043-.025a15.994 15.994 0 0 1 1.622-3.395m3.42 3.42a15.995 15.995 0 0 0 4.764-4.648l3.876-5.814a1.151 1.151 0 0 0-1.597-1.597L14.146 6.32a15.996 15.996 0 0 0-4.649 4.763m3.42 3.42a6.776 6.776 0 0 0-3.42-3.42" />
-            </svg>
+            <svg fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M9.53 16.122a3 3 0 0 0-5.78 1.128 2.25 2.25 0 0 1-2.4 2.245 4.5 4.5 0 0 0 8.4-2.245c0-.399-.078-.78-.22-1.128Zm0 0a15.998 15.998 0 0 0 3.388-1.62m-5.043-.025a15.994 15.994 0 0 1 1.622-3.395m3.42 3.42a15.995 15.995 0 0 0 4.764-4.648l3.876-5.814a1.151 1.151 0 0 0-1.597-1.597L14.146 6.32a15.996 15.996 0 0 0-4.649 4.763m3.42 3.42a6.776 6.776 0 0 0-3.42-3.42" /></svg>
           </div>
-          <h3>Thoughtful Design</h3>
-          <p>I collaborate closely with design, translating ideas into interfaces that feel intuitive and polished across all devices.</p>
+          <h3 data-i18n="about.card2.title"></h3>
+          <p data-i18n="about.card2.text"></p>
         </div>
         <div class="glass about-card reveal reveal-delay-3">
           <div class="about-card-icon">
-            <svg fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor">
-              <path stroke-linecap="round" stroke-linejoin="round" d="M3.75 13.5l10.5-11.25L12 10.5h8.25L9.75 21.75 12 13.5H3.75z" />
-            </svg>
+            <svg fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M3.75 13.5l10.5-11.25L12 10.5h8.25L9.75 21.75 12 13.5H3.75z" /></svg>
           </div>
-          <h3>Performance First</h3>
-          <p>Fast sites win. I optimise for real-world metrics — Core Web Vitals, load time, responsiveness — not just benchmarks.</p>
+          <h3 data-i18n="about.card3.title"></h3>
+          <p data-i18n="about.card3.text"></p>
         </div>
         <div class="glass about-card reveal reveal-delay-4">
           <div class="about-card-icon">
-            <svg fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor">
-              <path stroke-linecap="round" stroke-linejoin="round" d="M13.5 10.5V6.75a4.5 4.5 0 1 1 9 0v3.75M3.75 21.75h10.5a2.25 2.25 0 0 0 2.25-2.25v-6.75a2.25 2.25 0 0 0-2.25-2.25H3.75a2.25 2.25 0 0 0-2.25 2.25v6.75a2.25 2.25 0 0 0 2.25 2.25Z" />
-            </svg>
+            <svg fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M13.5 10.5V6.75a4.5 4.5 0 1 1 9 0v3.75M3.75 21.75h10.5a2.25 2.25 0 0 0 2.25-2.25v-6.75a2.25 2.25 0 0 0-2.25-2.25H3.75a2.25 2.25 0 0 0-2.25-2.25v6.75a2.25 2.25 0 0 0 2.25 2.25Z" /></svg>
           </div>
-          <h3>Reliable Delivery</h3>
-          <p>Deadlines are commitments. I communicate proactively, ship consistently, and keep teams informed throughout every project.</p>
+          <h3 data-i18n="about.card4.title"></h3>
+          <p data-i18n="about.card4.text"></p>
         </div>
       </div>
     </div>
@@ -624,37 +590,30 @@
   <!-- SKILLS -->
   <section id="skills">
     <div class="container">
-      <p class="section-label reveal">Skills</p>
-      <h2 class="section-title reveal reveal-delay-1">My tech stack</h2>
+      <p class="section-label reveal" data-i18n="skills.label"></p>
+      <h2 class="section-title reveal reveal-delay-1" data-i18n="skills.title"></h2>
       <div class="skills-wrap">
         <div class="skills-row reveal reveal-delay-1">
-          <span class="skills-row-label">Frontend</span>
+          <span class="skills-row-label" data-i18n="skills.cat1"></span>
           <div class="skills-tags">
-            <span class="skill-tag">React</span>
-            <span class="skill-tag">Next.js</span>
-            <span class="skill-tag">TypeScript</span>
-            <span class="skill-tag">Tailwind CSS</span>
-            <span class="skill-tag">HTML & CSS</span>
-            <span class="skill-tag">Framer Motion</span>
+            <span class="skill-tag">React</span><span class="skill-tag">Next.js</span>
+            <span class="skill-tag">TypeScript</span><span class="skill-tag">Tailwind CSS</span>
+            <span class="skill-tag">HTML & CSS</span><span class="skill-tag">Framer Motion</span>
           </div>
         </div>
         <div class="skills-row reveal reveal-delay-2">
-          <span class="skills-row-label">Backend</span>
+          <span class="skills-row-label" data-i18n="skills.cat2"></span>
           <div class="skills-tags">
-            <span class="skill-tag">Node.js</span>
-            <span class="skill-tag">PostgreSQL</span>
-            <span class="skill-tag">Supabase</span>
-            <span class="skill-tag">REST APIs</span>
+            <span class="skill-tag">Node.js</span><span class="skill-tag">PostgreSQL</span>
+            <span class="skill-tag">Supabase</span><span class="skill-tag">REST APIs</span>
             <span class="skill-tag">GraphQL</span>
           </div>
         </div>
         <div class="skills-row reveal reveal-delay-3">
-          <span class="skills-row-label">Tools & Platforms</span>
+          <span class="skills-row-label" data-i18n="skills.cat3"></span>
           <div class="skills-tags">
-            <span class="skill-tag">Git & GitHub</span>
-            <span class="skill-tag">Vercel</span>
-            <span class="skill-tag">Docker</span>
-            <span class="skill-tag">Figma</span>
+            <span class="skill-tag">Git & GitHub</span><span class="skill-tag">Vercel</span>
+            <span class="skill-tag">Docker</span><span class="skill-tag">Figma</span>
             <span class="skill-tag">VS Code</span>
           </div>
         </div>
@@ -667,75 +626,64 @@
   <!-- TESTIMONIALS -->
   <section id="testimonials">
     <div class="container">
-      <p class="section-label reveal">Testimonials</p>
-      <h2 class="section-title reveal reveal-delay-1">What people say</h2>
-      <p class="section-text reveal reveal-delay-2">Feedback from clients and collaborators I've had the pleasure of working with.</p>
-
+      <p class="section-label reveal" data-i18n="reviews.label"></p>
+      <h2 class="section-title reveal reveal-delay-1" data-i18n="reviews.title"></h2>
+      <p class="section-text reveal reveal-delay-2" data-i18n="reviews.text"></p>
       <div class="testimonials-track-wrap reveal reveal-delay-3">
-        <div class="testimonials-track" id="track">
+        <div class="testimonials-track">
           <div class="testimonials-inner" id="inner">
-
             <div class="glass testimonial-card">
               <div class="testimonial-quote">"</div>
-              <p class="testimonial-text">Working with Terriwin was a breath of fresh air. He delivered a complex dashboard on time, communicated clearly throughout, and the code quality was exceptional. I'd hire him again without hesitation.</p>
+              <p class="testimonial-text" data-i18n="reviews.t1.text"></p>
               <div class="testimonial-author">
                 <div class="testimonial-avatar">AK</div>
                 <div>
                   <div class="testimonial-name">Alex K.</div>
-                  <div class="testimonial-role">CTO, SaaS Startup</div>
+                  <div class="testimonial-role" data-i18n="reviews.t1.role"></div>
                 </div>
               </div>
             </div>
-
             <div class="glass testimonial-card">
               <div class="testimonial-quote">"</div>
-              <p class="testimonial-text">The landing page Terriwin built for us saw a 40% improvement in conversion rate. He pushed back on design choices that wouldn't have worked and suggested better alternatives. A true professional.</p>
+              <p class="testimonial-text" data-i18n="reviews.t2.text"></p>
               <div class="testimonial-author">
                 <div class="testimonial-avatar">MR</div>
                 <div>
                   <div class="testimonial-name">Maria R.</div>
-                  <div class="testimonial-role">Founder, E-Commerce Brand</div>
+                  <div class="testimonial-role" data-i18n="reviews.t2.role"></div>
                 </div>
               </div>
             </div>
-
             <div class="glass testimonial-card">
               <div class="testimonial-quote">"</div>
-              <p class="testimonial-text">Our backend was a mess before Terriwin joined. He refactored the entire API layer, improved response times by 3x, and left us with clean documentation. Highly recommended.</p>
+              <p class="testimonial-text" data-i18n="reviews.t3.text"></p>
               <div class="testimonial-author">
                 <div class="testimonial-avatar">JT</div>
                 <div>
                   <div class="testimonial-name">James T.</div>
-                  <div class="testimonial-role">Lead Engineer, FinTech</div>
+                  <div class="testimonial-role" data-i18n="reviews.t3.role"></div>
                 </div>
               </div>
             </div>
-
             <div class="glass testimonial-card">
               <div class="testimonial-quote">"</div>
-              <p class="testimonial-text">Fast, focused, and great to work with. Terriwin took our vague idea and turned it into a polished product in just a few weeks. The attention to detail — especially on mobile — was impressive.</p>
+              <p class="testimonial-text" data-i18n="reviews.t4.text"></p>
               <div class="testimonial-author">
                 <div class="testimonial-avatar">SL</div>
                 <div>
                   <div class="testimonial-name">Sofia L.</div>
-                  <div class="testimonial-role">Product Manager, Agency</div>
+                  <div class="testimonial-role" data-i18n="reviews.t4.role"></div>
                 </div>
               </div>
             </div>
-
           </div>
         </div>
-
         <div class="testimonials-controls">
           <button class="ctrl-btn" id="prev" aria-label="Previous">
-            <svg fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor">
-              <path stroke-linecap="round" stroke-linejoin="round" d="M15.75 19.5 8.25 12l7.5-7.5" />
-            </svg>
+            <svg fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M15.75 19.5 8.25 12l7.5-7.5" /></svg>
           </button>
           <button class="ctrl-btn" id="next" aria-label="Next">
-            <svg fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor">
-              <path stroke-linecap="round" stroke-linejoin="round" d="m8.25 4.5 7.5 7.5-7.5 7.5" />
-            </svg>
+            <svg fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="m8.25 4.5 7.5 7.5-7.5 7.5" /></svg>
           </button>
           <div class="dot-wrap" id="dots"></div>
         </div>
@@ -749,20 +697,16 @@
   <section id="contact">
     <div class="container">
       <div class="glass contact-card reveal">
-        <p class="section-label" style="text-align:center;">Contact</p>
-        <h2 class="section-title">Let's build something <br />together</h2>
-        <p class="section-text">Have a project in mind? I'm currently available for freelance work and full-time opportunities. Let's talk.</p>
+        <p class="section-label" data-i18n="contact.label"></p>
+        <h2 class="section-title" data-i18n="contact.title"></h2>
+        <p class="section-text" data-i18n="contact.text"></p>
         <div class="contact-links">
           <a href="mailto:nikitos10b@gmail.com" class="btn btn-primary">
-            <svg width="16" height="16" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor">
-              <path stroke-linecap="round" stroke-linejoin="round" d="M21.75 6.75v10.5a2.25 2.25 0 0 1-2.25 2.25h-15a2.25 2.25 0 0 1-2.25-2.25V6.75m19.5 0A2.25 2.25 0 0 0 19.5 4.5h-15a2.25 2.25 0 0 0-2.25 2.25m19.5 0v.243a2.25 2.25 0 0 1-1.07 1.916l-7.5 4.615a2.25 2.25 0 0 1-2.36 0L3.32 8.91a2.25 2.25 0 0 1-1.07-1.916V6.75" />
-            </svg>
-            Send email
+            <svg width="16" height="16" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M21.75 6.75v10.5a2.25 2.25 0 0 1-2.25 2.25h-15a2.25 2.25 0 0 1-2.25-2.25V6.75m19.5 0A2.25 2.25 0 0 0 19.5 4.5h-15a2.25 2.25 0 0 0-2.25 2.25m19.5 0v.243a2.25 2.25 0 0 1-1.07 1.916l-7.5 4.615a2.25 2.25 0 0 1-2.36 0L3.32 8.91a2.25 2.25 0 0 1-1.07-1.916V6.75" /></svg>
+            <span data-i18n="contact.email"></span>
           </a>
           <a href="https://github.com/Terriwin" target="_blank" rel="noopener" class="btn btn-ghost">
-            <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor">
-              <path d="M12 0C5.374 0 0 5.373 0 12c0 5.302 3.438 9.8 8.207 11.387.599.111.793-.261.793-.577v-2.234c-3.338.726-4.033-1.416-4.033-1.416-.546-1.387-1.333-1.756-1.333-1.756-1.089-.745.083-.729.083-.729 1.205.084 1.839 1.237 1.839 1.237 1.07 1.834 2.807 1.304 3.492.997.107-.775.418-1.305.762-1.604-2.665-.305-5.467-1.334-5.467-5.931 0-1.311.469-2.381 1.236-3.221-.124-.303-.535-1.524.117-3.176 0 0 1.008-.322 3.301 1.23A11.509 11.509 0 0 1 12 5.803c1.02.005 2.047.138 3.006.404 2.291-1.552 3.297-1.23 3.297-1.23.653 1.653.242 2.874.118 3.176.77.84 1.235 1.911 1.235 3.221 0 4.609-2.807 5.624-5.479 5.921.43.372.823 1.102.823 2.222v3.293c0 .319.192.694.801.576C20.566 21.797 24 17.3 24 12c0-6.627-5.373-12-12-12z"/>
-            </svg>
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor"><path d="M12 0C5.374 0 0 5.373 0 12c0 5.302 3.438 9.8 8.207 11.387.599.111.793-.261.793-.577v-2.234c-3.338.726-4.033-1.416-4.033-1.416-.546-1.387-1.333-1.756-1.333-1.756-1.089-.745.083-.729.083-.729 1.205.084 1.839 1.237 1.839 1.237 1.07 1.834 2.807 1.304 3.492.997.107-.775.418-1.305.762-1.604-2.665-.305-5.467-1.334-5.467-5.931 0-1.311.469-2.381 1.236-3.221-.124-.303-.535-1.524.117-3.176 0 0 1.008-.322 3.301 1.23A11.509 11.509 0 0 1 12 5.803c1.02.005 2.047.138 3.006.404 2.291-1.552 3.297-1.23 3.297-1.23.653 1.653.242 2.874.118 3.176.77.84 1.235 1.911 1.235 3.221 0 4.609-2.807 5.624-5.479 5.921.43.372.823 1.102.823 2.222v3.293c0 .319.192.694.801.576C20.566 21.797 24 17.3 24 12c0-6.627-5.373-12-12-12z"/></svg>
             GitHub
           </a>
         </div>
@@ -770,42 +714,187 @@
     </div>
   </section>
 
-  <!-- FOOTER -->
   <footer>
     <div class="container footer-inner">
-      <span>© 2025 Terriwin. All rights reserved.</span>
-      <span>Built with care &amp; clean code.</span>
+      <span data-i18n="footer.copy"></span>
+      <span data-i18n="footer.made"></span>
     </div>
   </footer>
 
   <script>
-    // Nav scroll
+    // ── Translations ──────────────────────────────────────────────
+    const t = {
+      ru: {
+        'nav.about':     'Обо мне',
+        'nav.skills':    'Навыки',
+        'nav.reviews':   'Отзывы',
+        'nav.contact':   'Контакт',
+        'nav.hire':      'Нанять меня',
+
+        'hero.available': 'Открыт к работе',
+        'hero.subtitle':  'Full Stack разработчик, создающий цифровые продукты на стыке чистого кода и продуманного дизайна.',
+        'hero.cta1':      'Читать отзывы',
+        'hero.cta2':      'Обо мне',
+        'hero.scroll':    'Прокрутить',
+
+        'about.label':  'Обо мне',
+        'about.title':  'Создаю вещи,\nкоторые важны',
+        'about.text':   'Я Full Stack разработчик, сосредоточенный на создании качественных цифровых продуктов. Мне важны производительность, доступность и ремесло разработки ПО, которым приятно пользоваться.',
+        'about.card1.title': 'Чистый код',
+        'about.card1.text':  'Пишу код, который легко читать, поддерживать и который создан надолго. Каждая функция имеет смысл, каждая абстракция оправдана.',
+        'about.card2.title': 'Продуманный дизайн',
+        'about.card2.text':  'Тесно сотрудничаю с дизайном, воплощая идеи в интерфейсы, которые ощущаются интуитивными и отполированными на любом устройстве.',
+        'about.card3.title': 'Производительность',
+        'about.card3.text':  'Быстрые сайты побеждают. Оптимизирую под реальные метрики — Core Web Vitals, время загрузки, отзывчивость — не только бенчмарки.',
+        'about.card4.title': 'Надёжность',
+        'about.card4.text':  'Дедлайны — это обязательства. Коммуницирую проактивно, сдаю стабильно и держу команду в курсе на каждом этапе.',
+
+        'skills.label': 'Навыки',
+        'skills.title': 'Мой технологический стек',
+        'skills.cat1':  'Фронтенд',
+        'skills.cat2':  'Бэкенд',
+        'skills.cat3':  'Инструменты и платформы',
+
+        'reviews.label': 'Отзывы',
+        'reviews.title': 'Что говорят люди',
+        'reviews.text':  'Отзывы клиентов и коллег, с которыми мне довелось работать.',
+        'reviews.t1.text': 'Работать с Terriwin было настоящим удовольствием. Он сдал сложный дашборд в срок, чётко коммуницировал на всём протяжении и продемонстрировал исключительное качество кода. Нанял бы снова без колебаний.',
+        'reviews.t1.role': 'CTO, SaaS-стартап',
+        'reviews.t2.text': 'Лендинг, который создал Terriwin, принёс нам рост конверсии на 40%. Он оспаривал дизайнерские решения, которые бы не сработали, и предлагал лучшие альтернативы. Настоящий профессионал.',
+        'reviews.t2.role': 'Основатель, E-Commerce бренд',
+        'reviews.t3.text': 'Наш бэкенд был в беспорядке до прихода Terriwin. Он рефакторил весь API-слой, улучшил время ответа в 3 раза и оставил нам чистую документацию. Очень рекомендую.',
+        'reviews.t3.role': 'Ведущий инженер, FinTech',
+        'reviews.t4.text': 'Быстро, целенаправленно, приятно в работе. Terriwin взял нашу расплывчатую идею и превратил её в отполированный продукт за несколько недель. Внимание к деталям — особенно на мобильных — впечатлило.',
+        'reviews.t4.role': 'Продакт-менеджер, Агентство',
+
+        'contact.label': 'Контакт',
+        'contact.title': 'Давай создадим\nчто-то вместе',
+        'contact.text':  'Есть проект? Я сейчас открыт к фрилансу и полной занятости. Давай поговорим.',
+        'contact.email': 'Написать письмо',
+
+        'footer.copy': '© 2025 Terriwin. Все права защищены.',
+        'footer.made': 'Сделано с заботой и чистым кодом.',
+      },
+
+      en: {
+        'nav.about':     'About',
+        'nav.skills':    'Skills',
+        'nav.reviews':   'Reviews',
+        'nav.contact':   'Contact',
+        'nav.hire':      'Hire me',
+
+        'hero.available': 'Available for work',
+        'hero.subtitle':  'Full Stack Developer crafting digital experiences that balance clean code with thoughtful design.',
+        'hero.cta1':      'See Reviews',
+        'hero.cta2':      'About me',
+        'hero.scroll':    'Scroll',
+
+        'about.label':  'About',
+        'about.title':  'Building things\nthat matter',
+        'about.text':   "I'm a full stack developer focused on creating well-crafted digital products. I care deeply about performance, accessibility, and the craft of building software that feels good to use.",
+        'about.card1.title': 'Clean Code',
+        'about.card1.text':  "I write code that's readable, maintainable, and built to last. Every function has a purpose, every abstraction earns its place.",
+        'about.card2.title': 'Thoughtful Design',
+        'about.card2.text':  'I collaborate closely with design, translating ideas into interfaces that feel intuitive and polished across all devices.',
+        'about.card3.title': 'Performance First',
+        'about.card3.text':  'Fast sites win. I optimise for real-world metrics — Core Web Vitals, load time, responsiveness — not just benchmarks.',
+        'about.card4.title': 'Reliable Delivery',
+        'about.card4.text':  'Deadlines are commitments. I communicate proactively, ship consistently, and keep teams informed throughout every project.',
+
+        'skills.label': 'Skills',
+        'skills.title': 'My tech stack',
+        'skills.cat1':  'Frontend',
+        'skills.cat2':  'Backend',
+        'skills.cat3':  'Tools & Platforms',
+
+        'reviews.label': 'Testimonials',
+        'reviews.title': 'What people say',
+        'reviews.text':  "Feedback from clients and collaborators I've had the pleasure of working with.",
+        'reviews.t1.text': 'Working with Terriwin was a breath of fresh air. He delivered a complex dashboard on time, communicated clearly throughout, and the code quality was exceptional. I\'d hire him again without hesitation.',
+        'reviews.t1.role': 'CTO, SaaS Startup',
+        'reviews.t2.text': "The landing page Terriwin built for us saw a 40% improvement in conversion rate. He pushed back on design choices that wouldn't have worked and suggested better alternatives. A true professional.",
+        'reviews.t2.role': 'Founder, E-Commerce Brand',
+        'reviews.t3.text': 'Our backend was a mess before Terriwin joined. He refactored the entire API layer, improved response times by 3x, and left us with clean documentation. Highly recommended.',
+        'reviews.t3.role': 'Lead Engineer, FinTech',
+        'reviews.t4.text': 'Fast, focused, and great to work with. Terriwin took our vague idea and turned it into a polished product in just a few weeks. The attention to detail — especially on mobile — was impressive.',
+        'reviews.t4.role': 'Product Manager, Agency',
+
+        'contact.label': 'Contact',
+        'contact.title': "Let's build something\ntogether",
+        'contact.text':  "Have a project in mind? I'm currently available for freelance work and full-time opportunities. Let's talk.",
+        'contact.email': 'Send email',
+
+        'footer.copy': '© 2025 Terriwin. All rights reserved.',
+        'footer.made': 'Built with care & clean code.',
+      }
+    };
+
+    // ── Language engine ───────────────────────────────────────────
+    let lang = localStorage.getItem('lang') || 'ru';
+
+    function applyLang(l, animate = false) {
+      lang = l;
+      document.documentElement.lang = l;
+      localStorage.setItem('lang', l);
+
+      // Buttons state
+      document.querySelectorAll('.lang-btn').forEach(btn => {
+        const active = btn.dataset.lang === l;
+        btn.classList.toggle('active', active);
+        btn.setAttribute('aria-pressed', active);
+      });
+
+      // Apply translations (with optional fade)
+      const els = document.querySelectorAll('[data-i18n]');
+      if (animate) {
+        document.body.classList.add('lang-switching');
+        setTimeout(() => {
+          els.forEach(el => {
+            const val = t[l][el.dataset.i18n];
+            if (val !== undefined) el.textContent = val;
+          });
+          document.body.classList.remove('lang-switching');
+        }, 200);
+      } else {
+        els.forEach(el => {
+          const val = t[l][el.dataset.i18n];
+          if (val !== undefined) el.textContent = val;
+        });
+      }
+    }
+
+    // Initial apply (no animation on load)
+    applyLang(lang, false);
+
+    // Toggle handler
+    document.querySelectorAll('.lang-btn').forEach(btn => {
+      btn.addEventListener('click', () => {
+        if (btn.dataset.lang !== lang) applyLang(btn.dataset.lang, true);
+      });
+    });
+
+    // ── Nav scroll ────────────────────────────────────────────────
     const nav = document.getElementById('nav');
     window.addEventListener('scroll', () => {
       nav.classList.toggle('scrolled', window.scrollY > 20);
     }, { passive: true });
 
-    // Scroll reveal
+    // ── Scroll reveal ─────────────────────────────────────────────
     const observer = new IntersectionObserver((entries) => {
       entries.forEach(el => {
-        if (el.isIntersecting) {
-          el.target.classList.add('visible');
-          observer.unobserve(el.target);
-        }
+        if (el.isIntersecting) { el.target.classList.add('visible'); observer.unobserve(el.target); }
       });
     }, { threshold: 0.12 });
     document.querySelectorAll('.reveal').forEach(el => observer.observe(el));
 
-    // Testimonials slider
+    // ── Testimonials slider ───────────────────────────────────────
     const inner = document.getElementById('inner');
     const dotsEl = document.getElementById('dots');
     const cards = inner.querySelectorAll('.testimonial-card');
-    const total = cards.length;
     const perView = window.innerWidth < 768 ? 1 : 2;
+    const maxSlides = cards.length - perView + 1;
     let cur = 0;
 
-    // Build dots
-    const maxSlides = total - perView + 1;
     for (let i = 0; i < maxSlides; i++) {
       const d = document.createElement('button');
       d.className = 'dot' + (i === 0 ? ' active' : '');
@@ -824,14 +913,12 @@
     document.getElementById('prev').addEventListener('click', () => go(cur - 1));
     document.getElementById('next').addEventListener('click', () => go(cur + 1));
 
-    // Auto-advance
     let autoTimer = setInterval(() => go((cur + 1) % maxSlides), 5000);
     inner.parentElement.addEventListener('mouseenter', () => clearInterval(autoTimer));
     inner.parentElement.addEventListener('mouseleave', () => {
       autoTimer = setInterval(() => go((cur + 1) % maxSlides), 5000);
     });
 
-    // Swipe
     let startX = 0;
     inner.addEventListener('touchstart', e => { startX = e.touches[0].clientX; }, { passive: true });
     inner.addEventListener('touchend', e => {
