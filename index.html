@@ -181,7 +181,9 @@
       display: flex;
       align-items: center;
       gap: 6px;
-      padding: 7px 12px;
+      padding: 0 14px;
+      height: 38px;
+      box-sizing: border-box;
       background: var(--glass);
       border: 1px solid var(--border);
       border-radius: 10px;
@@ -193,6 +195,12 @@
       backdrop-filter: var(--blur);
       transition: background 0.2s, border-color 0.2s, color 0.2s;
       white-space: nowrap;
+    }
+    .nav-right .btn {
+      height: 38px;
+      padding-top: 0;
+      padding-bottom: 0;
+      box-sizing: border-box;
     }
     .lang-trigger:hover {
       background: var(--glass-hov);
@@ -346,30 +354,6 @@
       line-height: 1.7;
     }
     .hero-actions { display: flex; gap: 12px; flex-wrap: wrap; }
-    .hero-scroll {
-      position: absolute;
-      bottom: 40px;
-      left: 50%;
-      transform: translateX(-50%);
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      gap: 8px;
-      color: var(--text-3);
-      font-size: 11px;
-      letter-spacing: 0.1em;
-      text-transform: uppercase;
-      animation: bounce 2s ease-in-out infinite;
-    }
-    .scroll-line {
-      width: 1px; height: 48px;
-      background: linear-gradient(to bottom, var(--accent), transparent);
-    }
-    @keyframes bounce {
-      0%, 100% { transform: translateX(-50%) translateY(0); }
-      50%       { transform: translateX(-50%) translateY(8px); }
-    }
-
     /* SECTION HEADER */
     .section-label {
       font-family: 'Space Mono', monospace;
@@ -619,10 +603,6 @@
         <a href="#testimonials" class="btn btn-primary" data-i18n="hero.cta1"></a>
         <a href="#about" class="btn btn-ghost" data-i18n="hero.cta2"></a>
       </div>
-      <div class="hero-scroll">
-        <div class="scroll-line"></div>
-        <span data-i18n="hero.scroll"></span>
-      </div>
     </div>
   </section>
 
@@ -817,7 +797,6 @@
         'hero.subtitle':  'Full Stack разработчик, создающий цифровые продукты на стыке чистого кода и продуманного дизайна.',
         'hero.cta1':      'Читать отзывы',
         'hero.cta2':      'Обо мне',
-        'hero.scroll':    'Прокрутить',
 
         'about.label':  'Обо мне',
         'about.title':  'Создаю вещи,\nкоторые важны',
@@ -869,7 +848,6 @@
         'hero.subtitle':  'Full Stack Developer crafting digital experiences that balance clean code with thoughtful design.',
         'hero.cta1':      'See Reviews',
         'hero.cta2':      'About me',
-        'hero.scroll':    'Scroll',
 
         'about.label':  'About',
         'about.title':  'Building things\nthat matter',
@@ -977,9 +955,7 @@
 
         // ── Step 5: measure new natural sizes ─────────────────────
         snaps.forEach(s => {
-          // scrollHeight ignores the height clamp → natural content height
-          s.newH = s.el.scrollHeight;
-
+          s.newH = s.el.scrollHeight; // ignores height clamp
           if (!s.isWide) {
             s.el.style.width = 'auto';
             s.newW = s.el.scrollWidth;
@@ -989,34 +965,39 @@
           }
         });
 
-        // ── Step 6: fade in (still at frozen dims) ────────────────
-        document.body.classList.remove('lang-switching');
+        // ── Step 6: animate containers to new size (text still invisible) ──
+        let hasResize = false;
+        snaps.forEach(({ el, oldW, oldH, newW, newH, isWide }) => {
+          const dW = !isWide && Math.abs(newW - oldW) > 1;
+          const dH = Math.abs(newH - oldH) > 1;
+          if (dW || dH) {
+            hasResize = true;
+            const parts = [];
+            if (dW) parts.push('width 0.22s ease');
+            if (dH) parts.push('height 0.22s ease');
+            el.style.transition = parts.join(', ');
+            el.offsetHeight; // force reflow
+            if (dW) el.style.width  = newW + 'px';
+            if (dH) el.style.height = newH + 'px';
+          }
+        });
 
-        // ── Step 7: after fade-in → smooth resize to new dims ─────
+        // ── Step 7: after resize → restore CSS transitions → fade in ──
         setTimeout(() => {
-          snaps.forEach(({ el, oldW, oldH, newW, newH, isWide }) => {
-            const dW = !isWide && Math.abs(newW - oldW) > 1;
-            const dH = Math.abs(newH - oldH) > 1;
+          // Clear inline transitions so CSS [data-i18n] rule takes over
+          snaps.forEach(({ el }) => { el.style.transition = ''; });
+          // Reflow so browser registers the transition change before class removal
+          document.body.offsetHeight;
+          // Now fade in text — containers are already at correct size
+          document.body.classList.remove('lang-switching');
 
-            if (dW || dH) {
-              const parts = [];
-              if (dW) parts.push('width 0.25s ease');
-              if (dH) parts.push('height 0.25s ease');
-              el.style.transition = parts.join(', ');
-              el.offsetHeight; // force reflow
-              if (dW) el.style.width  = newW + 'px';
-              if (dH) el.style.height = newH + 'px';
-
-              setTimeout(() => {
-                el.style.width = el.style.height = el.style.overflow =
-                  el.style.transition = el.style.display = '';
-              }, 280);
-            } else {
-              el.style.width = el.style.height = el.style.overflow =
-                el.style.display = '';
-            }
-          });
-        }, 300); // wait for fade-in to complete (CSS: 0.28s)
+          // ── Step 8: clean up inline styles after fade-in ──────────
+          setTimeout(() => {
+            snaps.forEach(({ el }) => {
+              el.style.width = el.style.height = el.style.overflow = el.style.display = '';
+            });
+          }, 310);
+        }, hasResize ? 240 : 0);
 
       }, 260); // wait for fade-out (CSS: 0.28s)
     }
