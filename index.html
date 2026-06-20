@@ -128,7 +128,6 @@
     .nav-inner {
       display: flex;
       align-items: center;
-      justify-content: space-between;
     }
     .nav-logo {
       font-family: 'Space Mono', monospace;
@@ -137,11 +136,15 @@
       color: var(--accent);
       text-decoration: none;
       letter-spacing: -0.02em;
+      /* clear the fixed corner hamburger smoothly at every width — no breakpoint jump.
+         tapers from 44px (narrow, logo sits past the bars) to 0 (wide, aligned to content) */
+      margin-left: max(0px, 44px - max(0px, (100vw - 1160px) / 2));
     }
     .nav-right {
       display: flex;
       align-items: center;
       gap: 8px;
+      margin-left: auto;
     }
 
     /* lang dropdown */
@@ -216,31 +219,6 @@
     .lang-option .check { width: 14px; height: 14px; margin-left: auto; flex-shrink: 0; opacity: 0; color: var(--accent); }
     .lang-option.active .check { opacity: 1; }
 
-    /* Telegram nav button */
-    .btn-tg {
-      display: inline-flex;
-      align-items: center;
-      gap: 7px;
-      padding: 0 16px;
-      height: 38px;
-      border-radius: 10px;
-      font-family: inherit;
-      font-size: 13px;
-      font-weight: 600;
-      cursor: pointer;
-      text-decoration: none;
-      background: var(--accent);
-      color: #0a0908;
-      border: none;
-      transition: background 0.2s, transform 0.2s var(--ease-out), box-shadow 0.2s;
-      white-space: nowrap;
-    }
-    .btn-tg:hover {
-      background: #ddd0b8;
-      transform: translateY(-1px);
-      box-shadow: 0 6px 20px rgba(201,185,154,0.28);
-    }
-    .btn-tg svg { width: 16px; height: 16px; flex-shrink: 0; }
 
     /* ── HERO ────────────────────────────────────────────── */
     #hero {
@@ -248,6 +226,7 @@
       display: flex;
       align-items: center;
       padding-top: 66px;
+      padding-bottom: 40px;
     }
     .hero-split {
       display: grid;
@@ -340,8 +319,6 @@
       letter-spacing: 0.1em;
       text-transform: uppercase;
       color: var(--text-3);
-      align-self: flex-start;
-      margin-left: 8px;
     }
 
     /* Orbital timeline */
@@ -449,45 +426,132 @@
     .orbit-node:hover .orbit-node-label,
     .orbit-node.active .orbit-node-label { color: var(--text-2); }
 
-    /* info panel below orbital */
+    /* info panel — zero-height flex child, content escapes downward via overflow:visible */
     .orbit-info {
+      position: relative;
       width: 360px;
-      min-height: 90px;
-      background: var(--glass);
-      border: 1px solid var(--border);
-      border-radius: var(--radius);
-      padding: 16px 20px;
-      backdrop-filter: var(--blur);
+      height: 0;
+      overflow: visible;
+      flex-shrink: 0;
+    }
+
+    /* idle hint */
+    .orbit-idle {
+      position: absolute;
+      top: 0; left: 0; right: 0;
       display: flex;
       align-items: center;
+      gap: 10px;
+      padding: 13px 4px;
+      transition: opacity 0.2s ease, transform 0.2s ease;
     }
-    .orbit-hint {
-      font-size: 12.5px;
-      color: var(--text-3);
+    .orbit-idle.out {
+      opacity: 0;
+      transform: translateY(-5px);
+      pointer-events: none;
+    }
+    .orbit-idle-line {
+      flex: 1;
+      height: 1px;
+    }
+    .orbit-idle-line-l { background: linear-gradient(90deg, transparent, var(--border)); }
+    .orbit-idle-line-r { background: linear-gradient(270deg, transparent, var(--border)); }
+    .orbit-idle-text {
+      font-size: 11px;
       font-weight: 500;
-      width: 100%;
-      text-align: center;
+      color: var(--text-3);
+      white-space: nowrap;
+      letter-spacing: 0.07em;
+      flex-shrink: 0;
     }
-    .orbit-content { width: 100%; }
-    .orbit-content-step {
-      font-size: 10px;
+
+    /* active stage card */
+    .orbit-card {
+      position: absolute;
+      top: 0; left: 0; right: 0;
+      background: rgba(14,13,12,0.72);
+      border: 1px solid var(--border);
+      border-top: 2px solid rgba(201,185,154,0.5);
+      border-radius: var(--radius);
+      padding: 16px 18px 14px;
+      backdrop-filter: blur(28px);
+      -webkit-backdrop-filter: blur(28px);
+      overflow: hidden;
+      opacity: 0;
+      transform: translateY(10px);
+      pointer-events: none;
+      transition: opacity 0.3s var(--ease-out), transform 0.3s var(--ease-out);
+      box-shadow: 0 8px 40px rgba(0,0,0,0.35), inset 0 1px 0 rgba(201,185,154,0.06);
+    }
+    .orbit-card.visible {
+      opacity: 1;
+      transform: translateY(0);
+      pointer-events: auto;
+    }
+    .orbit-card-ghost {
+      position: absolute;
+      right: 16px;
+      top: 50%;
+      transform: translateY(-50%);
+      font-family: 'Space Mono', monospace;
+      font-size: 80px;
       font-weight: 700;
-      letter-spacing: 0.09em;
+      line-height: 1;
+      color: var(--accent);
+      opacity: 0.045;
+      pointer-events: none;
+      user-select: none;
+      z-index: 0;
+      letter-spacing: -0.05em;
+    }
+    .orbit-card-inner { position: relative; z-index: 1; }
+    .orbit-card-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-bottom: 10px;
+    }
+    .orbit-card-tag {
+      font-size: 9.5px;
+      font-weight: 700;
+      letter-spacing: 0.12em;
       text-transform: uppercase;
       color: var(--accent);
-      margin-bottom: 5px;
-      data-i18n: attr(data-i18n);
     }
-    .orbit-content-title {
-      font-size: 14px;
+    .orbit-card-counter {
+      font-family: 'Space Mono', monospace;
+      font-size: 10px;
+      color: var(--text-3);
+      letter-spacing: 0.04em;
+    }
+    .orbit-card-title {
+      font-size: 15px;
       font-weight: 700;
       color: var(--text);
       margin-bottom: 6px;
+      letter-spacing: -0.015em;
     }
-    .orbit-content-desc {
+    .orbit-card-desc {
       font-size: 12.5px;
-      line-height: 1.6;
+      line-height: 1.65;
       color: var(--text-2);
+      margin-bottom: 14px;
+    }
+    .orbit-dots {
+      display: flex;
+      gap: 5px;
+      align-items: center;
+    }
+    .orbit-dot {
+      height: 3px;
+      width: 18px;
+      border-radius: 2px;
+      background: var(--border);
+      transition: background 0.3s, width 0.3s var(--ease-out);
+    }
+    .orbit-dot.active {
+      background: var(--accent);
+      width: 28px;
     }
 
     /* connection lines */
@@ -519,13 +583,308 @@
       .hero-right { align-items: center; }
       #orbital { width: 300px; height: 300px; }
       .orbit-info { width: 300px; }
-      .orbital-track { width: 220px; height: 220px; }
+      .orbital-track { width: 210px; height: 210px; }
+      .orbit-card-ghost { font-size: 60px; }
+      .orbit-card-desc { font-size: 12px; }
+      /* heavy blur freezes mobile GPU on load — hide on mobile */
+      .orb { display: none; }
+    }
+
+    /* ── Projects trigger — fixed true top-left corner ────────── */
+    .projects-trigger {
+      position: fixed;
+      top: 14px;
+      left: 16px;
+      z-index: 200;
+      display: flex;
+      flex-direction: column;
+      align-items: flex-start;
+      justify-content: center;
+      gap: 6px;
+      width: 44px;
+      height: 44px;
+      padding: 0 8px;
+      border: none;
+      background: transparent;
+      cursor: pointer;
+      touch-action: manipulation;
+      /* fade out when drawer is open — the drawer's own X takes over */
+      transition: opacity 0.18s ease;
+    }
+    .projects-trigger.open {
+      opacity: 0;
+      pointer-events: none;
+    }
+    .ptrigger-line {
+      display: block;
+      height: 2.5px;
+      border-radius: 2px;
+      transition: background 0.22s, width 0.25s var(--ease-out);
+    }
+    /* staggered widths: long · short · long */
+    .ptrigger-line:nth-child(1) { width: 20px; background: rgba(210,195,168,0.55); }
+    .ptrigger-line:nth-child(2) { width: 12px; background: rgba(210,195,168,0.32); }
+    .ptrigger-line:nth-child(3) { width: 20px; background: rgba(210,195,168,0.55); }
+
+    /* hover: accent + middle bar extends */
+    .projects-trigger:hover .ptrigger-line { background: var(--accent); }
+    .projects-trigger:hover .ptrigger-line:nth-child(2) { width: 20px; }
+
+    /* ── Projects overlay ──────────────────────────────────────── */
+    .projects-overlay {
+      position: fixed;
+      inset: 0;
+      background: rgba(0,0,0,0);
+      z-index: 148;
+      pointer-events: none;
+      transition: background 0.35s ease;
+    }
+    .projects-overlay.open {
+      background: rgba(0,0,0,0.55);
+      pointer-events: auto;
+    }
+
+    /* ── Projects drawer ───────────────────────────────────────── */
+    .projects-drawer {
+      position: fixed;
+      top: 0; left: 0; bottom: 0;
+      width: 380px;
+      max-width: calc(100vw - 40px);
+      background: rgba(9,9,10,0.97);
+      border-right: 1px solid rgba(210,195,168,0.07);
+      backdrop-filter: blur(48px);
+      -webkit-backdrop-filter: blur(48px);
+      z-index: 149;
+      transform: translateX(-100%);
+      transition: transform 0.4s cubic-bezier(0.22,1,0.36,1);
+      display: flex;
+      flex-direction: column;
+      overflow: hidden;
+    }
+    .projects-drawer.open { transform: translateX(0); }
+
+    .pdrawer-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 22px 22px 16px;
+      border-bottom: 1px solid var(--border);
+      flex-shrink: 0;
+    }
+    .pdrawer-eyebrow {
+      font-size: 9px;
+      font-weight: 700;
+      letter-spacing: 0.15em;
+      text-transform: uppercase;
+      color: var(--accent);
+      margin-bottom: 3px;
+      font-family: 'Space Mono', monospace;
+    }
+    .pdrawer-title {
+      font-size: 17px;
+      font-weight: 700;
+      color: var(--text);
+      line-height: 1;
+    }
+    /* close = same three-bar language as the trigger, locked in the X state */
+    .pdrawer-close {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      gap: 6px;
+      width: 40px;
+      height: 40px;
+      border: none;
+      border-radius: 6px;
+      background: transparent;
+      cursor: pointer;
+      flex-shrink: 0;
+      transition: opacity 0.2s;
+    }
+    .pclose-line {
+      display: block;
+      width: 20px;
+      height: 2.5px;
+      border-radius: 2px;
+      background: var(--accent);
+      transition: transform 0.3s var(--ease-out);
+    }
+    .pclose-line:nth-child(1) { transform: translateY(8.5px) rotate(45deg); }
+    .pclose-line:nth-child(2) { opacity: 0; }
+    .pclose-line:nth-child(3) { transform: translateY(-8.5px) rotate(-45deg); }
+    /* hover: tighten the X a touch for a subtle, premium reaction */
+    .pdrawer-close:hover .pclose-line:nth-child(1) { transform: translateY(8.5px) rotate(135deg); }
+    .pdrawer-close:hover .pclose-line:nth-child(3) { transform: translateY(-8.5px) rotate(-135deg); }
+
+    .pdrawer-body {
+      flex: 1;
+      overflow-y: auto;
+      padding: 20px 18px 16px;
+      scrollbar-width: thin;
+      scrollbar-color: rgba(210,195,168,0.1) transparent;
+    }
+    .pdrawer-body::-webkit-scrollbar { width: 3px; }
+    .pdrawer-body::-webkit-scrollbar-track { background: transparent; }
+    .pdrawer-body::-webkit-scrollbar-thumb { background: rgba(210,195,168,0.1); border-radius: 2px; }
+
+    .pdrawer-section-label {
+      font-size: 9px;
+      font-weight: 700;
+      letter-spacing: 0.13em;
+      text-transform: uppercase;
+      color: var(--text-3);
+      font-family: 'Space Mono', monospace;
+      margin-bottom: 14px;
+    }
+
+    /* project cards */
+    .pcard {
+      display: block;
+      border: 1px solid var(--border);
+      border-top: 2px solid rgba(210,195,168,0.14);
+      border-radius: var(--radius);
+      overflow: hidden;
+      background: rgba(210,195,168,0.022);
+      margin-bottom: 10px;
+      text-decoration: none;
+      transition: border-color 0.25s, transform 0.28s var(--ease-out), box-shadow 0.28s;
+      opacity: 0;
+      transform: translateX(-14px);
+    }
+    .pcard.revealed {
+      opacity: 1;
+      transform: translateX(0);
+      transition: opacity 0.38s var(--ease-out), transform 0.38s var(--ease-out),
+                  border-color 0.25s, box-shadow 0.28s;
+    }
+    .pcard--live:hover {
+      border-color: rgba(210,195,168,0.2);
+      border-top-color: rgba(210,195,168,0.45);
+      transform: translateY(-2px);
+      box-shadow: 0 10px 36px rgba(0,0,0,0.38);
+    }
+    .pcard--soon { cursor: default; }
+    .pcard--soon:hover { transform: none; border-color: var(--border); box-shadow: none; }
+
+    .pcard-preview {
+      position: relative;
+      width: 100%;
+      aspect-ratio: 16/9;
+      overflow: hidden;
+    }
+    .pcard-preview-bg {
+      position: absolute;
+      inset: 0;
+    }
+    .pcard-preview-veil {
+      position: absolute;
+      inset: 0;
+      background: linear-gradient(to bottom, transparent 35%, rgba(9,9,10,0.75));
+    }
+    .pcard-preview-watermark {
+      position: absolute;
+      inset: 0;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-family: 'Space Mono', monospace;
+      font-size: 11px;
+      font-weight: 700;
+      letter-spacing: 0.18em;
+      color: rgba(210,195,168,0.18);
+      text-transform: uppercase;
+    }
+
+    .pcard-body {
+      padding: 11px 13px 13px;
+    }
+    .pcard-row {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-bottom: 7px;
+    }
+    .pcard-num {
+      font-family: 'Space Mono', monospace;
+      font-size: 9px;
+      color: var(--text-3);
+    }
+    .pcard-badge {
+      font-family: 'Space Mono', monospace;
+      font-size: 8px;
+      font-weight: 700;
+      letter-spacing: 0.1em;
+      padding: 2px 7px;
+      border-radius: 3px;
+      text-transform: uppercase;
+    }
+    .pcard-badge--soon {
+      background: rgba(210,195,168,0.07);
+      color: var(--text-3);
+      border: 1px solid var(--border);
+    }
+    .pcard-badge--live {
+      background: rgba(80,200,120,0.1);
+      color: #6cda9e;
+      border: 1px solid rgba(80,200,120,0.18);
+    }
+    .pcard-title {
+      font-size: 13.5px;
+      font-weight: 700;
+      color: var(--text);
+      margin-bottom: 4px;
+      line-height: 1.3;
+    }
+    .pcard-desc {
+      font-size: 11.5px;
+      line-height: 1.6;
+      color: var(--text-2);
+    }
+    .pcard-cta {
+      display: inline-flex;
+      align-items: center;
+      gap: 5px;
+      margin-top: 10px;
+      font-size: 10.5px;
+      font-weight: 600;
+      color: var(--accent);
+      letter-spacing: 0.04em;
+      transition: gap 0.2s;
+    }
+    .pcard--live:hover .pcard-cta { gap: 8px; }
+    .pcard-cta svg { width: 11px; height: 11px; }
+
+    .pdrawer-footer {
+      padding: 13px 22px;
+      border-top: 1px solid var(--border);
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      flex-shrink: 0;
+    }
+    .pdrawer-footer-text {
+      font-size: 10px;
+      color: var(--text-3);
+      letter-spacing: 0.03em;
+    }
+    .pdrawer-count {
+      font-family: 'Space Mono', monospace;
+      font-size: 10px;
+      color: var(--text-3);
     }
   </style>
 </head>
 <body>
   <div class="orb orb-1"></div>
   <div class="orb orb-2"></div>
+
+  <!-- Hamburger — fixed at true top-left corner, outside nav container -->
+  <button class="projects-trigger" id="projectsTrigger" aria-label="Больше проектов">
+    <span class="ptrigger-line"></span>
+    <span class="ptrigger-line"></span>
+    <span class="ptrigger-line"></span>
+  </button>
 
   <!-- NAV -->
   <nav id="nav">
@@ -561,14 +920,6 @@
             </div>
           </div>
 
-          <!-- Telegram CTA -->
-          <a href="https://t.me/terriwin" class="btn-tg" target="_blank" rel="noopener noreferrer">
-            <svg viewBox="0 0 24 24" fill="currentColor">
-              <path d="M11.944 0A12 12 0 0 0 0 12a12 12 0 0 0 12 12 12 12 0 0 0 12-12A12 12 0 0 0 12 0a12 12 0 0 0-.056 0zm4.962 7.224c.1-.002.321.023.465.14a.506.506 0 0 1 .171.325c.016.093.036.306.02.472-.18 1.898-.962 6.502-1.36 8.627-.168.9-.499 1.201-.82 1.23-.696.065-1.225-.46-1.9-.902-1.056-.693-1.653-1.124-2.678-1.8-1.185-.78-.417-1.21.258-1.91.177-.184 3.247-2.977 3.307-3.23.007-.032.014-.15-.056-.212s-.174-.041-.249-.024c-.106.024-1.793 1.14-5.061 3.345-.48.33-.913.49-1.302.48-.428-.008-1.252-.241-1.865-.44-.752-.245-1.349-.374-1.297-.789.027-.216.325-.437.893-.663 3.498-1.524 5.83-2.529 6.998-3.014 3.332-1.386 4.025-1.627 4.476-1.635z"/>
-            </svg>
-            <span data-i18n="nav.contact">Написать</span>
-          </a>
-
         </div>
       </div>
     </div>
@@ -586,8 +937,8 @@
             <span data-i18n="hero.tag">Открыт к работе</span>
           </div>
           <h1 class="hero-name reveal reveal-d1">Terriwin</h1>
-          <p class="hero-sub reveal reveal-d2" data-i18n="hero.sub">Full Stack разработчик, создающий цифровые продукты на стыке чистого кода и продуманного дизайна.</p>
-          <a href="https://t.me/terriwin" class="hero-cta reveal reveal-d3" target="_blank" rel="noopener noreferrer">
+          <p class="hero-sub reveal reveal-d2" data-i18n="hero.sub">Веб-разработчик. Дизайн и разработка сайтов под ключ.</p>
+          <a href="https://t.me/fuqurty" class="hero-cta reveal reveal-d3" target="_blank" rel="noopener noreferrer">
             <svg viewBox="0 0 24 24" fill="currentColor">
               <path d="M11.944 0A12 12 0 0 0 0 12a12 12 0 0 0 12 12 12 12 0 0 0 12-12A12 12 0 0 0 12 0a12 12 0 0 0-.056 0zm4.962 7.224c.1-.002.321.023.465.14a.506.506 0 0 1 .171.325c.016.093.036.306.02.472-.18 1.898-.962 6.502-1.36 8.627-.168.9-.499 1.201-.82 1.23-.696.065-1.225-.46-1.9-.902-1.056-.693-1.653-1.124-2.678-1.8-1.185-.78-.417-1.21.258-1.91.177-.184 3.247-2.977 3.307-3.23.007-.032.014-.15-.056-.212s-.174-.041-.249-.024c-.106.024-1.793 1.14-5.061 3.345-.48.33-.913.49-1.302.48-.428-.008-1.252-.241-1.865-.44-.752-.245-1.349-.374-1.297-.789.027-.216.325-.437.893-.663 3.498-1.524 5.83-2.529 6.998-3.014 3.332-1.386 4.025-1.627 4.476-1.635z"/>
             </svg>
@@ -607,12 +958,31 @@
             <div class="orbital-track"></div>
             <svg class="orbital-svg" id="orbitalSvg"></svg>
           </div>
-          <div class="orbit-info reveal reveal-d2" id="orbitInfo">
-            <p class="orbit-hint" id="orbitHint"><span data-i18n="orbital.hint">Нажмите на этап</span></p>
-            <div class="orbit-content" id="orbitContent" hidden>
-              <div class="orbit-content-step" id="orbitStep" data-i18n="orbital.active.step"></div>
-              <div class="orbit-content-title" id="orbitTitle" data-i18n="orbital.active.title"></div>
-              <div class="orbit-content-desc" id="orbitDesc" data-i18n="orbital.active.desc"></div>
+          <!-- zero-height flex child: expands downward only, never shifts orbit -->
+          <div class="orbit-info" id="orbitInfo">
+            <div class="orbit-idle" id="orbitIdle">
+              <span class="orbit-idle-line orbit-idle-line-l"></span>
+              <span class="orbit-idle-text" data-i18n="orbital.hint">Нажмите на этап</span>
+              <span class="orbit-idle-line orbit-idle-line-r"></span>
+            </div>
+            <div class="orbit-card" id="orbitCard">
+              <div class="orbit-card-ghost" id="orbitGhost">01</div>
+              <div class="orbit-card-inner">
+                <div class="orbit-card-header">
+                  <span class="orbit-card-tag" id="orbitCardTag">Этап</span>
+                  <span class="orbit-card-counter" id="orbitStep">01 / 06</span>
+                </div>
+                <div class="orbit-card-title" id="orbitTitle"></div>
+                <div class="orbit-card-desc" id="orbitDesc"></div>
+                <div class="orbit-dots" id="orbitDots">
+                  <span class="orbit-dot"></span>
+                  <span class="orbit-dot"></span>
+                  <span class="orbit-dot"></span>
+                  <span class="orbit-dot"></span>
+                  <span class="orbit-dot"></span>
+                  <span class="orbit-dot"></span>
+                </div>
+              </div>
             </div>
           </div>
         </div>
@@ -621,53 +991,140 @@
     </div>
   </section>
 
+  <!-- Projects overlay -->
+  <div class="projects-overlay" id="projectsOverlay"></div>
+
+  <!-- Projects drawer -->
+  <aside class="projects-drawer" id="projectsDrawer" aria-hidden="true">
+
+    <div class="pdrawer-header">
+      <div>
+        <div class="pdrawer-eyebrow" data-i18n="drawer.eyebrow">Портфолио</div>
+        <div class="pdrawer-title" data-i18n="drawer.title">Проекты</div>
+      </div>
+      <button class="pdrawer-close" id="projectsClose" aria-label="Закрыть">
+        <span class="pclose-line"></span>
+        <span class="pclose-line"></span>
+        <span class="pclose-line"></span>
+      </button>
+    </div>
+
+    <div class="pdrawer-body">
+      <div class="pdrawer-section-label" data-i18n="drawer.section">Работы</div>
+
+      <!-- Card 1 — coming soon (replace href + badge when ready) -->
+      <div class="pcard pcard--soon">
+        <div class="pcard-preview">
+          <div class="pcard-preview-bg" style="background: radial-gradient(ellipse at 25% 60%, rgba(201,185,154,0.22) 0%, transparent 55%), radial-gradient(ellipse at 75% 30%, rgba(140,110,70,0.15) 0%, transparent 50%), linear-gradient(145deg,#1c1610 0%,#0c0a08 100%);"></div>
+          <div class="pcard-preview-veil"></div>
+          <div class="pcard-preview-watermark" data-i18n="drawer.soon">Скоро</div>
+        </div>
+        <div class="pcard-body">
+          <div class="pcard-row">
+            <span class="pcard-num">01</span>
+          </div>
+          <div class="pcard-title">Новый проект</div>
+          <div class="pcard-desc">В разработке — появится совсем скоро.</div>
+        </div>
+      </div>
+
+      <!-- Card 2 — coming soon placeholder -->
+      <div class="pcard pcard--soon">
+        <div class="pcard-preview">
+          <div class="pcard-preview-bg" style="background: radial-gradient(ellipse at 70% 40%, rgba(90,110,180,0.18) 0%, transparent 55%), radial-gradient(ellipse at 20% 70%, rgba(120,80,160,0.12) 0%, transparent 50%), linear-gradient(145deg,#0d0e18 0%,#090a0e 100%);"></div>
+          <div class="pcard-preview-veil"></div>
+          <div class="pcard-preview-watermark" data-i18n="drawer.soon">Скоро</div>
+        </div>
+        <div class="pcard-body">
+          <div class="pcard-row">
+            <span class="pcard-num">02</span>
+          </div>
+          <div class="pcard-title">Новый проект</div>
+          <div class="pcard-desc">В разработке — появится совсем скоро.</div>
+        </div>
+      </div>
+
+      <!--
+        ШАБЛОН для живого проекта — раскомментируй и заполни:
+
+        <a href="project.html" class="pcard pcard--live">
+          <div class="pcard-preview">
+            <div class="pcard-preview-bg" style="background: ...;"></div>
+            <div class="pcard-preview-veil"></div>
+          </div>
+          <div class="pcard-body">
+            <div class="pcard-row">
+              <span class="pcard-num">01</span>
+              <span class="pcard-badge pcard-badge--live">Live</span>
+            </div>
+            <div class="pcard-title">Название проекта</div>
+            <div class="pcard-desc">Краткое описание.</div>
+            <div class="pcard-cta">
+              Открыть проект
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
+            </div>
+          </div>
+        </a>
+      -->
+    </div>
+
+    <div class="pdrawer-footer">
+      <span class="pdrawer-footer-text" data-i18n="drawer.footer">terriwin · full stack dev</span>
+      <span class="pdrawer-count">00 / 00</span>
+    </div>
+
+  </aside>
+
   <script>
     // ── Translations ──────────────────────────────────────────────
     const t = {
       ru: {
         'meta.langLabel': 'Русский',
-        'nav.contact':    'Написать',
         'hero.tag':       'Открыт к работе',
-        'hero.sub':       'Full Stack разработчик, создающий цифровые продукты на стыке чистого кода и продуманного дизайна.',
+        'hero.sub':       'Веб-разработчик. Дизайн и разработка сайтов под ключ.',
         'hero.cta':       'Написать в Telegram',
         'orbital.label':  'Этапы работы',
         'orbital.hint':   'Нажмите на этап, чтобы узнать подробнее',
-        // active card — managed by orbital JS, but included for fade animation
-        'orbital.active.step':  '',
-        'orbital.active.title': '',
-        'orbital.active.desc':  '',
+        'orbital.stage':  'Этап',
+        'drawer.eyebrow': 'Портфолио',
+        'drawer.title':   'Проекты',
+        'drawer.section': 'Работы',
+        'drawer.soon':    'Скоро',
+        'drawer.footer':  'terriwin · full stack dev',
       },
       en: {
         'meta.langLabel': 'English',
-        'nav.contact':    'Contact',
         'hero.tag':       'Available for work',
-        'hero.sub':       'Full Stack Developer crafting digital products at the intersection of clean code and thoughtful design.',
+        'hero.sub':       'Web developer. I handle design and build websites end to end.',
         'hero.cta':       'Message on Telegram',
         'orbital.label':  'How I work',
         'orbital.hint':   'Click a stage to learn more',
-        'orbital.active.step':  '',
-        'orbital.active.title': '',
-        'orbital.active.desc':  '',
+        'orbital.stage':  'Stage',
+        'drawer.eyebrow': 'Portfolio',
+        'drawer.title':   'Projects',
+        'drawer.section': 'Works',
+        'drawer.soon':    'Soon',
+        'drawer.footer':  'terriwin · full stack dev',
       },
     };
 
     // ── Work stages ───────────────────────────────────────────────
     const stages = {
       ru: [
-        { id: 1, title: 'Бриф',       icon: 'brief',   desc: 'Обсуждаем цели, аудиторию и требования к проекту. Определяем объём, сроки и стек.',  relatedIds: [2] },
-        { id: 2, title: 'Концепт',    icon: 'concept', desc: 'Проектируем структуру и создаём прототипы. Согласовываем визуальное направление.',       relatedIds: [1, 3] },
-        { id: 3, title: 'Дизайн',     icon: 'design',  desc: 'Разрабатываем UI/UX: цвета, типографику, компоненты и адаптивную вёрстку.',              relatedIds: [2, 4] },
-        { id: 4, title: 'Разработка', icon: 'dev',     desc: 'Пишем чистый, масштабируемый код. Frontend, backend, базы данных — всё в одних руках.',  relatedIds: [3, 5] },
-        { id: 5, title: 'Тесты',      icon: 'test',    desc: 'QA и кросс-браузерная проверка. Оптимизируем производительность и Core Web Vitals.',     relatedIds: [4, 6] },
-        { id: 6, title: 'Запуск',     icon: 'launch',  desc: 'Деплой, настройка окружения и мониторинг. Передача кода с документацией.',                relatedIds: [5] },
+        { id: 1, title: 'Бриф',       icon: 'brief',   desc: 'Разбираемся в задаче вместе. Отвечаю на вопросы, помогаю сформулировать цель и понять, что именно нужно сделать.',  relatedIds: [2] },
+        { id: 2, title: 'Концепт',    icon: 'concept', desc: 'Набрасываю структуру, предлагаю идеи и представляю прототип для согласования.',                                      relatedIds: [1, 3] },
+        { id: 3, title: 'Дизайн',     icon: 'design',  desc: 'Прорабатываю внешний вид под ваши требования — стиль, цвета, типографика, адаптивность.',                           relatedIds: [2, 4] },
+        { id: 4, title: 'Разработка', icon: 'dev',     desc: 'Пишу код и обеспечиваю работоспособность. Frontend, backend — всё сам.',                                             relatedIds: [3, 5] },
+        { id: 5, title: 'Тесты',      icon: 'test',    desc: 'Тестирую и проверяю всё на разных устройствах и браузерах до сдачи.',                                               relatedIds: [4, 6] },
+        { id: 6, title: 'Запуск',     icon: 'launch',  desc: 'Вместе определяемся с доменом и хостингом. Настраиваю сервер и выкатываю проект.',                                  relatedIds: [5] },
       ],
       en: [
-        { id: 1, title: 'Brief',       icon: 'brief',   desc: 'Discuss goals, audience and project requirements. Define scope, timeline and tech stack.',  relatedIds: [2] },
-        { id: 2, title: 'Concept',     icon: 'concept', desc: 'Design structure and create wireframes. Agree on visual direction and user flows.',          relatedIds: [1, 3] },
-        { id: 3, title: 'Design',      icon: 'design',  desc: 'Develop UI/UX: color schemes, typography, components and responsive layout.',                relatedIds: [2, 4] },
-        { id: 4, title: 'Build',       icon: 'dev',     desc: 'Write clean, scalable code. Frontend, backend, databases — end to end.',                    relatedIds: [3, 5] },
-        { id: 5, title: 'Testing',     icon: 'test',    desc: 'QA and cross-browser checks. Performance optimisation and Core Web Vitals.',                 relatedIds: [4, 6] },
-        { id: 6, title: 'Launch',      icon: 'launch',  desc: 'Deploy, configure environment and set up monitoring. Handover with clean documentation.',    relatedIds: [5] },
+        { id: 1, title: 'Brief',       icon: 'brief',   desc: 'We figure out the task together. I answer questions and help define exactly what needs to be done.',  relatedIds: [2] },
+        { id: 2, title: 'Concept',     icon: 'concept', desc: 'I sketch out the structure, suggest ideas and present a prototype for your approval.',                 relatedIds: [1, 3] },
+        { id: 3, title: 'Design',      icon: 'design',  desc: 'I work on the look and feel to match your requirements — style, colours, typography, responsiveness.', relatedIds: [2, 4] },
+        { id: 4, title: 'Build',       icon: 'dev',     desc: 'I write the code and make everything work. Frontend and backend — all by myself.',                    relatedIds: [3, 5] },
+        { id: 5, title: 'Testing',     icon: 'test',    desc: 'I test everything across devices and browsers before handover.',                                       relatedIds: [4, 6] },
+        { id: 6, title: 'Launch',      icon: 'launch',  desc: 'We pick a domain and hosting together. I configure the server and deploy the project.',               relatedIds: [5] },
       ],
     };
 
@@ -841,10 +1298,17 @@
     let orbLang = lang;
     let nodePositions = {};
     let rafId = null;
+    let cachedNodes = null;
 
-    const RADIUS = 126;
-    const SIZE   = 360;
-    const CENTER = SIZE / 2;
+    // Dynamic metrics — recalculated on resize so mobile works correctly
+    let orbCenter = 180;
+    let orbRadius = 126;
+
+    function updateOrbMetrics() {
+      const size = document.getElementById('orbital').offsetWidth || 360;
+      orbCenter = size / 2;
+      orbRadius = Math.round(size * 0.35); // 126px@360, 105px@300
+    }
 
     function buildOrbital() {
       const container = document.getElementById('orbital');
@@ -878,9 +1342,11 @@
         const stage = stageList.find(s => s.id === activeId);
         if (stage) {
           const n = stageList.length;
-          document.getElementById('orbitStep').textContent  = `${String(activeId).padStart(2,'0')} / ${String(n).padStart(2,'0')}`;
-          document.getElementById('orbitTitle').textContent = stage.title;
-          document.getElementById('orbitDesc').textContent  = stage.desc;
+          document.getElementById('orbitGhost').textContent   = String(activeId).padStart(2,'0');
+          document.getElementById('orbitCardTag').textContent = t[l]['orbital.stage'] || 'Stage';
+          document.getElementById('orbitStep').textContent    = `${String(activeId).padStart(2,'0')} / ${String(n).padStart(2,'0')}`;
+          document.getElementById('orbitTitle').textContent   = stage.title;
+          document.getElementById('orbitDesc').textContent    = stage.desc;
         }
       }
     }
@@ -894,15 +1360,23 @@
       const stage = stageList.find(s => s.id === id);
       const n = stageList.length;
 
-      // Update UI
-      document.getElementById('orbitHint').hidden = true;
-      const content = document.getElementById('orbitContent');
-      content.hidden = false;
-      document.getElementById('orbitStep').textContent  = `${String(id).padStart(2,'0')} / ${String(n).padStart(2,'0')}`;
-      document.getElementById('orbitTitle').textContent = stage.title;
-      document.getElementById('orbitDesc').textContent  = stage.desc;
+      // fill card
+      document.getElementById('orbitGhost').textContent   = String(id).padStart(2,'0');
+      document.getElementById('orbitCardTag').textContent = t[orbLang]['orbital.stage'] || 'Stage';
+      document.getElementById('orbitStep').textContent    = `${String(id).padStart(2,'0')} / ${String(n).padStart(2,'0')}`;
+      document.getElementById('orbitTitle').textContent   = stage.title;
+      document.getElementById('orbitDesc').textContent    = stage.desc;
 
-      // Node classes
+      // progress dots
+      document.querySelectorAll('.orbit-dot').forEach((dot, i) => {
+        dot.classList.toggle('active', i === id - 1);
+      });
+
+      // transition: idle → card
+      document.getElementById('orbitIdle').classList.add('out');
+      document.getElementById('orbitCard').classList.add('visible');
+
+      // node classes
       document.querySelectorAll('.orbit-node').forEach((node, i) => {
         const nid = stageList[i].id;
         node.classList.toggle('active',   nid === id);
@@ -915,8 +1389,8 @@
     function clearActive() {
       activeId = null;
       autoRotate = true;
-      document.getElementById('orbitHint').hidden = false;
-      document.getElementById('orbitContent').hidden = true;
+      document.getElementById('orbitIdle').classList.remove('out');
+      document.getElementById('orbitCard').classList.remove('visible');
       document.querySelectorAll('.orbit-node').forEach(n => n.classList.remove('active','related'));
       document.getElementById('orbitalSvg').innerHTML = '';
     }
@@ -935,10 +1409,10 @@
         const relPos = nodePositions[rid];
         if (!relPos) return;
         const line = document.createElementNS('http://www.w3.org/2000/svg','line');
-        line.setAttribute('x1', CENTER + activePos.x);
-        line.setAttribute('y1', CENTER + activePos.y);
-        line.setAttribute('x2', CENTER + relPos.x);
-        line.setAttribute('y2', CENTER + relPos.y);
+        line.setAttribute('x1', orbCenter + activePos.x);
+        line.setAttribute('y1', orbCenter + activePos.y);
+        line.setAttribute('x2', orbCenter + relPos.x);
+        line.setAttribute('y2', orbCenter + relPos.y);
         line.classList.add('orbit-connector','active');
         svg.appendChild(line);
       });
@@ -951,13 +1425,14 @@
       lastTick = ts;
       if (autoRotate) rotation = (rotation + 0.30) % 360;
 
-      const nodes = document.querySelectorAll('.orbit-node');
+      if (!cachedNodes) cachedNodes = document.querySelectorAll('.orbit-node');
+      const nodes = cachedNodes;
       const total = nodes.length;
 
       nodes.forEach((node, i) => {
         const angle  = ((i / total) * 360 + rotation) * (Math.PI / 180);
-        const x      = Math.cos(angle) * RADIUS;
-        const y      = Math.sin(angle) * RADIUS;
+        const x      = Math.cos(angle) * orbRadius;
+        const y      = Math.sin(angle) * orbRadius;
         const depth  = Math.sin(angle); // -1..1
         const stageList = stages[orbLang];
         const sid    = stageList[i]?.id;
@@ -984,10 +1459,52 @@
     applyLang(lang, false);
     buildOrbital();
     updateOrbitalLabels(lang); // nodes didn't exist during applyLang, update now
+    updateOrbMetrics();
     tickOrbital(0);
+
+    // Recompute metrics when screen size changes (rotation, resize)
+    window.addEventListener('resize', () => {
+      updateOrbMetrics();
+      if (activeId !== null) drawConnectors(activeId);
+    });
+
+    // ── Projects drawer ───────────────────────────────────────────
+    const projectsTrigger = document.getElementById('projectsTrigger');
+    const projectsDrawer  = document.getElementById('projectsDrawer');
+    const projectsOverlay = document.getElementById('projectsOverlay');
+    const projectsClose   = document.getElementById('projectsClose');
+    let drawerOpen = false;
+
+    function openProjects() {
+      drawerOpen = true;
+      projectsTrigger.classList.add('open');
+      projectsDrawer.classList.add('open');
+      projectsOverlay.classList.add('open');
+      projectsDrawer.removeAttribute('aria-hidden');
+      document.body.style.overflow = 'hidden';
+      document.querySelectorAll('.pcard').forEach((card, i) => {
+        setTimeout(() => card.classList.add('revealed'), 55 + i * 80);
+      });
+    }
+
+    function closeProjects() {
+      drawerOpen = false;
+      projectsTrigger.classList.remove('open');
+      projectsDrawer.classList.remove('open');
+      projectsOverlay.classList.remove('open');
+      projectsDrawer.setAttribute('aria-hidden', 'true');
+      document.body.style.overflow = '';
+      document.querySelectorAll('.pcard').forEach(c => c.classList.remove('revealed'));
+    }
+
+    projectsTrigger.addEventListener('click', () => drawerOpen ? closeProjects() : openProjects());
+    projectsOverlay.addEventListener('click', closeProjects);
+    projectsClose.addEventListener('click', closeProjects);
+    document.addEventListener('keydown', e => { if (e.key === 'Escape' && drawerOpen) closeProjects(); });
 
     // ── Nav scroll ────────────────────────────────────────────────
     const nav = document.getElementById('nav');
+
     window.addEventListener('scroll', () => {
       nav.classList.toggle('scrolled', window.scrollY > 20);
     });
