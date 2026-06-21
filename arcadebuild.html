@@ -3,92 +3,1033 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>ArcadeBuild — Terriwin</title>
+  <title>Аркада Строй — Элитное строительство</title>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600;700&family=Space+Mono:wght@700&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,600;1,300;1,400&family=Manrope:wght@300;400;500;600&family=Space+Mono&display=swap" rel="stylesheet">
   <style>
     *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
 
     :root {
-      --bg:     #09090a;
-      --accent: #c9b99a;
-      --text:   #e8e0d0;
-      --text-2: rgba(232,224,208,0.55);
-      --border: rgba(210,195,168,0.08);
+      --bg:        #0a0a0b;
+      --bg-2:      #111113;
+      --surface:   rgba(255,255,255,0.03);
+      --gold:      #c9a84c;
+      --gold-dim:  rgba(201,168,76,0.12);
+      --gold-glow: rgba(201,168,76,0.06);
+      --text:      #f0ece4;
+      --text-2:    rgba(240,236,228,0.5);
+      --text-3:    rgba(240,236,228,0.28);
+      --border:    rgba(201,168,76,0.1);
+      --border-hi: rgba(201,168,76,0.22);
+      --ease-out:  cubic-bezier(0.22,1,0.36,1);
+      --ease-in:   cubic-bezier(0.64,0,0.78,0);
     }
 
-    html, body {
-      min-height: 100dvh;
+    html { scroll-behavior: smooth; }
+    body {
       background: var(--bg);
       color: var(--text);
       font-family: 'Manrope', sans-serif;
+      font-size: 16px;
+      line-height: 1.6;
+      -webkit-font-smoothing: antialiased;
+      overflow-x: hidden;
     }
 
-    /* back link */
-    .back {
+    /* ── TYPOGRAPHY ─────────────────────────────────────────────── */
+    .display {
+      font-family: 'Cormorant Garamond', serif;
+      line-height: 0.92;
+      letter-spacing: -0.02em;
+    }
+    .mono { font-family: 'Space Mono', monospace; }
+    .eyebrow {
+      font-size: 11px;
+      font-weight: 500;
+      letter-spacing: 0.18em;
+      text-transform: uppercase;
+      color: var(--gold);
+    }
+
+    /* ── LAYOUT ─────────────────────────────────────────────────── */
+    .container {
+      max-width: 1200px;
+      margin: 0 auto;
+      padding: 0 clamp(20px, 5vw, 64px);
+    }
+
+    /* ── NAV ────────────────────────────────────────────────────── */
+    nav {
       position: fixed;
-      top: 20px;
-      left: 24px;
-      display: inline-flex;
+      top: 0; left: 0; right: 0;
+      z-index: 100;
+      padding: 22px 0;
+      transition: background 0.5s, border-color 0.5s;
+    }
+    nav.scrolled {
+      background: rgba(10,10,11,0.92);
+      border-bottom: 1px solid var(--border);
+      backdrop-filter: blur(20px);
+      -webkit-backdrop-filter: blur(20px);
+      padding: 16px 0;
+    }
+    .nav-inner {
+      display: flex;
       align-items: center;
-      gap: 8px;
-      font-size: 13px;
+      justify-content: space-between;
+    }
+    .nav-logo {
+      display: flex;
+      flex-direction: column;
+      text-decoration: none;
+      line-height: 1.1;
+    }
+    .nav-logo-main {
+      font-family: 'Cormorant Garamond', serif;
+      font-size: 22px;
       font-weight: 600;
+      color: var(--text);
+      letter-spacing: 0.05em;
+    }
+    .nav-logo-sub {
+      font-size: 9px;
+      letter-spacing: 0.28em;
+      text-transform: uppercase;
+      color: var(--gold);
+      margin-top: 1px;
+    }
+    .nav-links {
+      display: flex;
+      align-items: center;
+      gap: 36px;
+      list-style: none;
+    }
+    .nav-links a {
+      font-size: 12px;
+      font-weight: 500;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
       color: var(--text-2);
       text-decoration: none;
       transition: color 0.2s;
-      z-index: 10;
     }
-    .back:hover { color: var(--accent); }
-    .back svg { width: 14px; height: 14px; }
+    .nav-links a:hover { color: var(--gold); }
+    .nav-cta {
+      font-size: 12px;
+      font-weight: 600;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      color: var(--bg);
+      background: var(--gold);
+      border: none;
+      padding: 11px 24px;
+      cursor: pointer;
+      transition: opacity 0.2s, transform 0.2s;
+      text-decoration: none;
+    }
+    .nav-cta:hover { opacity: 0.88; transform: translateY(-1px); }
+    .nav-menu-btn {
+      display: none;
+      flex-direction: column;
+      gap: 5px;
+      background: none;
+      border: none;
+      cursor: pointer;
+      padding: 8px;
+    }
+    .nav-menu-btn span {
+      display: block;
+      width: 22px;
+      height: 1.5px;
+      background: var(--text);
+      transition: transform 0.25s, opacity 0.2s;
+    }
 
-    /* placeholder center */
-    .center {
+    /* ── HERO ───────────────────────────────────────────────────── */
+    #hero {
+      min-height: 100dvh;
+      display: flex;
+      flex-direction: column;
+      justify-content: flex-end;
+      position: relative;
+      overflow: hidden;
+      padding-bottom: clamp(48px, 8vh, 96px);
+    }
+
+    /* architectural grid lines as background texture */
+    #hero::before {
+      content: '';
+      position: absolute;
+      inset: 0;
+      background-image:
+        linear-gradient(rgba(201,168,76,0.03) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(201,168,76,0.03) 1px, transparent 1px);
+      background-size: 80px 80px;
+      mask-image: radial-gradient(ellipse 70% 80% at 50% 50%, black 0%, transparent 100%);
+      -webkit-mask-image: radial-gradient(ellipse 70% 80% at 50% 50%, black 0%, transparent 100%);
+    }
+
+    /* ambient glow */
+    .hero-glow {
+      position: absolute;
+      top: 15%;
+      left: 50%;
+      transform: translateX(-50%);
+      width: min(800px, 120vw);
+      height: 400px;
+      background: radial-gradient(ellipse at center, rgba(201,168,76,0.07) 0%, transparent 70%);
+      pointer-events: none;
+    }
+
+    .hero-content {
+      position: relative;
+      z-index: 1;
+    }
+
+    /* signature: gold line that draws in on load */
+    .hero-line {
+      display: block;
+      width: 0;
+      height: 1px;
+      background: var(--gold);
+      margin-bottom: 32px;
+      animation: drawLine 1.2s var(--ease-out) 0.3s forwards;
+    }
+    @keyframes drawLine {
+      to { width: min(340px, 60vw); }
+    }
+
+    .hero-eyebrow {
+      margin-bottom: 28px;
+      opacity: 0;
+      transform: translateY(10px);
+      animation: fadeUp 0.7s var(--ease-out) 0.2s forwards;
+    }
+
+    .hero-title {
+      font-size: clamp(72px, 13vw, 160px);
+      font-weight: 300;
+      color: var(--text);
+      margin-bottom: 0;
+      opacity: 0;
+      transform: translateY(24px);
+      animation: fadeUp 1s var(--ease-out) 0.4s forwards;
+    }
+    .hero-title em {
+      font-style: italic;
+      color: var(--gold);
+      font-weight: 300;
+    }
+    .hero-title-2 {
+      font-size: clamp(72px, 13vw, 160px);
+      font-weight: 600;
+      color: var(--text);
+      display: block;
+      opacity: 0;
+      transform: translateY(24px);
+      animation: fadeUp 1s var(--ease-out) 0.55s forwards;
+      margin-bottom: 40px;
+    }
+
+    .hero-bottom {
+      display: flex;
+      align-items: flex-end;
+      justify-content: space-between;
+      gap: 32px;
+      opacity: 0;
+      transform: translateY(16px);
+      animation: fadeUp 0.8s var(--ease-out) 0.85s forwards;
+    }
+    .hero-sub {
+      font-size: clamp(14px, 1.5vw, 16px);
+      color: var(--text-2);
+      max-width: 380px;
+      line-height: 1.7;
+    }
+    .hero-sub strong {
+      color: var(--text);
+      font-weight: 500;
+    }
+    .hero-scroll {
       display: flex;
       flex-direction: column;
       align-items: center;
-      justify-content: center;
-      min-height: 100dvh;
-      gap: 12px;
-      padding: 40px 24px;
-      text-align: center;
+      gap: 10px;
+      text-decoration: none;
+      flex-shrink: 0;
     }
-    .label {
-      font-family: 'Space Mono', monospace;
-      font-size: 11px;
-      color: var(--text-2);
-      letter-spacing: 0.12em;
+    .hero-scroll-label {
+      font-size: 9px;
+      letter-spacing: 0.2em;
       text-transform: uppercase;
+      color: var(--text-3);
+      writing-mode: vertical-rl;
     }
-    .title {
-      font-family: 'Space Mono', monospace;
-      font-size: clamp(28px, 6vw, 52px);
-      font-weight: 700;
-      color: var(--accent);
+    .hero-scroll-line {
+      width: 1px;
+      height: 48px;
+      background: linear-gradient(to bottom, var(--gold), transparent);
+      animation: scrollPulse 2.5s ease-in-out 1.5s infinite;
+    }
+    @keyframes scrollPulse {
+      0%, 100% { opacity: 0.4; transform: scaleY(1); }
+      50% { opacity: 1; transform: scaleY(1.15); }
+    }
+
+    @keyframes fadeUp {
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    /* ── STATS ──────────────────────────────────────────────────── */
+    #stats {
+      border-top: 1px solid var(--border);
+      border-bottom: 1px solid var(--border);
+      padding: 0;
+    }
+    .stats-inner {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+    }
+    .stat {
+      padding: clamp(32px, 5vw, 56px) clamp(24px, 4vw, 48px);
+      border-right: 1px solid var(--border);
+      transition: background 0.3s;
+    }
+    .stat:last-child { border-right: none; }
+    .stat:hover { background: var(--gold-glow); }
+    .stat-number {
+      font-family: 'Cormorant Garamond', serif;
+      font-size: clamp(52px, 7vw, 88px);
+      font-weight: 300;
+      color: var(--gold);
+      line-height: 1;
       letter-spacing: -0.02em;
     }
-    .sub {
-      font-size: 14px;
+    .stat-unit {
+      font-family: 'Cormorant Garamond', serif;
+      font-size: clamp(28px, 4vw, 48px);
+      font-weight: 300;
+      color: rgba(201,168,76,0.5);
+    }
+    .stat-label {
+      margin-top: 10px;
+      font-size: 12px;
+      font-weight: 400;
+      letter-spacing: 0.06em;
       color: var(--text-2);
-      margin-top: 4px;
+      text-transform: uppercase;
+    }
+
+    /* ── SECTION HEADER ─────────────────────────────────────────── */
+    .section-header {
+      display: flex;
+      align-items: flex-end;
+      justify-content: space-between;
+      gap: 24px;
+      margin-bottom: clamp(40px, 6vw, 72px);
+    }
+    .section-title {
+      font-size: clamp(40px, 6vw, 72px);
+      font-weight: 300;
+    }
+    .section-title em {
+      font-style: italic;
+      color: var(--gold);
+    }
+    .section-num {
+      font-size: 11px;
+      letter-spacing: 0.15em;
+      color: var(--text-3);
+      margin-bottom: 8px;
+    }
+
+    /* ── PORTFOLIO ──────────────────────────────────────────────── */
+    #portfolio { padding: clamp(64px,10vw,120px) 0; }
+
+    .projects-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      grid-template-rows: auto auto;
+      gap: 2px;
+    }
+    .project-card {
+      position: relative;
+      overflow: hidden;
+      cursor: pointer;
+      aspect-ratio: 4/3;
+      background: var(--bg-2);
+    }
+    .project-card:first-child {
+      grid-column: 1 / 2;
+      grid-row: 1 / 3;
+      aspect-ratio: auto;
+    }
+    .pcard-bg {
+      position: absolute;
+      inset: 0;
+      transition: transform 0.8s var(--ease-out);
+    }
+    .project-card:hover .pcard-bg { transform: scale(1.05); }
+
+    /* architectural gradient "photos" */
+    .pcard-bg-1 {
+      background:
+        linear-gradient(160deg, #1a1208 0%, #0a0a0b 60%),
+        radial-gradient(ellipse at 80% 20%, rgba(201,168,76,0.2) 0%, transparent 50%);
+    }
+    /* inner structure lines */
+    .pcard-bg-1::after {
+      content: '';
+      position: absolute;
+      inset: 0;
+      background-image:
+        linear-gradient(rgba(201,168,76,0.06) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(201,168,76,0.06) 1px, transparent 1px);
+      background-size: 40px 40px;
+    }
+    .pcard-bg-2 {
+      background: linear-gradient(200deg, #0c0e14 0%, #0a0a0b 100%);
+      background-image: linear-gradient(200deg, #0c0e14 0%, #0a0a0b 100%);
+    }
+    .pcard-bg-2::before {
+      content: '';
+      position: absolute;
+      inset: 0;
+      background:
+        radial-gradient(ellipse at 20% 80%, rgba(80,100,160,0.15) 0%, transparent 60%),
+        radial-gradient(ellipse at 80% 20%, rgba(201,168,76,0.08) 0%, transparent 50%);
+    }
+    .pcard-bg-3 {
+      background: linear-gradient(140deg, #0f0e0a 0%, #0a0a0b 100%);
+    }
+    .pcard-bg-3::before {
+      content: '';
+      position: absolute;
+      inset: 0;
+      background: radial-gradient(ellipse at 60% 40%, rgba(201,168,76,0.12) 0%, transparent 60%);
+    }
+
+    .pcard-veil {
+      position: absolute;
+      inset: 0;
+      background: linear-gradient(to top, rgba(10,10,11,0.92) 0%, rgba(10,10,11,0.2) 60%, transparent 100%);
+    }
+    .pcard-info {
+      position: absolute;
+      bottom: 0; left: 0; right: 0;
+      padding: clamp(20px, 3vw, 36px);
+      transform: translateY(8px);
+      transition: transform 0.4s var(--ease-out);
+    }
+    .project-card:hover .pcard-info { transform: translateY(0); }
+    .pcard-tag {
+      font-size: 10px;
+      letter-spacing: 0.14em;
+      text-transform: uppercase;
+      color: var(--gold);
+      margin-bottom: 8px;
+    }
+    .pcard-name {
+      font-family: 'Cormorant Garamond', serif;
+      font-size: clamp(26px, 3.5vw, 40px);
+      font-weight: 400;
+      line-height: 1.1;
+      margin-bottom: 8px;
+    }
+    .pcard-meta {
+      font-size: 12px;
+      color: var(--text-2);
+      display: flex;
+      gap: 20px;
+    }
+    .pcard-arrow {
+      position: absolute;
+      top: clamp(16px,2.5vw,28px);
+      right: clamp(16px,2.5vw,28px);
+      width: 40px;
+      height: 40px;
+      border: 1px solid var(--border-hi);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      opacity: 0;
+      transform: translate(4px, -4px);
+      transition: opacity 0.3s, transform 0.3s var(--ease-out), background 0.2s;
+    }
+    .project-card:hover .pcard-arrow {
+      opacity: 1;
+      transform: translate(0, 0);
+    }
+    .pcard-arrow:hover { background: var(--gold); }
+    .pcard-arrow svg { width: 14px; height: 14px; stroke: var(--text); }
+
+    /* ── SERVICES ───────────────────────────────────────────────── */
+    #services { padding: clamp(64px,10vw,120px) 0; background: var(--bg-2); }
+
+    .services-list {
+      list-style: none;
+      counter-reset: srv;
+    }
+    .service-item {
+      counter-increment: srv;
+      border-bottom: 1px solid var(--border);
+      display: grid;
+      grid-template-columns: 56px 1fr auto;
+      align-items: center;
+      gap: 24px;
+      padding: clamp(20px,3vw,32px) 0;
+      cursor: default;
+      transition: padding-left 0.3s var(--ease-out);
+    }
+    .service-item:first-child { border-top: 1px solid var(--border); }
+    .service-item:hover { padding-left: 16px; }
+    .service-num {
+      font-family: 'Space Mono', monospace;
+      font-size: 11px;
+      color: var(--gold);
+      opacity: 0.6;
+    }
+    .service-num::before { content: counter(srv, decimal-leading-zero); }
+    .service-body { display: grid; gap: 0; }
+    .service-name {
+      font-family: 'Cormorant Garamond', serif;
+      font-size: clamp(22px,3vw,34px);
+      font-weight: 400;
+      color: var(--text);
+      transition: color 0.2s;
+    }
+    .service-item:hover .service-name { color: var(--gold); }
+    .service-desc {
+      font-size: 13px;
+      color: var(--text-2);
+      max-height: 0;
+      overflow: hidden;
+      transition: max-height 0.35s var(--ease-out), margin-top 0.3s;
+      line-height: 1.6;
+    }
+    .service-item:hover .service-desc {
+      max-height: 80px;
+      margin-top: 6px;
+    }
+    .service-icon {
+      width: 40px;
+      height: 40px;
+      flex-shrink: 0;
+      opacity: 0.35;
+      transition: opacity 0.2s;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+    .service-item:hover .service-icon { opacity: 1; }
+    .service-icon svg { width: 22px; height: 22px; stroke: var(--gold); }
+
+    /* ── FORM ───────────────────────────────────────────────────── */
+    #contact { padding: clamp(64px,10vw,120px) 0; }
+
+    .contact-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: clamp(48px, 8vw, 96px);
+      align-items: start;
+    }
+    .contact-left {}
+    .contact-title {
+      font-size: clamp(40px,6vw,64px);
+      font-weight: 300;
+      margin-bottom: 24px;
+    }
+    .contact-title em { font-style: italic; color: var(--gold); }
+    .contact-body {
+      font-size: 15px;
+      color: var(--text-2);
+      line-height: 1.75;
+      margin-bottom: 40px;
+    }
+    .contact-detail {
+      display: flex;
+      flex-direction: column;
+      gap: 16px;
+    }
+    .contact-line {
+      display: flex;
+      align-items: center;
+      gap: 14px;
+    }
+    .contact-line svg {
+      width: 16px;
+      height: 16px;
+      stroke: var(--gold);
+      flex-shrink: 0;
+    }
+    .contact-line span { font-size: 14px; color: var(--text-2); }
+    .contact-line a { color: var(--text); text-decoration: none; transition: color 0.2s; }
+    .contact-line a:hover { color: var(--gold); }
+
+    /* form */
+    form { display: flex; flex-direction: column; gap: 0; }
+    .field {
+      position: relative;
+      border-bottom: 1px solid var(--border);
+      transition: border-color 0.25s;
+    }
+    .field:focus-within { border-color: var(--gold); }
+    .field label {
+      display: block;
+      font-size: 10px;
+      letter-spacing: 0.14em;
+      text-transform: uppercase;
+      color: var(--text-3);
+      padding: 20px 0 0;
+      transition: color 0.2s;
+    }
+    .field:focus-within label { color: var(--gold); }
+    .field input,
+    .field select,
+    .field textarea {
+      display: block;
+      width: 100%;
+      background: none;
+      border: none;
+      outline: none;
+      font-family: 'Manrope', sans-serif;
+      font-size: 16px;
+      color: var(--text);
+      padding: 6px 0 16px;
+      -webkit-appearance: none;
+    }
+    .field select option { background: #1a1a1e; }
+    .field textarea { resize: none; height: 80px; }
+    .form-row { display: grid; grid-template-columns: 1fr 1fr; gap: 0 24px; }
+
+    .form-submit {
+      margin-top: 32px;
+      display: flex;
+      align-items: center;
+      gap: 20px;
+    }
+    .btn-gold {
+      font-family: 'Manrope', sans-serif;
+      font-size: 12px;
+      font-weight: 600;
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+      color: var(--bg);
+      background: var(--gold);
+      border: none;
+      padding: 16px 36px;
+      cursor: pointer;
+      transition: opacity 0.2s, transform 0.2s;
+      min-height: 52px;
+    }
+    .btn-gold:hover { opacity: 0.88; transform: translateY(-1px); }
+    .form-note { font-size: 11px; color: var(--text-3); line-height: 1.5; }
+    .form-status {
+      display: none;
+      font-size: 13px;
+      color: var(--gold);
+      margin-top: 12px;
+    }
+
+    /* ── FOOTER ─────────────────────────────────────────────────── */
+    footer {
+      border-top: 1px solid var(--border);
+      padding: 32px 0;
+    }
+    .footer-inner {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 24px;
+    }
+    .footer-copy { font-size: 12px; color: var(--text-3); }
+    .footer-back {
+      font-size: 11px;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      color: var(--text-3);
+      text-decoration: none;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      transition: color 0.2s;
+    }
+    .footer-back:hover { color: var(--gold); }
+    .footer-back svg { width: 12px; height: 12px; }
+
+    /* ── REVEAL ANIMATIONS ──────────────────────────────────────── */
+    .reveal {
+      opacity: 0;
+      transform: translateY(32px);
+      transition: opacity 0.8s var(--ease-out), transform 0.8s var(--ease-out);
+    }
+    .reveal.in { opacity: 1; transform: translateY(0); }
+    .reveal-d1 { transition-delay: 0.1s; }
+    .reveal-d2 { transition-delay: 0.2s; }
+    .reveal-d3 { transition-delay: 0.3s; }
+    .reveal-d4 { transition-delay: 0.4s; }
+
+    /* ── MOBILE ─────────────────────────────────────────────────── */
+    @media (max-width: 900px) {
+      .nav-links { display: none; }
+      .nav-menu-btn { display: flex; }
+      .projects-grid {
+        grid-template-columns: 1fr;
+        grid-template-rows: auto;
+      }
+      .project-card:first-child {
+        grid-column: auto;
+        grid-row: auto;
+        aspect-ratio: 4/3;
+      }
+      .contact-grid { grid-template-columns: 1fr; gap: 48px; }
+      .form-row { grid-template-columns: 1fr; }
+      .stats-inner { grid-template-columns: 1fr; }
+      .stat { border-right: none; border-bottom: 1px solid var(--border); }
+      .stat:last-child { border-bottom: none; }
+      .service-item { grid-template-columns: 44px 1fr auto; }
+    }
+    @media (max-width: 480px) {
+      .hero-bottom { flex-direction: column; align-items: flex-start; }
+      .hero-scroll { display: none; }
+      .section-header { flex-direction: column; align-items: flex-start; }
+    }
+
+    @media (prefers-reduced-motion: reduce) {
+      *, *::before, *::after {
+        animation-duration: 0.01ms !important;
+        transition-duration: 0.01ms !important;
+      }
     }
   </style>
 </head>
 <body>
 
-  <a href="/" class="back">
-    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-      <path d="M19 12H5M12 19l-7-7 7-7"/>
-    </svg>
-    terriwin.vercel.app
-  </a>
+  <!-- NAV -->
+  <nav id="nav">
+    <div class="container">
+      <div class="nav-inner">
+        <a href="#" class="nav-logo" aria-label="Аркада Строй">
+          <span class="nav-logo-main">АРКАДА</span>
+          <span class="nav-logo-sub">Строй · Элитное строительство</span>
+        </a>
+        <ul class="nav-links">
+          <li><a href="#portfolio">Проекты</a></li>
+          <li><a href="#services">Услуги</a></li>
+          <li><a href="#contact">Контакты</a></li>
+        </ul>
+        <a href="#contact" class="nav-cta">Оставить заявку</a>
+        <button class="nav-menu-btn" id="menuBtn" aria-label="Меню">
+          <span></span><span></span><span></span>
+        </button>
+      </div>
+    </div>
+  </nav>
 
-  <div class="center">
-    <div class="label">Проект 01</div>
-    <div class="title">ArcadeBuild</div>
-    <div class="sub">Страница в разработке</div>
-  </div>
+  <!-- HERO -->
+  <section id="hero">
+    <div class="hero-glow" aria-hidden="true"></div>
+    <div class="container">
+      <div class="hero-content">
+        <p class="eyebrow hero-eyebrow">Элитное строительство · Москва</p>
+        <span class="hero-line" aria-hidden="true"></span>
+        <h1 class="display">
+          <span class="hero-title">АРКАДА <em>строй</em></span>
+          <span class="hero-title-2 display">ОБЪЕКТЫ МЕЧТЫ</span>
+        </h1>
+        <div class="hero-bottom">
+          <p class="hero-sub">
+            Возводим <strong>резиденции, которые остаются в истории.</strong>
+            Авторская архитектура, материалы премиум-класса, сдача в срок.
+          </p>
+          <a href="#portfolio" class="hero-scroll" aria-label="Прокрутить к проектам">
+            <span class="hero-scroll-label">Смотреть</span>
+            <span class="hero-scroll-line" aria-hidden="true"></span>
+          </a>
+        </div>
+      </div>
+    </div>
+  </section>
 
+  <!-- STATS -->
+  <section id="stats" aria-label="Ключевые показатели">
+    <div class="stats-inner container">
+      <div class="stat reveal">
+        <div class="stat-number">47<span class="stat-unit"> объектов</span></div>
+        <div class="stat-label">Сдано под ключ</div>
+      </div>
+      <div class="stat reveal reveal-d1">
+        <div class="stat-number">12<span class="stat-unit"> лет</span></div>
+        <div class="stat-label">На рынке элитного строительства</div>
+      </div>
+      <div class="stat reveal reveal-d2">
+        <div class="stat-number">180<span class="stat-unit"> тыс м²</span></div>
+        <div class="stat-label">Реализованной недвижимости</div>
+      </div>
+    </div>
+  </section>
+
+  <!-- PORTFOLIO -->
+  <section id="portfolio">
+    <div class="container">
+      <div class="section-header reveal">
+        <div>
+          <div class="section-num eyebrow" style="color:var(--text-3);margin-bottom:12px">01 / Проекты</div>
+          <h2 class="section-title display">Наши <em>работы</em></h2>
+        </div>
+        <p style="font-size:14px;color:var(--text-2);max-width:300px;text-align:right">
+          Каждый объект — это диалог между заказчиком и архитектором
+        </p>
+      </div>
+    </div>
+
+    <div class="projects-grid reveal">
+      <!-- Card 1 - large -->
+      <article class="project-card">
+        <div class="pcard-bg pcard-bg-1" aria-hidden="true">
+          <!-- architectural silhouette -->
+          <svg style="position:absolute;bottom:0;left:0;width:100%;height:60%;opacity:0.15" viewBox="0 0 400 200" preserveAspectRatio="xMidYMax meet" aria-hidden="true">
+            <rect x="40" y="80" width="60" height="120" fill="currentColor"/>
+            <rect x="50" y="60" width="40" height="140" fill="currentColor"/>
+            <rect x="110" y="100" width="80" height="100" fill="currentColor"/>
+            <rect x="200" y="40" width="30" height="160" fill="currentColor"/>
+            <rect x="240" y="70" width="50" height="130" fill="currentColor"/>
+            <rect x="300" y="90" width="70" height="110" fill="currentColor"/>
+          </svg>
+        </div>
+        <div class="pcard-veil" aria-hidden="true"></div>
+        <div class="pcard-arrow" aria-hidden="true">
+          <svg viewBox="0 0 24 24" fill="none" stroke-width="1.5"><path d="M7 17 17 7M17 7H7M17 7v10"/></svg>
+        </div>
+        <div class="pcard-info">
+          <div class="pcard-tag">Пентхаус · 2023</div>
+          <h3 class="pcard-name">Резиденция «Северная Звезда»</h3>
+          <div class="pcard-meta">
+            <span>г. Москва, ММДЦ «Москва-Сити»</span>
+            <span>1 240 м²</span>
+          </div>
+        </div>
+      </article>
+
+      <!-- Card 2 -->
+      <article class="project-card">
+        <div class="pcard-bg pcard-bg-2" aria-hidden="true">
+          <svg style="position:absolute;bottom:0;right:0;width:80%;height:70%;opacity:0.12" viewBox="0 0 300 200" preserveAspectRatio="xMaxYMax meet" aria-hidden="true">
+            <rect x="0" y="60" width="120" height="140" fill="currentColor"/>
+            <rect x="130" y="100" width="80" height="100" fill="currentColor"/>
+            <rect x="220" y="80" width="80" height="120" fill="currentColor"/>
+            <rect x="40" y="30" width="40" height="170" fill="currentColor"/>
+          </svg>
+        </div>
+        <div class="pcard-veil" aria-hidden="true"></div>
+        <div class="pcard-arrow" aria-hidden="true">
+          <svg viewBox="0 0 24 24" fill="none" stroke-width="1.5"><path d="M7 17 17 7M17 7H7M17 7v10"/></svg>
+        </div>
+        <div class="pcard-info">
+          <div class="pcard-tag">Вилла · 2022</div>
+          <h3 class="pcard-name">Загородная резиденция «Аркадия»</h3>
+          <div class="pcard-meta">
+            <span>Рублёво-Успенское ш.</span>
+            <span>820 м²</span>
+          </div>
+        </div>
+      </article>
+
+      <!-- Card 3 -->
+      <article class="project-card">
+        <div class="pcard-bg pcard-bg-3" aria-hidden="true">
+          <svg style="position:absolute;bottom:0;left:20%;width:60%;height:80%;opacity:0.13" viewBox="0 0 200 200" preserveAspectRatio="xMidYMax meet" aria-hidden="true">
+            <rect x="0" y="50" width="200" height="150" fill="none" stroke="currentColor" stroke-width="2"/>
+            <rect x="20" y="70" width="160" height="130" fill="none" stroke="currentColor" stroke-width="1"/>
+            <line x1="100" y1="50" x2="100" y2="200" stroke="currentColor" stroke-width="1"/>
+            <rect x="60" y="90" width="80" height="110" fill="currentColor" opacity="0.5"/>
+          </svg>
+        </div>
+        <div class="pcard-veil" aria-hidden="true"></div>
+        <div class="pcard-arrow" aria-hidden="true">
+          <svg viewBox="0 0 24 24" fill="none" stroke-width="1.5"><path d="M7 17 17 7M17 7H7M17 7v10"/></svg>
+        </div>
+        <div class="pcard-info">
+          <div class="pcard-tag">Особняк · 2024</div>
+          <h3 class="pcard-name">«Белый Дом» на Патриарших</h3>
+          <div class="pcard-meta">
+            <span>Патриаршие пруды, Москва</span>
+            <span>560 м²</span>
+          </div>
+        </div>
+      </article>
+    </div>
+  </section>
+
+  <!-- SERVICES -->
+  <section id="services">
+    <div class="container">
+      <div class="section-header reveal">
+        <div>
+          <div class="section-num eyebrow" style="color:var(--text-3);margin-bottom:12px">02 / Услуги</div>
+          <h2 class="section-title display">Что мы <em>делаем</em></h2>
+        </div>
+      </div>
+      <ul class="services-list" role="list">
+        <li class="service-item reveal">
+          <span class="service-num mono"></span>
+          <div class="service-body">
+            <span class="service-name display">Архитектурное проектирование</span>
+            <span class="service-desc">Авторские концепции, рабочая документация, согласование. Работаем с ведущими бюро России и Европы.</span>
+          </div>
+          <div class="service-icon" aria-hidden="true">
+            <svg fill="none" stroke-width="1.2" viewBox="0 0 24 24"><path d="M3 21h18M5 21V7l7-4 7 4v14M9 21V13h6v8"/></svg>
+          </div>
+        </li>
+        <li class="service-item reveal reveal-d1">
+          <span class="service-num mono"></span>
+          <div class="service-body">
+            <span class="service-name display">Строительство под ключ</span>
+            <span class="service-desc">Весь цикл от котлована до финишной отделки. Собственные бригады, контроль на каждом этапе.</span>
+          </div>
+          <div class="service-icon" aria-hidden="true">
+            <svg fill="none" stroke-width="1.2" viewBox="0 0 24 24"><path d="M2 20h20M4 20V10l8-6 8 6v10"/><rect x="9" y="14" width="6" height="6"/></svg>
+          </div>
+        </li>
+        <li class="service-item reveal reveal-d2">
+          <span class="service-num mono"></span>
+          <div class="service-body">
+            <span class="service-name display">Дизайн интерьера</span>
+            <span class="service-desc">Интерьеры, которые отражают личность владельца. Материалы из Италии, Испании, Германии.</span>
+          </div>
+          <div class="service-icon" aria-hidden="true">
+            <svg fill="none" stroke-width="1.2" viewBox="0 0 24 24"><path d="M12 2L2 7l10 5 10-5-10-5zM2 17l10 5 10-5M2 12l10 5 10-5"/></svg>
+          </div>
+        </li>
+        <li class="service-item reveal reveal-d3">
+          <span class="service-num mono"></span>
+          <div class="service-body">
+            <span class="service-name display">Авторский надзор</span>
+            <span class="service-desc">Постоянный контроль соответствия проекту. Еженедельные отчёты и фотофиксация.</span>
+          </div>
+          <div class="service-icon" aria-hidden="true">
+            <svg fill="none" stroke-width="1.2" viewBox="0 0 24 24"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/></svg>
+          </div>
+        </li>
+      </ul>
+    </div>
+  </section>
+
+  <!-- CONTACT -->
+  <section id="contact">
+    <div class="container">
+      <div class="contact-grid">
+        <div class="contact-left reveal">
+          <div class="eyebrow" style="margin-bottom:20px">03 / Контакты</div>
+          <h2 class="contact-title display">Начнём <em>ваш</em><br>проект?</h2>
+          <p class="contact-body">
+            Оставьте заявку — наш эксперт свяжется с вами в течение 24 часов, обсудит задачу и предложит предварительную концепцию бесплатно.
+          </p>
+          <div class="contact-detail">
+            <div class="contact-line">
+              <svg fill="none" stroke-width="1.5" viewBox="0 0 24 24" aria-hidden="true"><path d="M22 16.92v3a2 2 0 01-2.18 2 19.79 19.79 0 01-8.63-3.07A19.5 19.5 0 013.07 12.5 19.79 19.79 0 012 3.18 2 2 0 013.18 1h3a2 2 0 012 1.72c.12.96.35 1.9.68 2.81a2 2 0 01-.45 2.11L7.09 8.91a16 16 0 006 6l1.27-1.27a2 2 0 012.11-.45c.91.33 1.85.56 2.81.68A2 2 0 0122 16.92z"/></svg>
+              <span><a href="tel:+74951234567">+7 (495) 123-45-67</a></span>
+            </div>
+            <div class="contact-line">
+              <svg fill="none" stroke-width="1.5" viewBox="0 0 24 24" aria-hidden="true"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/><polyline points="22,6 12,13 2,6"/></svg>
+              <span><a href="mailto:info@arkada-stroy.ru">info@arkada-stroy.ru</a></span>
+            </div>
+            <div class="contact-line">
+              <svg fill="none" stroke-width="1.5" viewBox="0 0 24 24" aria-hidden="true"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0118 0z"/><circle cx="12" cy="10" r="3"/></svg>
+              <span>Москва, Пресненская наб. 12</span>
+            </div>
+          </div>
+        </div>
+
+        <div class="reveal reveal-d1">
+          <form id="contactForm" novalidate>
+            <div class="form-row">
+              <div class="field">
+                <label for="name">Ваше имя *</label>
+                <input type="text" id="name" name="name" autocomplete="name" required>
+              </div>
+              <div class="field">
+                <label for="phone">Телефон *</label>
+                <input type="tel" id="phone" name="phone" autocomplete="tel" required>
+              </div>
+            </div>
+            <div class="field">
+              <label for="service">Тип проекта</label>
+              <select id="service" name="service">
+                <option value="">— Выберите —</option>
+                <option>Строительство загородного дома</option>
+                <option>Строительство городской резиденции</option>
+                <option>Дизайн и отделка интерьера</option>
+                <option>Авторский надзор</option>
+                <option>Другое</option>
+              </select>
+            </div>
+            <div class="field">
+              <label for="message">Расскажите о проекте</label>
+              <textarea id="message" name="message" placeholder="Площадь, бюджет, сроки, особые пожелания…"></textarea>
+            </div>
+            <div class="form-submit">
+              <button type="submit" class="btn-gold">Отправить заявку</button>
+              <p class="form-note">Ответим в течение 24 ч.<br>Первичная консультация — бесплатно.</p>
+            </div>
+            <p class="form-status" id="formStatus" role="status" aria-live="polite"></p>
+          </form>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- FOOTER -->
+  <footer>
+    <div class="container">
+      <div class="footer-inner">
+        <p class="footer-copy">© 2024 АРКАДА СТРОЙ. Все права защищены.</p>
+        <a href="/" class="footer-back">
+          <svg fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24" aria-hidden="true"><path d="M19 12H5M12 19l-7-7 7-7"/></svg>
+          terriwin.vercel.app
+        </a>
+      </div>
+    </div>
+  </footer>
+
+  <script>
+    // ── NAV scroll state ─────────────────────────────────────────
+    const nav = document.getElementById('nav');
+    window.addEventListener('scroll', () => {
+      nav.classList.toggle('scrolled', window.scrollY > 60);
+    }, { passive: true });
+
+    // ── Reveal on scroll ─────────────────────────────────────────
+    const io = new IntersectionObserver((entries) => {
+      entries.forEach(e => { if (e.isIntersecting) { e.target.classList.add('in'); io.unobserve(e.target); } });
+    }, { threshold: 0.12 });
+    document.querySelectorAll('.reveal').forEach(el => io.observe(el));
+
+    // ── Form ─────────────────────────────────────────────────────
+    const form = document.getElementById('contactForm');
+    const status = document.getElementById('formStatus');
+    form.addEventListener('submit', e => {
+      e.preventDefault();
+      const name = form.name.value.trim();
+      const phone = form.phone.value.trim();
+      if (!name || !phone) {
+        status.style.display = 'block';
+        status.style.color = 'rgba(240,100,100,0.9)';
+        status.textContent = 'Пожалуйста, заполните имя и телефон.';
+        return;
+      }
+      const btn = form.querySelector('.btn-gold');
+      btn.textContent = 'Отправка…';
+      btn.disabled = true;
+      setTimeout(() => {
+        status.style.display = 'block';
+        status.style.color = 'var(--gold)';
+        status.textContent = '✓ Заявка принята. Свяжемся с вами в течение 24 часов.';
+        btn.textContent = 'Отправлено';
+        form.reset();
+      }, 900);
+    });
+  </script>
 </body>
 </html>
