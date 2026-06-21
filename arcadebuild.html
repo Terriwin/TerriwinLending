@@ -793,7 +793,39 @@
 
     /* ── MOBILE ─────────────────────────────────────────────────── */
     @media (max-width: 900px) {
-      .nav-links { display: none; }
+      .nav-links {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        gap: 40px;
+        position: fixed;
+        inset: 0;
+        background: rgba(8,8,10,0.97);
+        backdrop-filter: blur(16px);
+        -webkit-backdrop-filter: blur(16px);
+        z-index: 90;
+        opacity: 0;
+        pointer-events: none;
+        transform: translateY(-10px);
+        transition: opacity 0.28s, transform 0.3s var(--ease-out);
+      }
+      .nav-links a {
+        font-family: 'Cormorant Garamond', serif;
+        font-size: 32px;
+        font-weight: 400;
+        letter-spacing: 0.06em;
+        color: var(--text-2);
+      }
+      .nav-links a:hover { color: var(--gold); }
+      #nav.nav-open .nav-links {
+        opacity: 1;
+        pointer-events: all;
+        transform: translateY(0);
+      }
+      #nav.nav-open .nav-menu-btn span:nth-child(1) { transform: translateY(6.5px) rotate(45deg); }
+      #nav.nav-open .nav-menu-btn span:nth-child(2) { opacity: 0; transform: scaleX(0); }
+      #nav.nav-open .nav-menu-btn span:nth-child(3) { transform: translateY(-6.5px) rotate(-45deg); }
       .nav-menu-btn { display: flex; }
       .projects-grid {
         grid-template-columns: 1fr;
@@ -1120,6 +1152,13 @@
   <script>
     // ── NAV scroll state ─────────────────────────────────────────
     const nav = document.getElementById('nav');
+
+    // ── Mobile nav toggle ────────────────────────────────────────
+    const menuBtn = document.getElementById('menuBtn');
+    menuBtn.addEventListener('click', () => nav.classList.toggle('nav-open'));
+    document.querySelectorAll('.nav-links a').forEach(a =>
+      a.addEventListener('click', () => nav.classList.remove('nav-open'))
+    );
 
     // ── Hero parallax ─────────────────────────────────────────────
     const heroBg   = document.querySelector('.hero-bg');
