@@ -722,6 +722,14 @@
     }
     .field select option { background: #1a1a1e; }
     .field textarea { resize: none; height: 80px; }
+    .field input:-webkit-autofill,
+    .field input:-webkit-autofill:hover,
+    .field input:-webkit-autofill:focus {
+      -webkit-box-shadow: 0 0 0 1000px var(--bg) inset;
+      -webkit-text-fill-color: var(--text);
+      caret-color: var(--text);
+      transition: background-color 5000s ease-in-out 0s;
+    }
     .form-row { display: grid; grid-template-columns: 1fr 1fr; gap: 0 24px; }
 
     .form-submit {
