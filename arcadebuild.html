@@ -18,8 +18,8 @@
       --gold-dim:  rgba(201,168,76,0.12);
       --gold-glow: rgba(201,168,76,0.06);
       --text:      #f0ece4;
-      --text-2:    rgba(240,236,228,0.5);
-      --text-3:    rgba(240,236,228,0.28);
+      --text-2:    rgba(240,236,228,0.64);
+      --text-3:    rgba(240,236,228,0.5);
       --border:    rgba(201,168,76,0.1);
       --border-hi: rgba(201,168,76,0.22);
       --ease-out:  cubic-bezier(0.22,1,0.36,1);
@@ -312,6 +312,28 @@
     }
     .stat:last-child { border-right: none; }
     .stat:hover { background: var(--gold-glow); }
+    /* signature: architect's dimension line measuring each figure */
+    .stat-dim {
+      position: relative;
+      height: 1px;
+      background: var(--border-hi);
+      margin-bottom: clamp(18px, 2.4vw, 28px);
+      transform: scaleX(0);
+      transform-origin: left center;
+      transition: transform 1s var(--ease-out);
+    }
+    .stat.in .stat-dim { transform: scaleX(1); }
+    .stat-dim::before,
+    .stat-dim::after {
+      content: '';
+      position: absolute;
+      top: -3px;
+      width: 1px;
+      height: 7px;
+      background: var(--gold);
+    }
+    .stat-dim::before { left: 0; }
+    .stat-dim::after { right: 0; }
     .stat-number {
       font-family: 'Cormorant Garamond', serif;
       font-size: clamp(52px, 7vw, 88px);
@@ -324,7 +346,7 @@
       font-family: 'Cormorant Garamond', serif;
       font-size: clamp(28px, 4vw, 48px);
       font-weight: 300;
-      color: rgba(201,168,76,0.5);
+      color: rgba(201,168,76,0.78);
     }
     .stat-label {
       margin-top: 10px;
@@ -394,7 +416,7 @@
     .pcard-veil {
       position: absolute;
       inset: 0;
-      background: linear-gradient(to top, rgba(10,10,11,0.92) 0%, rgba(10,10,11,0.2) 60%, transparent 100%);
+      background: linear-gradient(to top, rgba(10,10,11,0.96) 0%, rgba(10,10,11,0.5) 48%, transparent 100%);
     }
     .pcard-info {
       position: absolute;
@@ -444,6 +466,122 @@
     }
     .pcard-arrow:hover { background: var(--gold); }
     .pcard-arrow svg { width: 14px; height: 14px; stroke: var(--text); }
+
+    /* card is a real button now */
+    button.project-card {
+      font-family: inherit;
+      text-align: left;
+      border: none;
+      width: 100%;
+      color: var(--text);
+    }
+    .project-card:focus-visible {
+      outline: 2px solid var(--gold);
+      outline-offset: 3px;
+    }
+
+    /* ── PROJECT MODAL ──────────────────────────────────────────── */
+    .pmodal {
+      width: min(920px, 92vw);
+      max-height: 88vh;
+      padding: 0;
+      border: 1px solid var(--border-hi);
+      background: var(--bg-2);
+      color: var(--text);
+      overflow: hidden;
+      opacity: 0;
+      transform: translateY(16px) scale(0.985);
+      transition: opacity 0.3s var(--ease-out), transform 0.4s var(--ease-out);
+    }
+    .pmodal[open] { opacity: 1; transform: translateY(0) scale(1); }
+    .pmodal::backdrop {
+      background: rgba(6,6,7,0.78);
+      backdrop-filter: blur(6px);
+      -webkit-backdrop-filter: blur(6px);
+      opacity: 0;
+      transition: opacity 0.3s;
+    }
+    .pmodal[open]::backdrop { opacity: 1; }
+    .pmodal-grid {
+      display: grid;
+      grid-template-columns: 1.1fr 1fr;
+      max-height: 88vh;
+    }
+    .pmodal-media {
+      position: relative;
+      min-height: 320px;
+      background-size: cover;
+      background-position: center;
+    }
+    .pmodal-body {
+      padding: clamp(28px, 4vw, 48px);
+      overflow-y: auto;
+    }
+    .pmodal-tag {
+      font-size: 10px;
+      letter-spacing: 0.14em;
+      text-transform: uppercase;
+      color: var(--gold);
+      margin-bottom: 12px;
+    }
+    .pmodal-name {
+      font-family: 'Cormorant Garamond', serif;
+      font-size: clamp(30px, 4vw, 44px);
+      font-weight: 400;
+      line-height: 1.05;
+      margin-bottom: 18px;
+    }
+    .pmodal-desc {
+      font-size: 14px;
+      line-height: 1.75;
+      color: var(--text-2);
+      margin-bottom: 28px;
+    }
+    .pmodal-specs {
+      display: grid;
+      gap: 1px;
+      background: var(--border);
+      border: 1px solid var(--border);
+    }
+    .pmodal-spec {
+      display: flex;
+      justify-content: space-between;
+      gap: 16px;
+      padding: 13px 16px;
+      background: var(--bg-2);
+      font-size: 13px;
+    }
+    .pmodal-spec dt {
+      color: var(--text-3);
+      letter-spacing: 0.04em;
+    }
+    .pmodal-spec dd {
+      color: var(--text);
+      text-align: right;
+      font-weight: 500;
+    }
+    .pmodal-close {
+      position: absolute;
+      top: 14px;
+      right: 14px;
+      z-index: 2;
+      width: 40px;
+      height: 40px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      background: rgba(10,10,11,0.7);
+      border: 1px solid var(--border-hi);
+      color: var(--text);
+      cursor: pointer;
+      transition: background 0.2s, border-color 0.2s, transform 0.2s;
+    }
+    .pmodal-close:hover { background: var(--gold); color: var(--bg); border-color: var(--gold); transform: rotate(90deg); }
+    .pmodal-close svg { width: 16px; height: 16px; stroke: currentColor; stroke-width: 1.6; fill: none; }
+    @media (max-width: 720px) {
+      .pmodal-grid { grid-template-columns: 1fr; }
+      .pmodal-media { min-height: 200px; aspect-ratio: 16/10; }
+    }
 
     /* ── SERVICES ───────────────────────────────────────────────── */
     #services { padding: clamp(64px,10vw,120px) 0; background: var(--bg-2); }
@@ -523,16 +661,20 @@
     .slist-item.active .slist-plus { border-color: var(--border-hi); transform: rotate(45deg); }
     .slist-item.active .slist-plus svg { stroke: var(--gold); }
     .slist-body {
+      display: grid;
+      grid-template-rows: 0fr;
+      opacity: 0;
+      transition: grid-template-rows 0.45s var(--ease-out), opacity 0.35s;
+    }
+    .slist-body-inner {
+      overflow: hidden;
       font-size: 13px;
       color: var(--text-2);
       line-height: 1.7;
-      overflow: hidden;
-      max-height: 0;
-      opacity: 0;
       padding-left: 36px;
-      transition: max-height 0.45s var(--ease-out), opacity 0.35s, padding-bottom 0.35s;
     }
-    .slist-item.active .slist-body { max-height: 80px; opacity: 1; padding-bottom: 20px; }
+    .slist-item.active .slist-body { grid-template-rows: 1fr; opacity: 1; }
+    .slist-item.active .slist-body-inner { padding-bottom: 20px; }
 
     @media (max-width: 900px) {
       .services-wrap { grid-template-columns: 1fr; }
@@ -730,7 +872,23 @@
       caret-color: var(--text);
       transition: background-color 5000s ease-in-out 0s;
     }
+    .field.invalid { border-color: rgba(224,108,108,0.8); }
+    .field.invalid label { color: rgba(224,108,108,0.95); }
+    .field-err {
+      display: block;
+      min-height: 0;
+      font-size: 11px;
+      letter-spacing: 0.02em;
+      color: rgba(224,108,108,0.95);
+      opacity: 0;
+      transform: translateY(-2px);
+      transition: opacity 0.2s, transform 0.2s var(--ease-out);
+      margin-top: -8px;
+      padding-bottom: 0;
+    }
+    .field.invalid .field-err { opacity: 1; transform: translateY(0); padding-bottom: 8px; }
     .form-row { display: grid; grid-template-columns: 1fr 1fr; gap: 0 24px; }
+    .btn-gold[disabled] { opacity: 0.6; cursor: default; }
 
     .form-submit {
       margin-top: 32px;
@@ -932,14 +1090,17 @@
   <section id="stats" aria-label="Ключевые показатели">
     <div class="stats-inner container">
       <div class="stat reveal">
+        <div class="stat-dim" aria-hidden="true"></div>
         <div class="stat-number">47<span class="stat-unit"> объектов</span></div>
         <div class="stat-label">Сдано под ключ</div>
       </div>
       <div class="stat reveal reveal-d1">
+        <div class="stat-dim" aria-hidden="true"></div>
         <div class="stat-number">12<span class="stat-unit"> лет</span></div>
         <div class="stat-label">На рынке элитного строительства</div>
       </div>
       <div class="stat reveal reveal-d2">
+        <div class="stat-dim" aria-hidden="true"></div>
         <div class="stat-number">180<span class="stat-unit"> тыс м²</span></div>
         <div class="stat-label">Реализованной недвижимости</div>
       </div>
@@ -950,7 +1111,7 @@
   <section id="portfolio">
     <div class="projects-grid reveal">
       <!-- Card 1 - large -->
-      <article class="project-card">
+      <button type="button" class="project-card" data-project="0" aria-label="Резиденция «Северная Звезда» — подробнее">
         <div class="pcard-bg pcard-bg-1" aria-hidden="true"></div>
         <div class="pcard-veil" aria-hidden="true"></div>
         <div class="pcard-arrow" aria-hidden="true">
@@ -964,10 +1125,10 @@
             <span>1 240 м²</span>
           </div>
         </div>
-      </article>
+      </button>
 
       <!-- Card 2 -->
-      <article class="project-card">
+      <button type="button" class="project-card" data-project="1" aria-label="Загородная резиденция «Аркадия» — подробнее">
         <div class="pcard-bg pcard-bg-2" aria-hidden="true"></div>
         <div class="pcard-veil" aria-hidden="true"></div>
         <div class="pcard-arrow" aria-hidden="true">
@@ -981,10 +1142,10 @@
             <span>820 м²</span>
           </div>
         </div>
-      </article>
+      </button>
 
       <!-- Card 3 -->
-      <article class="project-card">
+      <button type="button" class="project-card" data-project="2" aria-label="«Белый Дом» на Патриарших — подробнее">
         <div class="pcard-bg pcard-bg-3" aria-hidden="true"></div>
         <div class="pcard-veil" aria-hidden="true"></div>
         <div class="pcard-arrow" aria-hidden="true">
@@ -998,8 +1159,24 @@
             <span>560 м²</span>
           </div>
         </div>
-      </article>
+      </button>
     </div>
+
+    <!-- project detail modal -->
+    <dialog class="pmodal" id="pmodal" aria-labelledby="pmName">
+      <button type="button" class="pmodal-close" id="pmClose" aria-label="Закрыть">
+        <svg viewBox="0 0 24 24"><path d="M6 6l12 12M18 6L6 18"/></svg>
+      </button>
+      <div class="pmodal-grid">
+        <div class="pmodal-media" id="pmMedia"></div>
+        <div class="pmodal-body">
+          <div class="pmodal-tag" id="pmTag"></div>
+          <h3 class="pmodal-name" id="pmName"></h3>
+          <p class="pmodal-desc" id="pmDesc"></p>
+          <dl class="pmodal-specs" id="pmSpecs"></dl>
+        </div>
+      </div>
+    </dialog>
   </section>
 
   <!-- SERVICES -->
@@ -1009,11 +1186,10 @@
 
         <!-- left: heading + text + cta -->
         <div class="services-left reveal">
-          <div class="eyebrow" style="margin-bottom:16px">Услуги</div>
           <h2 class="section-title display" style="margin-bottom:20px">Что мы <em>делаем</em></h2>
           <p class="services-tagline">
-            Полный цикл элитного строительства — от первого эскиза до передачи ключей.<br>
-            Наведите на карточку, чтобы узнать подробнее.
+            Полный цикл элитного строительства, от первого эскиза до передачи ключей.<br>
+            Нажмите на услугу, чтобы раскрыть подробности.
           </p>
           <a href="#contact" class="btn-outline">
             Обсудить проект
@@ -1031,7 +1207,7 @@
                 <span class="slist-name">Архитектурное проектирование</span>
                 <span class="slist-plus" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M12 5v14M5 12h14"/></svg></span>
               </div>
-              <div class="slist-body">Авторские концепции, рабочая документация, согласование с ведущими бюро.</div>
+              <div class="slist-body"><div class="slist-body-inner">Авторские концепции, рабочая документация, согласование с ведущими бюро.</div></div>
             </div>
 
             <div class="slist-item" role="listitem">
@@ -1040,7 +1216,7 @@
                 <span class="slist-name">Строительство под ключ</span>
                 <span class="slist-plus" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M12 5v14M5 12h14"/></svg></span>
               </div>
-              <div class="slist-body">От котлована до финишной отделки. Собственные бригады, контроль на каждом этапе.</div>
+              <div class="slist-body"><div class="slist-body-inner">От котлована до финишной отделки. Собственные бригады, контроль на каждом этапе.</div></div>
             </div>
 
             <div class="slist-item" role="listitem">
@@ -1049,7 +1225,7 @@
                 <span class="slist-name">Дизайн интерьера</span>
                 <span class="slist-plus" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M12 5v14M5 12h14"/></svg></span>
               </div>
-              <div class="slist-body">Интерьеры из материалов Италии и Германии, отражающие личность владельца.</div>
+              <div class="slist-body"><div class="slist-body-inner">Интерьеры из материалов Италии и Германии, отражающие личность владельца.</div></div>
             </div>
 
             <div class="slist-item" role="listitem">
@@ -1058,7 +1234,7 @@
                 <span class="slist-name">Авторский надзор</span>
                 <span class="slist-plus" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M12 5v14M5 12h14"/></svg></span>
               </div>
-              <div class="slist-body">Еженедельные отчёты и контроль соответствия проекту на каждом этапе.</div>
+              <div class="slist-body"><div class="slist-body-inner">Еженедельные отчёты и контроль соответствия проекту на каждом этапе.</div></div>
             </div>
 
           </div>
@@ -1072,7 +1248,6 @@
     <div class="container">
       <div class="contact-grid">
         <div class="contact-left reveal">
-          <div class="eyebrow" style="margin-bottom:20px">Контакты</div>
           <h2 class="contact-title display">Начнём <em>ваш</em><br>проект?</h2>
           <p class="contact-body">
             Оставьте заявку — наш эксперт свяжется с вами в течение 24 часов, обсудит задачу и предложит предварительную концепцию бесплатно.
@@ -1096,13 +1271,15 @@
         <div class="reveal reveal-d1">
           <form id="contactForm" novalidate>
             <div class="form-row">
-              <div class="field">
+              <div class="field" id="fieldName">
                 <label for="name">Ваше имя *</label>
-                <input type="text" id="name" name="name" autocomplete="name" required>
+                <input type="text" id="name" name="name" autocomplete="name" required aria-describedby="errName">
+                <span class="field-err" id="errName"></span>
               </div>
-              <div class="field">
+              <div class="field" id="fieldPhone">
                 <label for="phone">Телефон *</label>
-                <input type="tel" id="phone" name="phone" autocomplete="tel" required>
+                <input type="tel" id="phone" name="phone" autocomplete="tel" required aria-describedby="errPhone">
+                <span class="field-err" id="errPhone"></span>
               </div>
             </div>
             <div class="field cselect-field" id="serviceField">
@@ -1148,7 +1325,7 @@
   <footer>
     <div class="container">
       <div class="footer-inner">
-        <p class="footer-copy">© 2024 АРКАДА СТРОЙ. Все права защищены.</p>
+        <p class="footer-copy">© 2026 АРКАДА СТРОЙ. Все права защищены.</p>
         <a href="/" class="footer-back">
           <svg fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24" aria-hidden="true"><path d="M19 12H5M12 19l-7-7 7-7"/></svg>
           terriwin.vercel.app
@@ -1191,10 +1368,20 @@
     }, { passive: true });
 
     // ── Reveal on scroll ─────────────────────────────────────────
-    const io = new IntersectionObserver((entries) => {
-      entries.forEach(e => { if (e.isIntersecting) { e.target.classList.add('in'); io.unobserve(e.target); } });
-    }, { threshold: 0.12 });
-    document.querySelectorAll('.reveal').forEach(el => io.observe(el));
+    const reveals = document.querySelectorAll('.reveal');
+    const revealAll = () => reveals.forEach(el => el.classList.add('in'));
+    if ('IntersectionObserver' in window) {
+      const io = new IntersectionObserver((entries) => {
+        entries.forEach(e => { if (e.isIntersecting) { e.target.classList.add('in'); io.unobserve(e.target); } });
+      }, { threshold: 0.12 });
+      reveals.forEach(el => io.observe(el));
+      // safety net: a never-visible context (crawler, OG bot, background tab) never
+      // fires the observer — don't let content ship hidden. Real users (visible tab)
+      // keep the scroll animation untouched.
+      setTimeout(() => { if (document.hidden) revealAll(); }, 2000);
+    } else {
+      revealAll();
+    }
 
     // ── Services accordion ───────────────────────────────────────
     document.querySelectorAll('.slist-head').forEach(head => {
@@ -1271,28 +1458,120 @@
       if (!serviceField.contains(e.target)) csClose();
     });
 
+    // ── Project detail modal ─────────────────────────────────────
+    const projects = [
+      {
+        bg: 'url(assets/project-1.jpg) center 55%/cover',
+        tag: 'Пентхаус · 2023',
+        name: 'Резиденция «Северная Звезда»',
+        desc: 'Двухуровневый пентхаус в башне «Москва-Сити» с панорамным остеклением в пол и видом на излучину реки. Авторская планировка с приватной террасой, винным погребом и зимним садом.',
+        specs: [
+          ['Площадь', '1 240 м²'],
+          ['Локация', 'ММДЦ «Москва-Сити»'],
+          ['Срок', '14 месяцев'],
+          ['Материалы', 'Травертин, латунь, дуб'],
+          ['Статус', 'Сдан под ключ'],
+        ],
+      },
+      {
+        bg: 'url(assets/project-2.png) center 35%/cover',
+        tag: 'Вилла · 2022',
+        name: 'Загородная резиденция «Аркадия»',
+        desc: 'Семейная вилла на Рублёво-Успенском шоссе с бассейном, спа и гостевым домом. Архитектура в духе современного классицизма, посадка дома вписана в существующий сосновый лес.',
+        specs: [
+          ['Площадь', '820 м²'],
+          ['Локация', 'Рублёво-Успенское ш.'],
+          ['Срок', '20 месяцев'],
+          ['Материалы', 'Известняк, тик, стекло'],
+          ['Статус', 'Сдан под ключ'],
+        ],
+      },
+      {
+        bg: 'url(assets/project-3.jpg) center 45%/cover',
+        tag: 'Особняк · 2024',
+        name: '«Белый Дом» на Патриарших',
+        desc: 'Городской особняк в историческом квартале у Патриарших прудов. Полная реконструкция фасада по согласованию с городом и интерьеры с двойным световым объёмом в центральном холле.',
+        specs: [
+          ['Площадь', '560 м²'],
+          ['Локация', 'Патриаршие пруды'],
+          ['Срок', '16 месяцев'],
+          ['Материалы', 'Мрамор, бронза, орех'],
+          ['Статус', 'Сдан под ключ'],
+        ],
+      },
+    ];
+    const pmodal  = document.getElementById('pmodal');
+    const pmMedia = document.getElementById('pmMedia');
+    const pmTag   = document.getElementById('pmTag');
+    const pmName  = document.getElementById('pmName');
+    const pmDesc  = document.getElementById('pmDesc');
+    const pmSpecs = document.getElementById('pmSpecs');
+    const pmClose = document.getElementById('pmClose');
+
+    function openProject(i) {
+      const p = projects[i];
+      if (!p) return;
+      pmMedia.style.background = p.bg;
+      pmTag.textContent = p.tag;
+      pmName.textContent = p.name;
+      pmDesc.textContent = p.desc;
+      pmSpecs.innerHTML = p.specs
+        .map(([k, v]) => `<div class="pmodal-spec"><dt>${k}</dt><dd>${v}</dd></div>`)
+        .join('');
+      pmodal.showModal();
+    }
+    document.querySelectorAll('.project-card').forEach(card => {
+      card.addEventListener('click', () => openProject(+card.dataset.project));
+    });
+    pmClose.addEventListener('click', () => pmodal.close());
+    // click on backdrop closes (clicks land on <dialog> itself, not its content)
+    pmodal.addEventListener('click', e => { if (e.target === pmodal) pmodal.close(); });
+
     // ── Form ─────────────────────────────────────────────────────
-    const form = document.getElementById('contactForm');
+    const form   = document.getElementById('contactForm');
     const status = document.getElementById('formStatus');
+    const btn    = form.querySelector('.btn-gold');
+    const fields = {
+      name:  { field: document.getElementById('fieldName'),  err: document.getElementById('errName') },
+      phone: { field: document.getElementById('fieldPhone'), err: document.getElementById('errPhone') },
+    };
+
+    function setError(key, msg) {
+      fields[key].field.classList.add('invalid');
+      fields[key].err.textContent = msg;
+    }
+    function clearError(key) {
+      fields[key].field.classList.remove('invalid');
+      fields[key].err.textContent = '';
+    }
+    // clear a field's error as soon as the user fixes it
+    form.name.addEventListener('input', () => { if (form.name.value.trim()) clearError('name'); });
+    form.phone.addEventListener('input', () => { if (form.phone.value.replace(/\D/g, '').length >= 6) clearError('phone'); });
+
     form.addEventListener('submit', e => {
       e.preventDefault();
       const name = form.name.value.trim();
-      const phone = form.phone.value.trim();
-      if (!name || !phone) {
-        status.style.display = 'block';
-        status.style.color = 'rgba(240,100,100,0.9)';
-        status.textContent = 'Пожалуйста, заполните имя и телефон.';
-        return;
-      }
-      const btn = form.querySelector('.btn-gold');
+      const digits = form.phone.value.replace(/\D/g, '');
+      let firstInvalid = null;
+
+      if (!name) { setError('name', 'Укажите, как к вам обращаться.'); firstInvalid ??= form.name; }
+      else clearError('name');
+
+      if (!digits)            { setError('phone', 'Введите номер телефона.'); firstInvalid ??= form.phone; }
+      else if (digits.length < 6) { setError('phone', 'Похоже, номер неполный.'); firstInvalid ??= form.phone; }
+      else clearError('phone');
+
+      if (firstInvalid) { firstInvalid.focus(); return; }
+
       btn.textContent = 'Отправка…';
       btn.disabled = true;
+      status.textContent = '';
       setTimeout(() => {
-        status.style.display = 'block';
         status.style.color = 'var(--gold)';
         status.textContent = '✓ Заявка принята. Свяжемся с вами в течение 24 часов.';
-        btn.textContent = 'Отправлено';
         form.reset();
+        btn.disabled = false;
+        btn.textContent = 'Отправить заявку';
       }, 900);
     });
   </script>
