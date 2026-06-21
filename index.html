@@ -1012,21 +1012,25 @@
     <div class="pdrawer-body">
       <div class="pdrawer-section-label" data-i18n="drawer.section">Работы</div>
 
-      <!-- Card 1 — coming soon (replace href + badge when ready) -->
-      <div class="pcard pcard--soon">
+      <!-- Card 1 — ArcadeBuild (live) -->
+      <a href="/arcadebuild" class="pcard pcard--live">
         <div class="pcard-preview">
-          <div class="pcard-preview-bg" style="background: radial-gradient(ellipse at 25% 60%, rgba(201,185,154,0.22) 0%, transparent 55%), radial-gradient(ellipse at 75% 30%, rgba(140,110,70,0.15) 0%, transparent 50%), linear-gradient(145deg,#1c1610 0%,#0c0a08 100%);"></div>
+          <div class="pcard-preview-bg" style="background: radial-gradient(ellipse at 30% 70%, rgba(120,200,100,0.18) 0%, transparent 55%), radial-gradient(ellipse at 75% 25%, rgba(60,160,80,0.12) 0%, transparent 50%), linear-gradient(145deg,#0b1610 0%,#080c08 100%);"></div>
           <div class="pcard-preview-veil"></div>
-          <div class="pcard-preview-watermark" data-i18n="drawer.soon">Скоро</div>
         </div>
         <div class="pcard-body">
           <div class="pcard-row">
             <span class="pcard-num">01</span>
+            <span class="pcard-badge pcard-badge--live">Live</span>
           </div>
-          <div class="pcard-title">Новый проект</div>
-          <div class="pcard-desc">В разработке — появится совсем скоро.</div>
+          <div class="pcard-title">ArcadeBuild</div>
+          <div class="pcard-desc" data-i18n="drawer.card1.desc">Веб-приложение. Полный цикл разработки.</div>
+          <div class="pcard-cta" data-i18n="drawer.card1.cta">
+            Открыть проект
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
+          </div>
         </div>
-      </div>
+      </a>
 
       <!-- Card 2 — coming soon placeholder -->
       <div class="pcard pcard--soon">
@@ -1089,8 +1093,10 @@
         'drawer.eyebrow': 'Портфолио',
         'drawer.title':   'Проекты',
         'drawer.section': 'Работы',
-        'drawer.soon':    'Скоро',
-        'drawer.footer':  'terriwin · full stack dev',
+        'drawer.soon':       'Скоро',
+        'drawer.card1.desc': 'Веб-приложение. Полный цикл разработки.',
+        'drawer.card1.cta':  'Открыть проект',
+        'drawer.footer':     'terriwin · full stack dev',
       },
       en: {
         'meta.langLabel': 'English',
@@ -1103,8 +1109,10 @@
         'drawer.eyebrow': 'Portfolio',
         'drawer.title':   'Projects',
         'drawer.section': 'Works',
-        'drawer.soon':    'Soon',
-        'drawer.footer':  'terriwin · full stack dev',
+        'drawer.soon':       'Soon',
+        'drawer.card1.desc': 'Web application. Full development cycle.',
+        'drawer.card1.cta':  'Open project',
+        'drawer.footer':     'terriwin · full stack dev',
       },
     };
 
