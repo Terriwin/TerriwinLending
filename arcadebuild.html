@@ -273,6 +273,7 @@
       font-weight: 600;
       text-transform: uppercase;
       letter-spacing: 0.01em;
+      line-height: 1.04;
       color: var(--text);
       margin-bottom: 0;
       opacity: 0;
@@ -295,6 +296,7 @@
       opacity: 0;
       transform: translateY(24px);
       animation: fadeUp 1s var(--ease-out) 0.55s forwards;
+      margin-top: clamp(10px, 1.6vw, 22px);
       margin-bottom: 40px;
     }
 
@@ -363,10 +365,12 @@
     .stat {
       padding: clamp(32px, 5vw, 56px) clamp(24px, 4vw, 48px);
       border-right: 1px solid var(--border);
-      transition: background 0.3s;
+      transition: background 0.45s var(--ease-out);
     }
     .stat:last-child { border-right: none; }
-    .stat:hover { background: var(--gold-glow); }
+    /* soft full-cell wash rising from the base — open, not a hard box */
+    .stat:hover { background: linear-gradient(to top, rgba(201,168,76,0.09), transparent 75%); }
+    .stat:hover .stat-dim { background: var(--gold); }
     /* signature: architect's dimension line measuring each figure */
     .stat-dim {
       position: relative;
@@ -765,79 +769,56 @@
     .cselect-wrap.cselect-open .cselect-arrow { transform: rotate(180deg); stroke: var(--gold); }
     .cselect-dropdown {
       position: absolute;
-      top: calc(100% + 6px);
-      left: -1px; right: -1px;
-      background: #0d0d10;
-      border: 1px solid rgba(201,168,76,0.22);
-      border-top: 2px solid var(--gold);
+      top: calc(100% + 8px);
+      left: 0; right: 0;
+      background: #0e0e12;
+      border: 1px solid rgba(201,168,76,0.20);
+      border-radius: 14px;
+      padding: 8px;
       z-index: 200;
       opacity: 0;
-      transform: translateY(-8px) scaleY(0.96);
-      transform-origin: top;
+      transform: translateY(-8px) scale(0.98);
+      transform-origin: top center;
       pointer-events: none;
-      transition: opacity 0.2s, transform 0.26s var(--ease-out);
-      box-shadow: 0 24px 64px rgba(0,0,0,0.85);
+      transition: opacity 0.2s, transform 0.28s var(--ease-out);
+      box-shadow: 0 24px 60px rgba(0,0,0,0.6);
     }
-    .cselect-wrap.cselect-open .cselect-dropdown { opacity: 1; transform: translateY(0) scaleY(1); pointer-events: all; }
-    .cselect-search-wrap {
-      display: flex;
-      align-items: center;
-      gap: 12px;
-      padding: 12px 16px;
-      border-bottom: 1px solid rgba(201,168,76,0.1);
-    }
-    .cselect-search-wrap svg { width: 13px; height: 13px; stroke: var(--gold); opacity: 0.7; fill: none; flex-shrink: 0; }
-    .cselect-search {
-      flex: 1;
-      background: none;
-      border: none;
-      outline: none;
-      font-family: 'Manrope', sans-serif;
-      font-size: 12px;
-      letter-spacing: 0.05em;
-      color: var(--text);
-      caret-color: var(--gold);
-    }
-    .cselect-search::placeholder { color: var(--text-3); }
+    .cselect-wrap.cselect-open .cselect-dropdown { opacity: 1; transform: translateY(0) scale(1); pointer-events: all; }
+    .cselect-list:focus { outline: none; }
 
     .cselect-list {
       list-style: none;
-      max-height: 224px;
-      overflow-y: auto;
-      padding: 8px 0;
-      scrollbar-width: thin;
-      scrollbar-color: rgba(201,168,76,0.25) transparent;
+      display: flex;
+      flex-direction: column;
+      gap: 2px;
     }
-    .cselect-list::-webkit-scrollbar { width: 3px; }
-    .cselect-list::-webkit-scrollbar-track { background: transparent; }
-    .cselect-list::-webkit-scrollbar-thumb { background: rgba(201,168,76,0.28); }
-    .cselect-list::-webkit-scrollbar-thumb:hover { background: rgba(201,168,76,0.5); }
-
     .cselect-item {
       display: flex;
       align-items: center;
       justify-content: space-between;
-      padding: 12px 16px;
+      gap: 12px;
+      padding: 13px 16px;
+      border-radius: 10px;
       font-family: 'Manrope', sans-serif;
       font-size: 15px;
       font-weight: 400;
       line-height: 1.2;
       color: var(--text-2);
       cursor: pointer;
-      transition: background 0.15s, color 0.15s;
+      transition: background 0.18s var(--ease-out), color 0.18s;
     }
     .cselect-item:hover,
     .cselect-item.kbd-active {
-      background: rgba(201,168,76,0.08);
+      background: rgba(201,168,76,0.10);
       color: var(--text);
     }
     .cselect-item[aria-selected="true"] {
       color: var(--gold);
-      background: rgba(201,168,76,0.06);
+      background: rgba(201,168,76,0.07);
     }
-    .cselect-check { width: 14px; height: 14px; flex-shrink: 0; opacity: 0; transition: opacity 0.15s; }
+    .cselect-check { width: 15px; height: 15px; flex-shrink: 0; opacity: 0; transition: opacity 0.15s; }
     .cselect-item[aria-selected="true"] .cselect-check { opacity: 1; }
-    .cselect-check svg { width: 14px; height: 14px; stroke: var(--gold); fill: none; stroke-width: 2.5; }
+    .cselect-check svg { width: 15px; height: 15px; stroke: var(--gold); fill: none; stroke-width: 2.5; }
     .cselect-empty { padding: 12px 16px; font-size: 13px; color: var(--text-3); font-style: italic; letter-spacing: 0.04em; }
     .cselect-field.cselect-open { border-color: var(--gold); }
     .cselect-field.cselect-open label { color: var(--gold); }
@@ -1352,19 +1333,13 @@
                   <svg class="cselect-arrow" viewBox="0 0 24 24"><path d="M6 9l6 6 6-6"/></svg>
                 </button>
                 <div class="cselect-dropdown" id="serviceDropdown">
-                  <div class="cselect-search-wrap">
-                    <svg viewBox="0 0 24 24" stroke-width="1.5" aria-hidden="true"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/></svg>
-                    <input type="text" class="cselect-search" placeholder="Поиск…" id="serviceSearch" autocomplete="off"
-                           role="combobox" aria-expanded="false" aria-controls="serviceList" aria-autocomplete="list" aria-label="Поиск типа проекта">
-                  </div>
-                  <ul class="cselect-list" id="serviceList" role="listbox" aria-label="Тип проекта">
+                  <ul class="cselect-list" id="serviceList" role="listbox" tabindex="-1" aria-label="Тип проекта" aria-activedescendant="">
                     <li class="cselect-item" id="opt-house" data-value="house" role="option" aria-selected="false">Строительство загородного дома<span class="cselect-check"><svg viewBox="0 0 24 24" aria-hidden="true"><polyline points="20 6 9 17 4 12"/></svg></span></li>
                     <li class="cselect-item" id="opt-city" data-value="city" role="option" aria-selected="false">Строительство городской резиденции<span class="cselect-check"><svg viewBox="0 0 24 24" aria-hidden="true"><polyline points="20 6 9 17 4 12"/></svg></span></li>
                     <li class="cselect-item" id="opt-interior" data-value="interior" role="option" aria-selected="false">Дизайн и отделка интерьера<span class="cselect-check"><svg viewBox="0 0 24 24" aria-hidden="true"><polyline points="20 6 9 17 4 12"/></svg></span></li>
                     <li class="cselect-item" id="opt-supervision" data-value="supervision" role="option" aria-selected="false">Авторский надзор<span class="cselect-check"><svg viewBox="0 0 24 24" aria-hidden="true"><polyline points="20 6 9 17 4 12"/></svg></span></li>
                     <li class="cselect-item" id="opt-other" data-value="other" role="option" aria-selected="false">Другое<span class="cselect-check"><svg viewBox="0 0 24 24" aria-hidden="true"><polyline points="20 6 9 17 4 12"/></svg></span></li>
                   </ul>
-                  <p class="cselect-empty" id="serviceEmpty" hidden>Ничего не найдено</p>
                 </div>
                 <input type="hidden" name="service" id="serviceHidden">
               </div>
@@ -1476,53 +1451,41 @@
       });
     });
 
-    // ── Custom Select ─────────────────────────────────────────────
-    const serviceField    = document.getElementById('serviceField');
-    const serviceWrap     = document.getElementById('serviceWrap');
-    const serviceBtn      = document.getElementById('serviceBtn');
-    const serviceVal      = document.getElementById('serviceVal');
-    const serviceSearch   = document.getElementById('serviceSearch');
-    const serviceList     = document.getElementById('serviceList');
-    const serviceEmpty    = document.getElementById('serviceEmpty');
-    const serviceHidden   = document.getElementById('serviceHidden');
-    const allCItems       = [...serviceList.querySelectorAll('.cselect-item')];
+    // ── Custom Select (rounded flyout, keyboard-driven listbox) ───
+    const serviceField  = document.getElementById('serviceField');
+    const serviceWrap   = document.getElementById('serviceWrap');
+    const serviceBtn    = document.getElementById('serviceBtn');
+    const serviceVal    = document.getElementById('serviceVal');
+    const serviceList   = document.getElementById('serviceList');
+    const serviceHidden = document.getElementById('serviceHidden');
+    const allCItems     = [...serviceList.querySelectorAll('.cselect-item')];
 
-    let activeIdx = -1; // index into the currently-visible items
-
-    const visibleItems = () => allCItems.filter(i => i.style.display !== 'none');
+    let activeIdx = -1;
+    const isOpen = () => serviceWrap.classList.contains('cselect-open');
     function setActive(idx) {
-      const vis = visibleItems();
       allCItems.forEach(i => i.classList.remove('kbd-active'));
-      activeIdx = vis.length ? Math.max(0, Math.min(idx, vis.length - 1)) : -1;
-      if (activeIdx === -1) { serviceSearch.removeAttribute('aria-activedescendant'); return; }
-      const el = vis[activeIdx];
+      activeIdx = Math.max(0, Math.min(idx, allCItems.length - 1));
+      const el = allCItems[activeIdx];
       el.classList.add('kbd-active');
-      el.scrollIntoView({ block: 'nearest' });
-      serviceSearch.setAttribute('aria-activedescendant', el.id);
+      serviceList.setAttribute('aria-activedescendant', el.id);
     }
-
     function csOpen() {
       serviceWrap.classList.add('cselect-open');
       serviceField.classList.add('cselect-open');
       serviceBtn.setAttribute('aria-expanded', 'true');
-      serviceSearch.setAttribute('aria-expanded', 'true');
-      // start on the selected option if there is one, else the first
       const sel = allCItems.findIndex(i => i.getAttribute('aria-selected') === 'true');
-      setTimeout(() => { serviceSearch.focus(); setActive(sel > -1 ? sel : 0); }, 60);
+      setActive(sel > -1 ? sel : 0);
+      setTimeout(() => serviceList.focus(), 60);
     }
     function csClose({ focusTrigger = false } = {}) {
       serviceWrap.classList.remove('cselect-open');
       serviceField.classList.remove('cselect-open');
       serviceBtn.setAttribute('aria-expanded', 'false');
-      serviceSearch.setAttribute('aria-expanded', 'false');
-      serviceSearch.removeAttribute('aria-activedescendant');
-      serviceSearch.value = '';
-      allCItems.forEach(i => { i.style.display = ''; i.classList.remove('kbd-active'); });
-      serviceEmpty.hidden = true;
+      serviceList.removeAttribute('aria-activedescendant');
+      allCItems.forEach(i => i.classList.remove('kbd-active'));
       activeIdx = -1;
       if (focusTrigger) serviceBtn.focus();
     }
-
     function selectItem(item) {
       allCItems.forEach(i => i.setAttribute('aria-selected', 'false'));
       item.setAttribute('aria-selected', 'true');
@@ -1532,44 +1495,29 @@
       csClose({ focusTrigger: true });
     }
 
-    serviceBtn.addEventListener('click', () => {
-      serviceWrap.classList.contains('cselect-open') ? csClose() : csOpen();
-    });
+    serviceBtn.addEventListener('click', () => isOpen() ? csClose() : csOpen());
     serviceBtn.addEventListener('keydown', e => {
-      if ((e.key === 'ArrowDown' || e.key === 'ArrowUp') && !serviceWrap.classList.contains('cselect-open')) {
+      if (!isOpen() && (e.key === 'ArrowDown' || e.key === 'ArrowUp' || e.key === 'Enter' || e.key === ' ')) {
         e.preventDefault(); csOpen();
       }
     });
-
-    serviceSearch.addEventListener('input', () => {
-      const q = serviceSearch.value.toLowerCase();
-      let n = 0;
-      allCItems.forEach(item => {
-        const match = item.firstChild.textContent.toLowerCase().includes(q);
-        item.style.display = match ? '' : 'none';
-        if (match) n++;
-      });
-      serviceEmpty.hidden = n > 0;
-      setActive(0); // keep highlight on first match
-    });
-
-    serviceSearch.addEventListener('keydown', e => {
-      const vis = visibleItems();
+    serviceList.addEventListener('keydown', e => {
+      if (!isOpen()) return;
       switch (e.key) {
         case 'ArrowDown': e.preventDefault(); setActive(activeIdx + 1); break;
         case 'ArrowUp':   e.preventDefault(); setActive(activeIdx - 1); break;
         case 'Home':      e.preventDefault(); setActive(0); break;
-        case 'End':       e.preventDefault(); setActive(vis.length - 1); break;
-        case 'Enter':     e.preventDefault(); if (vis[activeIdx]) selectItem(vis[activeIdx]); break;
+        case 'End':       e.preventDefault(); setActive(allCItems.length - 1); break;
+        case 'Enter':
+        case ' ':         e.preventDefault(); if (allCItems[activeIdx]) selectItem(allCItems[activeIdx]); break;
         case 'Escape':    e.preventDefault(); csClose({ focusTrigger: true }); break;
         case 'Tab':       csClose(); break;
       }
     });
-
     allCItems.forEach(item => {
       item.addEventListener('click', () => selectItem(item));
+      item.addEventListener('mousemove', () => setActive(allCItems.indexOf(item)));
     });
-
     document.addEventListener('click', e => {
       if (!serviceField.contains(e.target)) csClose();
     });
