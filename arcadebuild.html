@@ -6,7 +6,7 @@
   <title>Аркада Строй — Элитное строительство</title>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,600;1,300;1,400&family=Manrope:wght@300;400;500;600&family=Space+Mono&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Manrope:wght@300;400;500;600&family=Oswald:wght@300;400;500;600;700&family=Space+Mono&display=swap" rel="stylesheet">
   <style>
     *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
 
@@ -53,9 +53,9 @@
 
     /* ── TYPOGRAPHY ─────────────────────────────────────────────── */
     .display {
-      font-family: 'Cormorant Garamond', serif;
-      line-height: 0.92;
-      letter-spacing: -0.02em;
+      font-family: 'Oswald', sans-serif;
+      line-height: 0.96;
+      letter-spacing: 0;
     }
     .section-title, .contact-title, .pcard-name, .pmodal-name { text-wrap: balance; }
     .services-tagline, .contact-body, .pmodal-desc { text-wrap: pretty; }
@@ -139,7 +139,7 @@
       line-height: 1.1;
     }
     .nav-logo-main {
-      font-family: 'Cormorant Garamond', serif;
+      font-family: 'Oswald', sans-serif;
       font-size: 22px;
       font-weight: 600;
       color: var(--text);
@@ -269,8 +269,10 @@
     }
 
     .hero-title {
-      font-size: clamp(72px, 13vw, 160px);
-      font-weight: 300;
+      font-size: clamp(72px, 13vw, 168px);
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: 0.01em;
       color: var(--text);
       margin-bottom: 0;
       opacity: 0;
@@ -278,7 +280,7 @@
       animation: fadeUp 1s var(--ease-out) 0.4s forwards;
     }
     .hero-title em {
-      font-style: italic;
+      font-style: normal;
       color: var(--gold);
       font-weight: 300;
     }
@@ -388,15 +390,15 @@
     .stat-dim::before { left: 0; }
     .stat-dim::after { right: 0; }
     .stat-number {
-      font-family: 'Cormorant Garamond', serif;
+      font-family: 'Oswald', sans-serif;
       font-size: clamp(52px, 7vw, 88px);
-      font-weight: 300;
+      font-weight: 600;
       color: var(--gold);
       line-height: 1;
-      letter-spacing: -0.02em;
+      letter-spacing: 0;
     }
     .stat-unit {
-      font-family: 'Cormorant Garamond', serif;
+      font-family: 'Oswald', sans-serif;
       font-size: clamp(28px, 4vw, 48px);
       font-weight: 300;
       color: rgba(201,168,76,0.78);
@@ -420,10 +422,11 @@
     }
     .section-title {
       font-size: clamp(40px, 6vw, 72px);
-      font-weight: 300;
+      font-weight: 500;
     }
     .section-title em {
-      font-style: italic;
+      font-style: normal;
+      font-weight: 300;
       color: var(--gold);
     }
     .section-num {
@@ -487,9 +490,9 @@
       margin-bottom: 8px;
     }
     .pcard-name {
-      font-family: 'Cormorant Garamond', serif;
+      font-family: 'Oswald', sans-serif;
       font-size: clamp(26px, 3.5vw, 40px);
-      font-weight: 400;
+      font-weight: 500;
       line-height: 1.1;
       margin-bottom: 8px;
     }
@@ -578,9 +581,9 @@
       margin-bottom: 12px;
     }
     .pmodal-name {
-      font-family: 'Cormorant Garamond', serif;
+      font-family: 'Oswald', sans-serif;
       font-size: clamp(30px, 4vw, 44px);
-      font-weight: 400;
+      font-weight: 500;
       line-height: 1.05;
       margin-bottom: 18px;
     }
@@ -693,9 +696,9 @@
     }
     .slist-name {
       flex: 1;
-      font-family: 'Cormorant Garamond', serif;
+      font-family: 'Oswald', sans-serif;
       font-size: clamp(20px, 2.2vw, 26px);
-      font-weight: 400;
+      font-weight: 500;
       color: var(--text);
       line-height: 1.2;
       transition: color 0.25s;
@@ -815,8 +818,8 @@
       align-items: center;
       justify-content: space-between;
       padding: 12px 16px;
-      font-family: 'Cormorant Garamond', serif;
-      font-size: 18px;
+      font-family: 'Manrope', sans-serif;
+      font-size: 15px;
       font-weight: 400;
       line-height: 1.2;
       color: var(--text-2);
@@ -851,10 +854,10 @@
     .contact-left {}
     .contact-title {
       font-size: clamp(40px,6vw,64px);
-      font-weight: 300;
+      font-weight: 500;
       margin-bottom: 24px;
     }
-    .contact-title em { font-style: italic; color: var(--gold); }
+    .contact-title em { font-style: normal; font-weight: 300; color: var(--gold); }
     .contact-body {
       font-size: 15px;
       color: var(--text-2);
@@ -1031,7 +1034,7 @@
         transition: opacity 0.28s, transform 0.3s var(--ease-out);
       }
       .nav-links a {
-        font-family: 'Cormorant Garamond', serif;
+        font-family: 'Oswald', sans-serif;
         font-size: 32px;
         font-weight: 400;
         letter-spacing: 0.06em;
