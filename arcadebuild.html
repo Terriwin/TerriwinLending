@@ -22,8 +22,22 @@
       --text-3:    rgba(240,236,228,0.5);
       --border:    rgba(201,168,76,0.1);
       --border-hi: rgba(201,168,76,0.22);
+      --danger:    #e06c6c;
+      --scrim:     rgba(6,6,7,0.78);
       --ease-out:  cubic-bezier(0.22,1,0.36,1);
       --ease-in:   cubic-bezier(0.64,0,0.78,0);
+    }
+
+    /* visually hidden, still announced by screen readers */
+    .sr-only {
+      position: absolute;
+      width: 1px; height: 1px;
+      padding: 0; margin: -1px;
+      overflow: hidden;
+      clip: rect(0 0 0 0);
+      clip-path: inset(50%);
+      white-space: nowrap;
+      border: 0;
     }
 
     html { scroll-behavior: smooth; }
@@ -43,6 +57,8 @@
       line-height: 0.92;
       letter-spacing: -0.02em;
     }
+    .section-title, .contact-title, .pcard-name, .pmodal-name { text-wrap: balance; }
+    .services-tagline, .contact-body, .pmodal-desc { text-wrap: pretty; }
     .mono { font-family: 'Space Mono', monospace; }
     .eyebrow {
       font-size: 11px;
@@ -50,6 +66,43 @@
       letter-spacing: 0.18em;
       text-transform: uppercase;
       color: var(--gold);
+    }
+
+    /* skip link — visible only on keyboard focus */
+    .skip-link {
+      position: fixed;
+      top: 12px;
+      left: 12px;
+      z-index: 300;
+      transform: translateY(-150%);
+      background: var(--gold);
+      color: var(--bg);
+      font-size: 13px;
+      font-weight: 600;
+      letter-spacing: 0.04em;
+      padding: 12px 20px;
+      text-decoration: none;
+      transition: transform 0.2s var(--ease-out);
+    }
+    .skip-link:focus { transform: translateY(0); outline: none; }
+
+    /* visible keyboard focus — never remove an outline without a replacement */
+    .nav-links a:focus-visible,
+    .nav-cta:focus-visible,
+    .nav-menu-btn:focus-visible,
+    .hero-scroll:focus-visible,
+    .btn-gold:focus-visible,
+    .btn-outline:focus-visible,
+    .slist-head:focus-visible,
+    .cselect-trigger:focus-visible,
+    .cselect-search:focus-visible,
+    .pmodal-close:focus-visible,
+    .contact-line a:focus-visible,
+    .footer-back:focus-visible,
+    .nav-logo:focus-visible {
+      outline: 2px solid var(--gold);
+      outline-offset: 3px;
+      border-radius: 1px;
     }
 
     /* ── LAYOUT ─────────────────────────────────────────────────── */
@@ -495,7 +548,7 @@
     }
     .pmodal[open] { opacity: 1; transform: translateY(0) scale(1); }
     .pmodal::backdrop {
-      background: rgba(6,6,7,0.78);
+      background: var(--scrim);
       backdrop-filter: blur(6px);
       -webkit-backdrop-filter: blur(6px);
       opacity: 0;
@@ -565,8 +618,8 @@
       top: 14px;
       right: 14px;
       z-index: 2;
-      width: 40px;
-      height: 40px;
+      width: 44px;
+      height: 44px;
       display: flex;
       align-items: center;
       justify-content: center;
@@ -761,24 +814,22 @@
       display: flex;
       align-items: center;
       justify-content: space-between;
-      padding: 11px 16px 11px 18px;
+      padding: 12px 16px;
       font-family: 'Cormorant Garamond', serif;
       font-size: 18px;
       font-weight: 400;
       line-height: 1.2;
       color: var(--text-2);
       cursor: pointer;
-      border-left: 2px solid transparent;
-      transition: background 0.15s, color 0.15s, border-color 0.2s;
+      transition: background 0.15s, color 0.15s;
     }
-    .cselect-item:hover {
-      background: rgba(201,168,76,0.05);
+    .cselect-item:hover,
+    .cselect-item.kbd-active {
+      background: rgba(201,168,76,0.08);
       color: var(--text);
-      border-left-color: var(--gold);
     }
     .cselect-item[aria-selected="true"] {
       color: var(--gold);
-      border-left-color: var(--gold);
       background: rgba(201,168,76,0.06);
     }
     .cselect-check { width: 14px; height: 14px; flex-shrink: 0; opacity: 0; transition: opacity 0.15s; }
@@ -872,14 +923,14 @@
       caret-color: var(--text);
       transition: background-color 5000s ease-in-out 0s;
     }
-    .field.invalid { border-color: rgba(224,108,108,0.8); }
-    .field.invalid label { color: rgba(224,108,108,0.95); }
+    .field.invalid { border-color: var(--danger); }
+    .field.invalid label { color: var(--danger); }
     .field-err {
       display: block;
       min-height: 0;
       font-size: 11px;
       letter-spacing: 0.02em;
-      color: rgba(224,108,108,0.95);
+      color: var(--danger);
       opacity: 0;
       transform: translateY(-2px);
       transition: opacity 0.2s, transform 0.2s var(--ease-out);
@@ -940,6 +991,9 @@
       display: flex;
       align-items: center;
       gap: 8px;
+      /* roomier tap target without shifting layout */
+      padding: 12px 8px;
+      margin: -12px -8px;
       transition: color 0.2s;
     }
     .footer-back:hover { color: var(--gold); }
@@ -1037,6 +1091,8 @@
 </head>
 <body>
 
+  <a href="#main" class="skip-link">Перейти к содержанию</a>
+
   <!-- NAV -->
   <nav id="nav">
     <div class="container">
@@ -1057,6 +1113,8 @@
       </div>
     </div>
   </nav>
+
+  <main id="main">
 
   <!-- HERO -->
   <section id="hero">
@@ -1108,7 +1166,8 @@
   </section>
 
   <!-- PORTFOLIO -->
-  <section id="portfolio">
+  <section id="portfolio" aria-labelledby="portfolio-h">
+    <h2 id="portfolio-h" class="sr-only">Избранные проекты</h2>
     <div class="projects-grid reveal">
       <!-- Card 1 - large -->
       <button type="button" class="project-card" data-project="0" aria-label="Резиденция «Северная Звезда» — подробнее">
@@ -1289,17 +1348,18 @@
                   <span class="cselect-val cselect-placeholder" id="serviceVal">— Выберите —</span>
                   <svg class="cselect-arrow" viewBox="0 0 24 24"><path d="M6 9l6 6 6-6"/></svg>
                 </button>
-                <div class="cselect-dropdown" id="serviceDropdown" role="listbox">
+                <div class="cselect-dropdown" id="serviceDropdown">
                   <div class="cselect-search-wrap">
-                    <svg viewBox="0 0 24 24" stroke-width="1.5"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/></svg>
-                    <input type="text" class="cselect-search" placeholder="Поиск…" id="serviceSearch" autocomplete="off">
+                    <svg viewBox="0 0 24 24" stroke-width="1.5" aria-hidden="true"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/></svg>
+                    <input type="text" class="cselect-search" placeholder="Поиск…" id="serviceSearch" autocomplete="off"
+                           role="combobox" aria-expanded="false" aria-controls="serviceList" aria-autocomplete="list" aria-label="Поиск типа проекта">
                   </div>
-                  <ul class="cselect-list" id="serviceList">
-                    <li class="cselect-item" data-value="house" role="option">Строительство загородного дома<span class="cselect-check"><svg viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg></span></li>
-                    <li class="cselect-item" data-value="city" role="option">Строительство городской резиденции<span class="cselect-check"><svg viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg></span></li>
-                    <li class="cselect-item" data-value="interior" role="option">Дизайн и отделка интерьера<span class="cselect-check"><svg viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg></span></li>
-                    <li class="cselect-item" data-value="supervision" role="option">Авторский надзор<span class="cselect-check"><svg viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg></span></li>
-                    <li class="cselect-item" data-value="other" role="option">Другое<span class="cselect-check"><svg viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg></span></li>
+                  <ul class="cselect-list" id="serviceList" role="listbox" aria-label="Тип проекта">
+                    <li class="cselect-item" id="opt-house" data-value="house" role="option" aria-selected="false">Строительство загородного дома<span class="cselect-check"><svg viewBox="0 0 24 24" aria-hidden="true"><polyline points="20 6 9 17 4 12"/></svg></span></li>
+                    <li class="cselect-item" id="opt-city" data-value="city" role="option" aria-selected="false">Строительство городской резиденции<span class="cselect-check"><svg viewBox="0 0 24 24" aria-hidden="true"><polyline points="20 6 9 17 4 12"/></svg></span></li>
+                    <li class="cselect-item" id="opt-interior" data-value="interior" role="option" aria-selected="false">Дизайн и отделка интерьера<span class="cselect-check"><svg viewBox="0 0 24 24" aria-hidden="true"><polyline points="20 6 9 17 4 12"/></svg></span></li>
+                    <li class="cselect-item" id="opt-supervision" data-value="supervision" role="option" aria-selected="false">Авторский надзор<span class="cselect-check"><svg viewBox="0 0 24 24" aria-hidden="true"><polyline points="20 6 9 17 4 12"/></svg></span></li>
+                    <li class="cselect-item" id="opt-other" data-value="other" role="option" aria-selected="false">Другое<span class="cselect-check"><svg viewBox="0 0 24 24" aria-hidden="true"><polyline points="20 6 9 17 4 12"/></svg></span></li>
                   </ul>
                   <p class="cselect-empty" id="serviceEmpty" hidden>Ничего не найдено</p>
                 </div>
@@ -1321,6 +1381,8 @@
     </div>
   </section>
 
+  </main>
+
   <!-- FOOTER -->
   <footer>
     <div class="container">
@@ -1340,10 +1402,19 @@
 
     // ── Mobile nav toggle ────────────────────────────────────────
     const menuBtn = document.getElementById('menuBtn');
-    menuBtn.addEventListener('click', () => nav.classList.toggle('nav-open'));
+    function setMenu(open) {
+      nav.classList.toggle('nav-open', open);
+      menuBtn.setAttribute('aria-expanded', String(open));
+    }
+    menuBtn.setAttribute('aria-expanded', 'false');
+    menuBtn.addEventListener('click', () => setMenu(!nav.classList.contains('nav-open')));
     document.querySelectorAll('.nav-links a').forEach(a =>
-      a.addEventListener('click', () => nav.classList.remove('nav-open'))
+      a.addEventListener('click', () => setMenu(false))
     );
+    // Esc closes the mobile menu and returns focus to the toggle
+    document.addEventListener('keydown', e => {
+      if (e.key === 'Escape' && nav.classList.contains('nav-open')) { setMenu(false); menuBtn.focus(); }
+    });
 
     // ── Hero parallax ─────────────────────────────────────────────
     const heroBg   = document.querySelector('.hero-bg');
@@ -1413,23 +1484,58 @@
     const serviceHidden   = document.getElementById('serviceHidden');
     const allCItems       = [...serviceList.querySelectorAll('.cselect-item')];
 
+    let activeIdx = -1; // index into the currently-visible items
+
+    const visibleItems = () => allCItems.filter(i => i.style.display !== 'none');
+    function setActive(idx) {
+      const vis = visibleItems();
+      allCItems.forEach(i => i.classList.remove('kbd-active'));
+      activeIdx = vis.length ? Math.max(0, Math.min(idx, vis.length - 1)) : -1;
+      if (activeIdx === -1) { serviceSearch.removeAttribute('aria-activedescendant'); return; }
+      const el = vis[activeIdx];
+      el.classList.add('kbd-active');
+      el.scrollIntoView({ block: 'nearest' });
+      serviceSearch.setAttribute('aria-activedescendant', el.id);
+    }
+
     function csOpen() {
       serviceWrap.classList.add('cselect-open');
       serviceField.classList.add('cselect-open');
       serviceBtn.setAttribute('aria-expanded', 'true');
-      setTimeout(() => serviceSearch.focus(), 60);
+      serviceSearch.setAttribute('aria-expanded', 'true');
+      // start on the selected option if there is one, else the first
+      const sel = allCItems.findIndex(i => i.getAttribute('aria-selected') === 'true');
+      setTimeout(() => { serviceSearch.focus(); setActive(sel > -1 ? sel : 0); }, 60);
     }
-    function csClose() {
+    function csClose({ focusTrigger = false } = {}) {
       serviceWrap.classList.remove('cselect-open');
       serviceField.classList.remove('cselect-open');
       serviceBtn.setAttribute('aria-expanded', 'false');
+      serviceSearch.setAttribute('aria-expanded', 'false');
+      serviceSearch.removeAttribute('aria-activedescendant');
       serviceSearch.value = '';
-      allCItems.forEach(i => (i.style.display = ''));
+      allCItems.forEach(i => { i.style.display = ''; i.classList.remove('kbd-active'); });
       serviceEmpty.hidden = true;
+      activeIdx = -1;
+      if (focusTrigger) serviceBtn.focus();
+    }
+
+    function selectItem(item) {
+      allCItems.forEach(i => i.setAttribute('aria-selected', 'false'));
+      item.setAttribute('aria-selected', 'true');
+      serviceVal.textContent = item.firstChild.textContent.trim();
+      serviceVal.classList.remove('cselect-placeholder');
+      serviceHidden.value = item.dataset.value;
+      csClose({ focusTrigger: true });
     }
 
     serviceBtn.addEventListener('click', () => {
       serviceWrap.classList.contains('cselect-open') ? csClose() : csOpen();
+    });
+    serviceBtn.addEventListener('keydown', e => {
+      if ((e.key === 'ArrowDown' || e.key === 'ArrowUp') && !serviceWrap.classList.contains('cselect-open')) {
+        e.preventDefault(); csOpen();
+      }
     });
 
     serviceSearch.addEventListener('input', () => {
@@ -1441,17 +1547,24 @@
         if (match) n++;
       });
       serviceEmpty.hidden = n > 0;
+      setActive(0); // keep highlight on first match
+    });
+
+    serviceSearch.addEventListener('keydown', e => {
+      const vis = visibleItems();
+      switch (e.key) {
+        case 'ArrowDown': e.preventDefault(); setActive(activeIdx + 1); break;
+        case 'ArrowUp':   e.preventDefault(); setActive(activeIdx - 1); break;
+        case 'Home':      e.preventDefault(); setActive(0); break;
+        case 'End':       e.preventDefault(); setActive(vis.length - 1); break;
+        case 'Enter':     e.preventDefault(); if (vis[activeIdx]) selectItem(vis[activeIdx]); break;
+        case 'Escape':    e.preventDefault(); csClose({ focusTrigger: true }); break;
+        case 'Tab':       csClose(); break;
+      }
     });
 
     allCItems.forEach(item => {
-      item.addEventListener('click', () => {
-        allCItems.forEach(i => i.removeAttribute('aria-selected'));
-        item.setAttribute('aria-selected', 'true');
-        serviceVal.textContent = item.firstChild.textContent.trim();
-        serviceVal.classList.remove('cselect-placeholder');
-        serviceHidden.value = item.dataset.value;
-        csClose();
-      });
+      item.addEventListener('click', () => selectItem(item));
     });
 
     document.addEventListener('click', e => {
